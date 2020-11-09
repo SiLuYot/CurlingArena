@@ -15,7 +15,8 @@ public class CameraManager : MonoBehaviour
     }
 
     public Camera mainCamera;
-    public Transform targetPos;
+    public Transform stoneRoot;
+    public Transform playerCreatePos;
     public float y = 10.0f;
 
     public static bool IsFixed = false;
@@ -23,9 +24,9 @@ public class CameraManager : MonoBehaviour
     public void Start()
     {
         var newPos = new Vector3(
-                targetPos.position.x,
-                targetPos.position.y + y,
-                targetPos.position.z);
+                playerCreatePos.position.x,
+                playerCreatePos.position.y + y,
+                playerCreatePos.position.z);
 
         mainCamera.transform.position = newPos;
     }
@@ -34,10 +35,12 @@ public class CameraManager : MonoBehaviour
     {
         if (IsFixed)
         {
+            var findObj = stoneRoot.Find("player").gameObject.transform;
+
             var newPos = new Vector3(
-                targetPos.position.x,
-                targetPos.position.y + y,
-                targetPos.position.z);
+                findObj.position.x,
+                findObj.position.y + y,
+                findObj.position.z);
 
             mainCamera.transform.position = newPos;
         }

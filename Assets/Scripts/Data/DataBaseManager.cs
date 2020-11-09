@@ -26,23 +26,20 @@ public class DataBaseManager : MonoBehaviour
         DataLoadStart();
     }
 
-    public void Update()
-    {
-
-    }
-
     public void DataLoadStart()
     {
         loader = new DataBaseLoader("CurlingArena", new MonoSQLite());
 
-        loader.AddTaskEvent(
-            (v) => { Debug.Log(v); },
-            (v) => { Debug.Log(v); },
-            (v) => { Debug.Log("end"); });
-
         IDataBase[] dataBase = new IDataBase[]
         {
-            new TestDataBase(),
+            //new TestDataBase(),
+            new AffiliationDataBase(),
+            new CharacterDataBase(),
+            new JobDataBase(),
+            new RarityDataBase(),
+            new SizeDataBase(),
+            new SkillDataBase(),
+            new SpeciesDataBase(),
         };
 
         loader.Process(dataBase);
@@ -51,13 +48,6 @@ public class DataBaseManager : MonoBehaviour
         if (msg != string.Empty)
         {
             Debug.Log(msg);
-        }
-
-        foreach (var data in loader.GetDataBase("test").GetDataList())
-        {
-            var testData = data as TestData;
-            Debug.Log(string.Format("{0} {1} {2} {3}",
-                testData.id, testData.name, testData.count, testData.value));
         }
     }
 }
