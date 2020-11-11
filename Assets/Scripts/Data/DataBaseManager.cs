@@ -28,11 +28,11 @@ public class DataBaseManager : MonoBehaviour
 
     public void DataLoadStart()
     {
-        loader = new DataBaseLoader("CurlingArena", new MonoSQLite());
+        if (loader == null)
+            loader = new DataBaseLoader("CurlingArena", new MonoSQLite());
 
         IDataBase[] dataBase = new IDataBase[]
-        {
-            //new TestDataBase(),
+        {            
             new AffiliationDataBase(),
             new CharacterDataBase(),
             new JobDataBase(),
