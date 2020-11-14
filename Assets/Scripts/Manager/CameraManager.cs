@@ -23,12 +23,7 @@ public class CameraManager : MonoBehaviour
 
     public void Start()
     {
-        var newPos = new Vector3(
-                playerCreatePos.position.x,
-                playerCreatePos.position.y + y,
-                playerCreatePos.position.z);
-
-        mainCamera.transform.position = newPos;
+        Init();
     }
 
     public void LateUpdate()
@@ -44,6 +39,18 @@ public class CameraManager : MonoBehaviour
 
             mainCamera.transform.position = newPos;
         }
+    }
+
+    public void Init()
+    {
+        IsFixed = false;
+
+        var newPos = new Vector3(
+                playerCreatePos.position.x,
+                playerCreatePos.position.y + y,
+                playerCreatePos.position.z);
+
+        mainCamera.transform.position = newPos;
     }
 
     public void DragScreen(Vector3 clickStartPos)

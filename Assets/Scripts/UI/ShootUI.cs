@@ -7,13 +7,15 @@ public class ShootUI : UIBase
     public UISlider slider;
     public Transform rotateRoot;
     
-    private readonly float maxPower = 10.0f;
-    private readonly float multiply = 2.0f;
+    private readonly float maxPower = 20.0f;
+    private readonly float multiply = 3.0f;
     public float PowerValue { get => slider.value * maxPower * multiply; }
 
-    public void init(Vector3 pos)
+    public void Init(Vector3 pos)
     {
-        transform.position = pos;
+        var e1 = Camera.main.ScreenToViewportPoint(pos);
+        var e2 = UICamera.mainCamera.ViewportToWorldPoint(e1);
+        transform.position = e2;
     }
 
     public void RotateArrow(Vector3 clickStartPixelPos)

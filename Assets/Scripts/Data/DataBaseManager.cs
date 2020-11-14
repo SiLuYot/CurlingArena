@@ -1,12 +1,12 @@
 ﻿using SQLiteLoadHelper;
 using SQLiteLoadHelper.Database;
 using SQLiteLoadHelper.Sqlite;
+using System;
 using System.IO;
 using UnityEngine;
 
 public class DataBaseManager : MonoBehaviour
 {
-
     private static DataBaseManager instance = null;
     public static DataBaseManager Instance
     {
@@ -20,6 +20,8 @@ public class DataBaseManager : MonoBehaviour
     }
 
     public DataBaseLoader loader;
+
+    public event Action EndDataLoadEvent;
 
     public void Start()
     {
@@ -49,6 +51,8 @@ public class DataBaseManager : MonoBehaviour
         {
             Debug.Log(msg);
         }
+
+        EndDataLoadEvent?.Invoke();
     }
 }
 

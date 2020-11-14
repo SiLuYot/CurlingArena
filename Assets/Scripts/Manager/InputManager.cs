@@ -8,7 +8,7 @@ public class InputManager : MonoBehaviour
     private Vector3 clickStartWorldPos = Vector3.zero;
     private Vector3 clickStartScreenPos = Vector3.zero;
 
-    public float sweep = 0.0001f;    
+    public float sweep = 0.0001f;
 
     private void Update()
     {
@@ -25,8 +25,9 @@ public class InputManager : MonoBehaviour
                 var obj = hit.transform.gameObject.GetComponent<Character>();
                 if (obj != null && !CameraManager.IsFixed)
                 {
-                    selectedCharacter = obj;
                     shootUI = UIManager.Instance.Get<ShootUI>() as ShootUI;
+                    shootUI.Init(clickStartScreenPos);
+                    selectedCharacter = obj;
                 }
             }
         }
@@ -35,7 +36,10 @@ public class InputManager : MonoBehaviour
         {
             if (shootUI == null)
             {
-                CameraManager.Instance.DragScreen(clickStartWorldPos);
+                if (!UICamera.isOverUI)
+                {
+                    CameraManager.Instance.DragScreen(clickStartWorldPos);
+                }                                                
             }
             else if (shootUI != null)
             {
@@ -45,15 +49,19 @@ public class InputManager : MonoBehaviour
         }
         //땔때
         else if (Input.GetMouseButtonUp(0))
-        {            
+        {
             if (selectedCharacter != null && shootUI != null)
             {
                 var dragVector = clickStartWorldPos - Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
                 var dir = dragVector.normalized;
                 var force = shootUI.PowerValue;
+                var attackBouns = shootUI.slider.value * 1.2f;
+                if (attackBouns < 0.5f)
+                    attackBouns = 0.5f;
 
                 selectedCharacter.Physics.AddForce(dir, force);
+                selectedCharacter.Physics.SetAttackBonus(attackBouns);
                 selectedCharacter = null;
 
                 shootUI.Close();

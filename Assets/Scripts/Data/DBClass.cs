@@ -22,8 +22,8 @@ public class CharacterData : ReadData
     public int id;
     public int rarity;
     public string name;
-    public int attack;
-    public int defence;
+    public float attack;
+    public float defence;
     public int size;
     public int species;
     public int affiliation;
