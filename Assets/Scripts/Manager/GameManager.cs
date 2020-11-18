@@ -1,8 +1,18 @@
-﻿using Boo.Lang;
+﻿using System.Collections.Generic;
 using UnityEngine;
+
+public enum RoundStep
+{
+    READY = 0,
+    SHOOT = 1,
+    MOVE = 2,
+    END = 3,
+}
 
 public class GameManager : MonoBehaviour
 {
+    public static RoundStep CurRoundStep;    
+
     public Transform stoneRoot;
     public Transform playerStartPos;
     public Transform housePos;
@@ -29,13 +39,47 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        TestSceneStart();
+        Ready();
+    }
+
+    public void Ready()
+    {
+        CurRoundStep = RoundStep.READY;
+        Debug.Log("Round Step : " + CurRoundStep);
+
+        CameraManager.Instance.Init();
+        PhysicsManager.Instance.Init();
+
+        TestSceneStart();        
+    }
+
+    public void Shoot(Character character, Vector3 dir, float force, float attackBouns)
+    {
+        CurRoundStep = RoundStep.SHOOT;
+        Debug.Log("Round Step : " + CurRoundStep);
+
+        CameraManager.IsFixed = true;
+        CameraManager.Instance.SetFollowTrans(character.transform);        
+
+        character.Physics.ApplyForce(dir, force, attackBouns);
+
+        Move();
+    }
+
+    public void Move()
+    {
+        CurRoundStep = RoundStep.MOVE;
+        Debug.Log("Round Step : " + CurRoundStep);
+    }
+
+    public void End()
+    {
+        CurRoundStep = RoundStep.END;
+        Debug.Log("Round Step : " + CurRoundStep);
     }
 
     public void TestSceneStart()
-    {
-        CameraManager.Instance.Init();
-
+    {        
         var characterList = DataBaseManager.Instance.loader.GetDataBase("CharacterDB");
 
         var enemyData = characterList.GetDataList().Find(v => v.ID == EnemyID) as CharacterData;
@@ -80,7 +124,7 @@ public class GameManager : MonoBehaviour
         }
         enemyList.Clear();
 
-        TestSceneStart();
+        Ready();
     }
 
     public void SetPlayerCharacter(CharacterData data)

@@ -4601,6 +4601,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isAllStop: 0
+  isAllStopEventEnd: 0
 --- !u!1 &2036583671
 GameObject:
   m_ObjectHideFlags: 0

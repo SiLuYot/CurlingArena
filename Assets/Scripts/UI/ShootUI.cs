@@ -8,7 +8,7 @@ public class ShootUI : UIBase
     public Transform rotateRoot;
     
     private readonly float maxPower = 20.0f;
-    private readonly float multiply = 3.0f;
+    private readonly float multiply = 3.2f;
     public float PowerValue { get => slider.value * maxPower * multiply; }
 
     public void Init(Vector3 pos)

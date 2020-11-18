@@ -19,28 +19,43 @@ public class PhysicsManager : MonoBehaviour
     private List<CharacterPhysics> physicsObjectList = new List<CharacterPhysics>();
 
     public bool isAllStop = false;
+    public bool isAllStopEventEnd = false;
+
+    public void Init()
+    {
+        isAllStop = false;
+        isAllStopEventEnd = false;
+    }
 
     private void FixedUpdate()
     {
+        if (GameManager.CurRoundStep != RoundStep.MOVE)
+            return;
+
+        if (physicsObjectList == null)
+            return;
+
         //방향과 속력 계산
         CalculateForce();
         //계산된 방향과 속력 갱신
         UpdateForce();
         //갱신된 방향과 속력 적용
         ApplyForce();
+
+        AllStopEvent();
     }
 
     public void AddPhysicsObject(CharacterPhysics obj)
     {
         //인덱스 부여 후
-        obj.index = physicsObjectList.Count;
+        obj.pid = physicsObjectList.Count;
         //리스트에 추가
         physicsObjectList.Add(obj);
 
         Debug.Log(string.Format("" +
             "*AddPhysicsObject*\n" +
             "이름 : {0} / PID : {1} / 등급 : {2} / 이름 : {3}",
-            obj.characterTransform.name, obj.index, obj.data.rarity, obj.data.name));
+            obj.characterTransform.name, obj.pid, obj.data.rarity, obj.data.name));
     }
 
     public void RemovePhysicsObject(CharacterPhysics obj)
@@ -51,11 +66,7 @@ public class PhysicsManager : MonoBehaviour
     //방향과 속력을 계산한다.
     private void CalculateForce()
     {
-        if (physicsObjectList == null)
-            return;
-
         bool allStop = true;
-
         foreach (var moveObj in physicsObjectList)
         {
             if (moveObj == null)
@@ -73,11 +84,12 @@ public class PhysicsManager : MonoBehaviour
             //아직 변하는 중이라면
             if (moveObj.speed > 0)
             {
+                allStop = false;
                 //체크할 오브젝트 리스트 순환
                 foreach (var checkObj in physicsObjectList)
                 {
                     //자신은 제외한다.
-                    if (moveObj.index == checkObj.index)
+                    if (moveObj.pid == checkObj.pid)
                         continue;
 
                     //두 오브젝트 충돌 체크
@@ -90,8 +102,6 @@ public class PhysicsManager : MonoBehaviour
                         CalculateBouncing(moveObj, checkObj, difference);
                     }
                 }
-
-                allStop = false;
             }
         }
 
@@ -101,9 +111,6 @@ public class PhysicsManager : MonoBehaviour
     //계산된 방향과 속력을 갱신한다.
     private void UpdateForce()
     {
-        if (physicsObjectList == null)
-            return;
-
         foreach (var moveObj in physicsObjectList)
         {
             if (moveObj != null && moveObj.updateForce != null)
@@ -117,9 +124,6 @@ public class PhysicsManager : MonoBehaviour
     //계산된 방향과 속력을 적용한다.
     private void ApplyForce()
     {
-        if (physicsObjectList == null)
-            return;
-
         foreach (var moveObj in physicsObjectList)
         {
             if (moveObj == null)
@@ -133,6 +137,30 @@ public class PhysicsManager : MonoBehaviour
                 //현재 위치에 더해준다.
                 moveObj.characterTransform.localPosition += force;
             }
+        }
+    }
+
+    private void AllStopEvent()
+    {
+        if (physicsObjectList == null)
+            return;
+
+        if (!isAllStop)
+            return;
+
+        if (isAllStopEventEnd)
+        {
+            GameManager.Instance.End();
+            return;
+        }            
+
+        isAllStopEventEnd = true;
+        foreach (var moveObj in physicsObjectList)
+        {
+            if (moveObj == null)
+                continue;
+
+            moveObj.allStopEvent(physicsObjectList);
         }
     }
 
@@ -251,50 +279,67 @@ public class PhysicsManager : MonoBehaviour
         //반동이 계산된 충돌된 오브젝트 벡터
         var newv2 = new Vector3(proj22.x + v2fx, 0, proj22.z + v2fz);
 
-        moveObj?.collisionEvent(checkObj, false);
-        checkObj?.collisionEvent(moveObj, true);
+        //충돌 이벤트 발생
+        moveObj?.collideEvent(checkObj);
+        //충돌 된 이벤트 발생
+        checkObj?.beCollidedEvent(moveObj);
 
         //공격력과 공격보너스를 합친 값 (발사단계에서 게이지 퍼센트 만큼 50%~120% 보너스)
         var attackValue = moveObj.character.finalAttack * moveObj.attackBouns;
-        //방어력을 기반으로 계산된 방어율
-        var defenceValue = checkObj.character.finalDefenceValue * 0.01f;
-        //공격력과 방어율을 계산한 충격량
-        var Impulse = checkObj.character.GetImpulseValue(attackValue);
-        var ImpulseValue = Impulse * 0.01f;
+
+        //방어율
+        var defenceValue = checkObj.character.GetDefenceValue();
+        //방어율 (퍼센트)
+        var pDefenceValue = defenceValue * 0.01f;
+
+        //move오브젝트의 충격량
+        var moveImpulse = attackValue * pDefenceValue;
+        //check오브젝트의 충격량
+        var checkImpulse = attackValue * (1.0f - pDefenceValue);
+
+        //공,방 계산후 추가로 더해지는 충격량까지 고려
+        var finalMoveImpulse = moveImpulse + moveObj.character.addImpulse;
+        var finalCheckImpulse = checkImpulse + checkObj.character.addImpulse;
+
+        //충격량이 날아갈 총 거리이므로 
+        //마찰력을 공차로 가지는 등차수열의 합이 충격량이다.
+        var moveSpeed = moveObj.GetQuadraticEquationValue(finalMoveImpulse * 2);
+        var checkSpeed = checkObj.GetQuadraticEquationValue(finalCheckImpulse * 2);
 
         //방향과 속력 업데이트 등록
         moveObj.updateForce = () =>
         {
-            moveObj.dir = newv1.normalized;
+            moveObj.dir = newv1.normalized;            
+            moveObj.speed = moveSpeed;
             //moveObj.speed = newv1.magnitude;
-            moveObj.speed = newv1.magnitude * defenceValue;
         };
 
         //방향과 속력 업데이트 등록
         checkObj.updateForce = () =>
         {
-            checkObj.dir = newv2.normalized;
+            checkObj.dir = newv2.normalized;            
+            checkObj.speed = checkSpeed;
             //checkObj.speed = newv2.magnitude;
-            checkObj.speed = newv2.magnitude * ImpulseValue;
         };
 
-        moveObj.isFirstCollision = true;
-        checkObj.isFirstCollision = true;
+        moveObj.isFirstCollide = true;
+        checkObj.isFirstCollide = true;
 
-        Debug.Log(moveObjTrans.name + " -> " + checkObjTrans.name);
+        Debug.Log(string.Format("충돌 발생!\n{0} -> {1}", moveObjTrans.name, checkObjTrans.name));
         Debug.Log(moveObjTrans.name + " 충돌 전 속도 : " + moveObj.speed);
         Debug.Log(checkObjTrans.name + " 충돌 전 속도 : " + checkObj.speed);
 
         Debug.Log(moveObjTrans.name + " 의 공격력 : " + attackValue);
         Debug.Log(checkObjTrans.name + " 의 방어력 : " + checkObj.character.finalDefence);
+        Debug.Log(checkObjTrans.name + " 의 방어율 : " + defenceValue);
 
-        Debug.Log(checkObjTrans.name + " 의 방어율 : " + checkObj.character.finalDefenceValue);
-        Debug.Log(checkObjTrans.name + " 의 충격량 : " + Impulse);
+        Debug.Log(string.Format("{0}의 충격량 : {1} ({2}+{3})", moveObjTrans.name, finalMoveImpulse, moveImpulse, moveObj.character.addImpulse));
+        Debug.Log(string.Format("{0}의 충격량 : {1} ({2}+{3})", checkObjTrans.name, finalCheckImpulse, checkImpulse, checkObj.character.addImpulse));
 
         Debug.Log(moveObjTrans.name + " 방향 : " + newv1.normalized);
-        Debug.Log(moveObjTrans.name + " 속도 : " + newv1.magnitude * defenceValue);
+        Debug.Log(moveObjTrans.name + " 속도 : " + moveSpeed);
         Debug.Log(checkObjTrans.name + " 방향 : " + newv2.normalized);
-        Debug.Log(checkObjTrans.name + " 속도 : " + newv2.magnitude * ImpulseValue);
+        Debug.Log(checkObjTrans.name + " 속도 : " + checkSpeed);
     }
 
     private void OnDestroy()

@@ -1,6 +1,5 @@
 ﻿using SQLiteLoadHelper.Data;
 using SQLiteLoadHelper.Database;
-using System.Linq;
 
 
 public class AffiliationData : ReadData
@@ -31,12 +30,12 @@ public class CharacterData : ReadData
     public int skill1;
     public int skill2;
 
+    public RarityData rarityData;
     public SizeData sizeData;
     public SpeciesData speciesData;
     public AffiliationData affiliationData;
     public JobData jobData;
-    public SkillData skillData1;
-    public SkillData skillData2;
+    public SkillData[] skillDataArray;
 
     public override int ID => id;
     public override string NAME => name;
@@ -51,6 +50,7 @@ public class CharacterDataBase : DataBase<CharacterData>
         var dbLoader = DataBaseManager.Instance.loader;
 
         var dataList = GetDataList();
+        var rarityDataList = dbLoader.GetDataList("RarityDB");
         var sizeDataList = dbLoader.GetDataList("SizeDB");
         var speciesDataList = dbLoader.GetDataList("SpeciesDB");
         var affiliationDataList = dbLoader.GetDataList("AffiliationDB");
@@ -60,12 +60,20 @@ public class CharacterDataBase : DataBase<CharacterData>
         foreach (var data in dataList)
         {
             var characterData = data as CharacterData;
+            characterData.rarityData = rarityDataList.Find(v => v.ID == characterData.rarity) as RarityData;
             characterData.sizeData = sizeDataList.Find(v => v.ID == characterData.size) as SizeData;
             characterData.speciesData = speciesDataList.Find(v => v.ID == characterData.species) as SpeciesData;
             characterData.affiliationData = affiliationDataList.Find(v => v.ID == characterData.affiliation) as AffiliationData;
             characterData.jobData = jobDataList.Find(v => v.ID == characterData.job) as JobData;
-            characterData.skillData1 = skillDataList.Find(v => v.ID == characterData.skill1) as SkillData;
-            characterData.skillData2 = skillDataList.Find(v => v.ID == characterData.skill2) as SkillData;
+
+            var skillData1 = skillDataList.Find(v => v.ID == characterData.skill1) as SkillData;
+            var skillData2 = skillDataList.Find(v => v.ID == characterData.skill2) as SkillData;
+
+            characterData.skillDataArray = new SkillData[]
+            {
+                skillData1,
+                skillData2
+            };
         }
 
         return true;
@@ -118,25 +126,33 @@ public class SizeDataBase : DataBase<SizeData>
 public class SkillData : ReadData
 {
     public int id;
-    public string skillname;
-    public int skillTrigger;
-    public int condition1;
-    public int condition2;
-    public int condition3;
-    public int skillTriggerObject;
-    public int skillTarget;
-    public int changingType;
+    public string name;
+    public int conditionType;
+    public int conditionObjectType;
+    public int applyObject;
+    public float applyRange;
+    public int applyType;
+    public int applyValueType;
+    public float applyValue;
     public int changingValue;
-    public int figureType;
-    public float figureValue;
-    public int keep;
     public int checkSize;
     public int checkRarity;
-    public float Range;
-    public string text;
+    public int checkDefenceOver;
+    public int isOneShot;
+    public int isFirstCollide;
+    public string desc;
+
+    public enum ConditionType
+    {
+        None,
+        Shoot,
+        Collide,
+        BeCollide,
+        AllStop
+    }
 
     public override int ID => id;
-    public override string NAME => skillname;
+    public override string NAME => name;
 }
 
 public class SkillDataBase : DataBase<SkillData>

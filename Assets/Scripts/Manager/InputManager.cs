@@ -2,16 +2,31 @@
 
 public class InputManager : MonoBehaviour
 {
-    private Character selectedCharacter = null;
-    private ShootUI shootUI = null;
+    private Character selectedCharacter;
+    private ShootUI shootUI;
 
     private Vector3 clickStartWorldPos = Vector3.zero;
     private Vector3 clickStartScreenPos = Vector3.zero;
 
     public float sweep = 0.0001f;
 
+    private void Start()
+    {
+        Init();
+    }
+
+    public void Init()
+    {
+        selectedCharacter = null;
+        shootUI = null;
+    }
+
     private void Update()
     {
+        //준비 단계가 아니라면 리턴
+        if (GameManager.CurRoundStep != RoundStep.READY)
+            return;
+
         //누를떄
         if (Input.GetMouseButtonDown(0))
         {
@@ -34,14 +49,12 @@ public class InputManager : MonoBehaviour
         //누르는 중일때
         else if (Input.GetMouseButton(0))
         {
-            if (shootUI == null)
+            //누르는 위치가 UI가 아니고 캐릭터를 누른것도 아닐때
+            if (!UICamera.isOverUI && selectedCharacter == null)
             {
-                if (!UICamera.isOverUI)
-                {
-                    CameraManager.Instance.DragScreen(clickStartWorldPos);
-                }                                                
+                CameraManager.Instance.DragScreen(clickStartWorldPos);
             }
-            else if (shootUI != null)
+            else if (selectedCharacter != null)
             {
                 shootUI.RotateArrow(clickStartScreenPos);
                 shootUI.SetSliderValue(clickStartWorldPos);
@@ -50,31 +63,30 @@ public class InputManager : MonoBehaviour
         //땔때
         else if (Input.GetMouseButtonUp(0))
         {
-            if (selectedCharacter != null && shootUI != null)
+            if (selectedCharacter != null)
             {
-                var dragVector = clickStartWorldPos - Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                var dragVector =
+                    clickStartWorldPos -
+                    Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
                 var dir = dragVector.normalized;
                 var force = shootUI.PowerValue;
-                var attackBouns = shootUI.slider.value * 1.2f;
-                if (attackBouns < 0.5f)
-                    attackBouns = 0.5f;
 
-                selectedCharacter.Physics.AddForce(dir, force);
-                selectedCharacter.Physics.SetAttackBonus(attackBouns);
-                selectedCharacter = null;
+                var attackBouns = shootUI.slider.value * 1.2f;
+                if (attackBouns < 0.5f) attackBouns = 0.5f;
+
+                GameManager.Instance.Shoot(selectedCharacter, dir, force, attackBouns);
 
                 shootUI.Close();
                 shootUI = null;
-
-                CameraManager.IsFixed = true;
+                selectedCharacter = null;
             }
         }
     }
 
     private void FixedUpdate()
     {
-        //누르는 중일때
+        //누르는 중일때 (스윕)
         //if (Input.GetMouseButton(0))
         //{
         //    if (selectedCharacter != null && shootUI == null)

@@ -21,24 +21,11 @@ public class CameraManager : MonoBehaviour
 
     public static bool IsFixed = false;
 
+    private Transform followTrans;
+
     public void Start()
     {
         Init();
-    }
-
-    public void LateUpdate()
-    {
-        if (IsFixed)
-        {
-            var findObj = stoneRoot.Find("player").gameObject.transform;
-
-            var newPos = new Vector3(
-                findObj.position.x,
-                findObj.position.y + y,
-                findObj.position.z);
-
-            mainCamera.transform.position = newPos;
-        }
     }
 
     public void Init()
@@ -51,6 +38,26 @@ public class CameraManager : MonoBehaviour
                 playerCreatePos.position.z);
 
         mainCamera.transform.position = newPos;
+    }
+
+    public void LateUpdate()
+    {
+        if (IsFixed)
+        {
+            var findObj = followTrans;
+
+            var newPos = new Vector3(
+                findObj.position.x,
+                findObj.position.y + y,
+                findObj.position.z);
+
+            mainCamera.transform.position = newPos;
+        }
+    }
+
+    public void SetFollowTrans(Transform followTrans)
+    {
+        this.followTrans = followTrans;
     }
 
     public void DragScreen(Vector3 clickStartPos)
