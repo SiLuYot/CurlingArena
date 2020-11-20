@@ -91,7 +91,7 @@ public class GameManager : MonoBehaviour
         player.Init(characterData, 0);
 
         var enemy1 = Instantiate(characterPrefab2, stoneRoot).GetComponent<Character>();
-        enemy1.transform.position = new Vector3(housePos.position.x, enemy1.transform.position.y, housePos.position.z);        
+        enemy1.transform.position = new Vector3(housePos.position.x, enemy1.transform.position.y, housePos.position.z - 3f);        
         enemy1.name = "enemy1";
         enemy1.Init(enemyData, 1);
         enemyList.Add(enemy1);

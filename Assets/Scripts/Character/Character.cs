@@ -15,7 +15,7 @@ public class Character : MonoBehaviour
     public float finalDefence;
     public float addImpulse;
     public int team;
-    public event Action TempEvent;    
+    public event Action TempEvent;
 
     public void Init(CharacterData data, int team)
     {
@@ -180,10 +180,19 @@ public class Character : MonoBehaviour
             if (skill.conditionType != (int)SkillData.ConditionType.Collide)
                 continue;
 
-            var applyObj = GetApplyObject(skill, otherObj, null);
+            var applyObjList = GetApplyObject(skill, otherObj, null);
+            if (applyObjList == null)
+            {
+                Debug.LogError("ApplyObjList is NULL");
+                continue;
+            }
+
             if (CheckSkill(skill, otherObj))
             {
-                ApplySkill(skill, applyObj, false);
+                foreach (var obj in applyObjList)
+                {
+                    ApplySkill(skill, obj, false);
+                }
             }
         }
     }
@@ -195,10 +204,19 @@ public class Character : MonoBehaviour
             if (skill.conditionType != (int)SkillData.ConditionType.BeCollide)
                 continue;
 
-            var applyObj = GetApplyObject(skill, otherObj, null);
+            var applyObjList = GetApplyObject(skill, otherObj, null);
+            if (applyObjList == null)
+            {
+                Debug.LogError("ApplyObjList is NULL");
+                continue;
+            }
+
             if (CheckSkill(skill, otherObj))
             {
-                ApplySkill(skill, applyObj, false);
+                foreach (var obj in applyObjList)
+                {
+                    ApplySkill(skill, obj, false);
+                }
             }
         }
     }
@@ -210,51 +228,118 @@ public class Character : MonoBehaviour
             if (skill.conditionType != (int)SkillData.ConditionType.AllStop)
                 continue;
 
-            var applyObj = GetApplyObject(skill, null, physicsObjectList);
-            if (CheckSkill(skill, applyObj))
+            var applyObjList = GetApplyObject(skill, null, physicsObjectList);
+            if (applyObjList == null)
             {
-                ApplySkill(skill, applyObj, true);
+                Debug.Log(string.Format("{0}스킬 '{1}'\n발동 무시 원인 : ApplyObjList is NULL", 
+                    transform.name, skill.desc));
+                continue;
+            }
+
+            var checkObjList = CheckSkill(skill, applyObjList);
+            foreach (var obj in checkObjList)
+            {
+                ApplySkill(skill, obj, true);
             }
         }
     }
 
-    public CharacterPhysics GetApplyObject(SkillData skill, CharacterPhysics collisionObj, List<CharacterPhysics> physicsObjectList)
+    public List<CharacterPhysics> GetApplyObject(SkillData skill, CharacterPhysics collisionObj, List<CharacterPhysics> physicsObjectList)
     {
-        CharacterPhysics targetObj = null;
         switch (skill.applyObject)
         {
-            case 0:
+            case 0: //없음
                 break;
-            case 1:
-                targetObj = this.physics;
+            case 1: //본인
+                return new List<CharacterPhysics>() { this.physics };
+            case 2: //충돌된 대상
+                return new List<CharacterPhysics>() { collisionObj };
+            case 3: //가장 가까운 아군
                 break;
-            case 2:
-                targetObj = collisionObj;
+            case 4: //가장 가까운 적군
                 break;
-            case 3:
+            case 5: //가장 가까운 아군/적군
+                {
+                    var obj = GetNearCharacter(physicsObjectList);
+                    if (obj != null)
+                    {
+                        return new List<CharacterPhysics>() { obj };
+                    }
+                    break;
+                }
+            case 6: //범위 안 아군
                 break;
-            case 4:
+            case 7: //범위 안 적군
                 break;
-            case 5:
+            case 8: //범위 안 아군/적군
+                return GetCharacterInRange(skill.applyRange, physicsObjectList);
+            case 9: //랜덤한 아군
                 break;
-            case 6:
+            case 10: //랜덤한 적군
                 break;
-            case 7:
-                break;
-            case 8:
-                break;
-            case 9:
-                break;
-            case 10:
-                break;
-            case 11:
-                targetObj = GetRandomCharacter(physicsObjectList);
-                break;
-            case 12:
+            case 11: //랜덤한 아군/적군
+                {
+                    var obj = GetRandomCharacter(physicsObjectList);
+                    if (obj != null)
+                    {
+                        return new List<CharacterPhysics>() { obj };
+                    }
+                    break;
+                }
+            case 12: //모든 대상
                 break;
         }
 
-        return targetObj;
+        return null;
+    }
+
+    public CharacterPhysics GetNearCharacter(List<CharacterPhysics> physicsObjectList)
+    {
+        float nearDistance = -1;
+        CharacterPhysics findObj = null;
+
+        foreach (var obj in physicsObjectList)
+        {
+            if (obj.pid == this.Physics.pid)
+                continue;
+
+            var dis = Vector3.Distance(
+                this.transform.localPosition,
+                obj.characterTransform.localPosition);
+
+            if (dis < nearDistance || nearDistance == -1)
+            {
+                nearDistance = dis;
+                findObj = obj;
+            }
+        }
+
+        return findObj;
+    }
+
+    public List<CharacterPhysics> GetCharacterInRange(float range, List<CharacterPhysics> physicsObjectList)
+    {
+        List<CharacterPhysics> findObjList = null;
+
+        foreach (var obj in physicsObjectList)
+        {
+            if (obj.pid == this.Physics.pid)
+                continue;
+
+            var dis = Vector3.Distance(
+                this.transform.localPosition,
+                obj.characterTransform.localPosition);
+
+            if (dis <= range)
+            {
+                if (findObjList == null)
+                    findObjList = new List<CharacterPhysics>();
+
+                findObjList.Add(obj);
+            }
+        }
+
+        return findObjList;
     }
 
     public CharacterPhysics GetRandomCharacter(List<CharacterPhysics> physicsObjectList)
@@ -262,19 +347,17 @@ public class Character : MonoBehaviour
         var randomList = new List<CharacterPhysics>();
         foreach (var obj in physicsObjectList)
         {
-            if (obj.pid == this.physics.pid)
+            if (obj.pid == this.Physics.pid)
                 continue;
 
             randomList.Add(obj);
         }
 
+        if (randomList.Count <= 0)
+            return null;
+
         var randomID = UnityEngine.Random.Range(0, randomList.Count);
         var randomObj = randomList.ElementAt(randomID);
-
-        if (randomObj == null)
-        {
-            Debug.LogError("랜덤 오브젝트 NULL");
-        }
 
         return randomObj;
     }
@@ -304,43 +387,91 @@ public class Character : MonoBehaviour
         return true;
     }
 
+    public List<CharacterPhysics> CheckSkill(SkillData skillData, List<CharacterPhysics> objList)
+    {
+        var checkObjList = new List<CharacterPhysics>();
+
+        if (skillData.id == 0)
+            return checkObjList;
+
+        if (!CheckFirstCollide(skillData))
+            return checkObjList;
+
+        foreach (var obj in objList)
+        {
+            var otherCharacter = obj.character;
+
+            if (!CheckSize(skillData, otherCharacter))
+            {
+                Debug.LogError(string.Format("'CheckSize'에서 제외됨 : {0}", otherCharacter.name));
+                continue;
+            }
+
+            if (!CheckRarity(skillData, otherCharacter))
+            {
+                Debug.LogError(string.Format("'CheckRarity'에서 제외됨 : {0}", otherCharacter.name));
+                continue;
+            }
+
+            if (!CheckDefenceOver(skillData, otherCharacter))
+            {
+                Debug.LogError(string.Format("'CheckDefenceOver'에서 제외됨 : {0}", otherCharacter.name));
+                continue;
+            }
+
+            if (!CheckObjectTeam(skillData, otherCharacter))
+            {
+                Debug.LogError(string.Format("'CheckObjectTeam'에서 제외됨 : {0}", otherCharacter.name));
+                continue;
+            }
+
+            checkObjList.Add(obj);
+        }
+
+        return checkObjList;
+    }
+
     public void ApplySkill(SkillData skillData, CharacterPhysics applyObj, bool isAllStop)
     {
         Debug.Log(string.Format("스킬 발동 {0} -> {1}\n{2}",
            transform.name, applyObj.characterTransform.name, skillData.desc));
 
-        float value = 0;
         var applyCharacter = applyObj.character;
-
         switch (skillData.applyType)
         {
             case 1:
-                value = GetApplyValueType(skillData.applyValueType, applyCharacter.finalAttack, this);
-                applyCharacter.finalAttack = value * skillData.applyValue;
-                break;
+                {
+                    var value = GetApplyValueType(skillData.applyValueType, applyCharacter.finalAttack, this);
+                    applyCharacter.finalAttack = value * skillData.applyValue;
+                    break;
+                }
             case 2:
-                value = GetApplyValueType(skillData.applyValueType, applyCharacter.finalDefence, this);
-                applyCharacter.finalDefence = value * skillData.applyValue;
-                break;
+                {
+                    var value = GetApplyValueType(skillData.applyValueType, applyCharacter.finalDefence, this);
+                    applyCharacter.finalDefence = value * skillData.applyValue;
+                    break;
+                }
             case 3:
-                value = GetApplyValueType(skillData.applyValueType, applyCharacter.addImpulse, this);
-                var finalValue = value * skillData.applyValue;
-
-                if (isAllStop)
                 {
-                    var dir = Vector3.Normalize(applyCharacter.transform.localPosition - this.transform.localPosition);                    
-                    var speed = applyCharacter.Physics.GetQuadraticEquationValue(finalValue);
-                    
-                    applyCharacter.Physics.ApplyForce(dir, speed);
+                    var value = GetApplyValueType(skillData.applyValueType, applyCharacter.addImpulse, this);
+                    var finalValue = value * skillData.applyValue;
 
-                    Debug.Log(string.Format("준 충격량 : {0}\n방향 : {1} 속도 : {2}", 
-                        finalValue, dir, speed));
+                    if (isAllStop)
+                    {
+                        var dir = Vector3.Normalize(applyCharacter.transform.localPosition - this.transform.localPosition);
+                        var speed = applyCharacter.Physics.GetQuadraticEquationValue(finalValue);
+
+                        applyCharacter.Physics.ApplyForce(dir, speed);
+
+                        Debug.Log(string.Format("준 충격량 : {0}\n방향 : {1} 속도 : {2}",
+                            finalValue, dir, speed));
+                    }
+                    else
+                    {
+                        applyCharacter.addImpulse = applyCharacter.GetImpulseValue(finalValue);
+                    }
+                    break;
                 }
-                else
-                {
-                    applyCharacter.addImpulse = applyCharacter.GetImpulseValue(finalValue);
-                }
-                break;
             case 4:
                 break;
             case 5:
