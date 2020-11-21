@@ -13,9 +13,11 @@ public class Character : MonoBehaviour
 
     public float finalAttack;
     public float finalDefence;
-    public float addImpulse;
+    public float ImpulseAddValue;
+    public float ImpulsePercentValue;
+    public float ImmuneCount;
+    public float lockCount;
     public int team;
-    public event Action TempEvent;
 
     public void Init(CharacterData data, int team)
     {
@@ -29,14 +31,18 @@ public class Character : MonoBehaviour
             BeCollidedEvent,
             AllStopEvent);
 
-        InitFinalState();
+        InitState();
+        InitEvent();
     }
 
-    public void InitFinalState()
+    public void InitState()
     {
         finalAttack = data.attack;
         finalDefence = data.defence;
-        addImpulse = 0;
+        ImpulseAddValue = 0;
+        ImpulsePercentValue = 1.0f;
+        ImmuneCount = 0;
+        lockCount = 0;
     }
 
     public float GetDefenceValue()
@@ -49,128 +55,25 @@ public class Character : MonoBehaviour
         return attack * (100 - GetDefenceValue()) / 100;
     }
 
-    public bool CheckSize(SkillData skillData, Character otherCharacter)
+    public void InitEvent()
     {
-        switch (skillData.checkSize)
+        foreach (var skill in data.skillDataArray)
         {
-            case 0:
-                return true;
-            case 1:
-                return otherCharacter.Data.sizeData.id == 0;
-            case 2:
-                return otherCharacter.Data.sizeData.id >= 0;
-            case 3:
-                return otherCharacter.Data.sizeData.id <= 1;
-            case 4:
-                return otherCharacter.Data.sizeData.id >= 1;
-            case 5:
-                return otherCharacter.Data.sizeData.id <= 2;
-            case 6:
-                return otherCharacter.Data.sizeData.id == 2;
-            default:
-                return false;
+            if (skill.conditionType != (int)SkillData.ConditionType.Init)
+                continue;
+
+            var applyObjList = GetApplyObject(skill, null, null);
+            if (applyObjList == null)
+            {
+                Debug.LogError("ApplyObjList is NULL");
+                continue;
+            }
+
+            foreach (var obj in applyObjList)
+            {
+                ApplySkill(skill, obj, true);
+            }
         }
-    }
-
-    public bool CheckRarity(SkillData skillData, Character otherCharacter)
-    {
-        switch (skillData.checkRarity)
-        {
-            case 0:
-                return true;
-            case 1:
-                return otherCharacter.Data.rarityData.id == 0;
-            case 2:
-                return otherCharacter.Data.rarityData.id <= 1;
-            case 3:
-                return otherCharacter.Data.rarityData.id >= 1;
-            case 4:
-                return otherCharacter.Data.rarityData.id <= 2;
-            case 5:
-                return otherCharacter.Data.rarityData.id >= 2;
-            case 6:
-                return otherCharacter.Data.rarityData.id <= 3;
-            case 7:
-                return otherCharacter.Data.rarityData.id >= 3;
-            case 8:
-                return otherCharacter.Data.rarityData.id <= 4;
-            case 9:
-                return otherCharacter.Data.rarityData.id >= 4;
-            case 10:
-                return otherCharacter.Data.rarityData.id <= 5;
-            case 11:
-                return otherCharacter.Data.rarityData.id == 5;
-            default:
-                return false;
-        }
-    }
-
-    public bool CheckDefenceOver(SkillData skillData, Character otherCharacter)
-    {
-        //1인 경우만 체크
-        if (skillData.checkDefenceOver == 1)
-        {
-            //충돌된 대상이 나의 방어력을 못넘긴 경우
-            if (otherCharacter.finalAttack < this.finalDefence) return true;
-            else return false;
-        }
-        else return true;
-
-    }
-
-    public void CheckOneShot(SkillData skillData)
-    {
-        if (skillData.isOneShot != 1)
-            return;
-
-        Action tempAction = null;
-        tempAction = () =>
-        {
-            InitFinalState();
-            TempEvent -= tempAction;
-        };
-
-        TempEvent += tempAction;
-    }
-
-    public bool CheckFirstCollide(SkillData skillData)
-    {
-        if (skillData.isFirstCollide == 1)
-        {
-            //첫 충돌이 이미 발생한 뒤라면
-            if (this.physics.isFirstCollide) return false;
-            else return true;
-        }
-        else return true;
-    }
-
-    public bool CheckObjectTeam(SkillData skillData, Character otherCharacter)
-    {
-        //조건이 없거나 둘 다 일때
-        if (skillData.conditionObjectType == 0 ||
-            skillData.conditionObjectType == 3)
-            return true;
-
-        bool isSameTeam = this.team == otherCharacter.team;
-        if (isSameTeam)
-        {
-            //서로 같은 팀이고 조건도 아군일때
-            if (skillData.conditionObjectType == 1)
-                return true;
-        }
-        else
-        {
-            //서로 다른 팀이고 조건도 적군일때
-            if (skillData.conditionObjectType == 2)
-                return true;
-        }
-
-        return false;
-    }
-
-    public void ShootEvent()
-    {
-        TempEvent?.Invoke();
     }
 
     public void CollideEvent(CharacterPhysics otherObj)
@@ -231,7 +134,7 @@ public class Character : MonoBehaviour
             var applyObjList = GetApplyObject(skill, null, physicsObjectList);
             if (applyObjList == null)
             {
-                Debug.Log(string.Format("{0}스킬 '{1}'\n발동 무시 원인 : ApplyObjList is NULL", 
+                Debug.Log(string.Format("{0}스킬 '{1}'\n발동 무시",
                     transform.name, skill.desc));
                 continue;
             }
@@ -369,20 +272,84 @@ public class Character : MonoBehaviour
         if (skillData.id == 0)
             return false;
 
+        //첫 충돌이 아니라면
         if (!CheckFirstCollide(skillData))
+        {
+            Debug.Log(string.Format("스킬 '{0} 발동 무시'\n{1} - 'CheckFirstCollide'에서 제외", 
+                skillData.desc, otherCharacter.name));
             return false;
+        }
 
+        //스킬이 발동되는 사이즈가 아니라면
         if (!CheckSize(skillData, otherCharacter))
+        {
+            Debug.Log(string.Format("스킬 '{0} 발동 무시'\n{1} - 'CheckSize'에서 제외",
+               skillData.desc, otherCharacter.name));
             return false;
+        }
 
-        if (!CheckRarity(skillData, otherCharacter))
+        //스킬이 발동되는 등급이 아니라면
+        //if (!CheckRarity(skillData, otherCharacter))
+        //{
+        //    Debug.Log(string.Format("스킬 '{0} 발동 무시'\n{1} - 'CheckRarity'에서 제외",
+        //       skillData.desc, otherCharacter.name));
+        //    return false;
+        //}
+
+        //상대의 공격력이 자신의 방어력을 넘겼다면
+        if (!CheckDefanceOver(skillData, otherCharacter))
+        {
+            Debug.Log(string.Format("스킬 '{0} 발동 무시'\n{1} - 'CheckDefanceOver'에서 제외",
+               skillData.desc, otherCharacter.name));
             return false;
+        }
 
-        if (!CheckDefenceOver(skillData, otherCharacter))
-            return false;
-
+        //발동되는 팀 조건이 아니라면
         if (!CheckObjectTeam(skillData, otherCharacter))
+        {
+            Debug.Log(string.Format("스킬 '{0} 발동 무시'\n{1} - 'CheckObjectTeam'에서 제외",
+               skillData.desc, otherCharacter.name));
             return false;
+        }
+
+        //자신에게 스킬 봉인 횟수가 남아 있다면  (-1 = 무한)
+        if (this.lockCount > 0 || this.lockCount == -1)
+        {
+            if (this.lockCount != -1)
+                this.lockCount -= 1;
+
+            Debug.Log(string.Format("스킬 '{0} 발동 무시'\n{1} - 'lockCount'에서 제외 {2}의 남은 스킬 봉인 횟수 {3}",
+                skillData.desc, otherCharacter.name, this.name, this.lockCount));
+            return false;
+        }
+
+        //상대에게 스킬 면역 횟수가 남아 있다면 (-1 = 무한)
+        if (otherCharacter.ImmuneCount > 0 || otherCharacter.ImmuneCount == -1)
+        {
+            //상대 기준으로 면역 스킬 조건 체크
+            if (otherCharacter.CheckImmuneSkill(this))
+            {
+                if (otherCharacter.ImmuneCount != -1)
+                    otherCharacter.ImmuneCount -= 1;
+
+                Debug.Log(string.Format("스킬 '{0} 발동 무시'\n{1} - 'ImmuneCount'에서 제외 {2}의 남은 스킬 면역 횟수 {3}",
+                    skillData.desc, otherCharacter.name, otherCharacter.name, otherCharacter.ImmuneCount));
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public bool CheckImmuneSkill(Character otherCharacter)
+    {
+        foreach (var skill in Data.skillDataArray)
+        {
+            if (!CheckRarity(skill, otherCharacter))
+            {
+                return false;
+            }
+        }
 
         return true;
     }
@@ -391,44 +358,140 @@ public class Character : MonoBehaviour
     {
         var checkObjList = new List<CharacterPhysics>();
 
-        if (skillData.id == 0)
-            return checkObjList;
-
-        if (!CheckFirstCollide(skillData))
-            return checkObjList;
-
         foreach (var obj in objList)
         {
-            var otherCharacter = obj.character;
-
-            if (!CheckSize(skillData, otherCharacter))
+            if (CheckSkill(skillData, obj))
             {
-                Debug.LogError(string.Format("'CheckSize'에서 제외됨 : {0}", otherCharacter.name));
-                continue;
+                checkObjList.Add(obj);
             }
-
-            if (!CheckRarity(skillData, otherCharacter))
-            {
-                Debug.LogError(string.Format("'CheckRarity'에서 제외됨 : {0}", otherCharacter.name));
-                continue;
-            }
-
-            if (!CheckDefenceOver(skillData, otherCharacter))
-            {
-                Debug.LogError(string.Format("'CheckDefenceOver'에서 제외됨 : {0}", otherCharacter.name));
-                continue;
-            }
-
-            if (!CheckObjectTeam(skillData, otherCharacter))
-            {
-                Debug.LogError(string.Format("'CheckObjectTeam'에서 제외됨 : {0}", otherCharacter.name));
-                continue;
-            }
-
-            checkObjList.Add(obj);
         }
 
         return checkObjList;
+    }
+
+    public bool CheckSize(SkillData skillData, Character otherCharacter)
+    {
+        switch (skillData.checkSize)
+        {
+            case 0: //조건 없음
+                return true;
+            case 1: //0 한정
+                return otherCharacter.Data.sizeData.id == 0;
+            case 2: //0 이상
+                return otherCharacter.Data.sizeData.id >= 0;
+            case 3: //1 이하
+                return otherCharacter.Data.sizeData.id <= 1;
+            case 4: //1 이상
+                return otherCharacter.Data.sizeData.id >= 1;
+            case 5: //2 이하
+                return otherCharacter.Data.sizeData.id <= 2;
+            case 6: //2 한정
+                return otherCharacter.Data.sizeData.id == 2;
+            default: //그 외 false
+                return false;
+        }
+    }
+
+    public bool CheckRarity(SkillData skillData, Character otherCharacter)
+    {
+        switch (skillData.checkOtherRarity)
+        {
+            case 0: //모두 허용
+                return true;
+            case 1: //베이직 한정
+                return otherCharacter.Data.rarityData.id == 0;
+            case 2: //노말 이하
+                return otherCharacter.Data.rarityData.id <= 1;
+            case 3: //노말 이상
+                return otherCharacter.Data.rarityData.id >= 1;
+            case 4: //레어 이하
+                return otherCharacter.Data.rarityData.id <= 2;
+            case 5: //레어 이상
+                return otherCharacter.Data.rarityData.id >= 2;
+            case 6: //슈퍼레어 이하
+                return otherCharacter.Data.rarityData.id <= 3;
+            case 7: //슈퍼레어 이상
+                return otherCharacter.Data.rarityData.id >= 3;
+            case 8: //유니크 이하
+                return otherCharacter.Data.rarityData.id <= 4;
+            case 9: //유니크 이상
+                return otherCharacter.Data.rarityData.id >= 4;
+            case 10: //레전드 이하
+                return otherCharacter.Data.rarityData.id <= 5;
+            case 11: //레전드 한정
+                return otherCharacter.Data.rarityData.id >= 5;
+            default: //그 외
+                return false;
+        }
+    }
+
+    public bool CheckDefanceOver(SkillData skillData, Character otherCharacter)
+    {
+        //공격력이 방어력을 넘는지 체크 안한다면 (체크 안함)
+        if (skillData.isDefanceOver != 1)
+            return true;
+
+        //상대의 공격력이 자신의 방어력을 넘지 못한 경우 (발동)
+        if (otherCharacter.finalAttack < this.finalDefence) return true;
+        //상대의 공격력이 자신의 방어력을 넘은 경우 (발동 안함)
+        else return false;
+    }
+
+    public void CheckOneShot(SkillData skillData)
+    {
+        //1회성 스킬이 아니라면 리턴
+        if (skillData.isOneShot != 1)
+            return;
+
+        //스텟 초기화 이벤트 등록 해야함...
+        //Action tempAction = null;
+        //tempAction = () =>
+        //{
+        //    InitFinalState();
+        //    TempEvent -= tempAction;
+        //};
+
+        //TempEvent += tempAction;
+    }
+
+    //첫 충돌인지 체크
+    public bool CheckFirstCollide(SkillData skillData)
+    {
+        //첫 충돌 체크를 안한다면 (체크 안함)
+        if (skillData.isFirstCollide != 1)
+            return true;
+
+        //첫 충돌이 이미 발생한 뒤라면 (발동 안함)
+        if (this.physics.isFirstCollide)
+            return false;
+        //아직 첫 충돌이 발생하지 않은 경우 (발동)
+        else return true;
+    }
+
+    public bool CheckObjectTeam(SkillData skillData, Character otherCharacter)
+    {
+        //조건이 없거나 아군/적군 둘다 일때
+        if (skillData.conditionObjectType == 0 ||
+            skillData.conditionObjectType == 3)
+            return true;
+
+        //서로 같은 팀인지 체크
+        bool isSameTeam = this.team == otherCharacter.team;
+        if (isSameTeam)
+        {
+            //서로 같은 팀이고 조건도 아군일때
+            if (skillData.conditionObjectType == 1)
+                return true;
+        }
+        else
+        {
+            //서로 다른 팀이고 조건도 적군일때
+            if (skillData.conditionObjectType == 2)
+                return true;
+        }
+
+        //그 외에는 false
+        return false;
     }
 
     public void ApplySkill(SkillData skillData, CharacterPhysics applyObj, bool isAllStop)
@@ -439,22 +502,28 @@ public class Character : MonoBehaviour
         var applyCharacter = applyObj.character;
         switch (skillData.applyType)
         {
-            case 1:
+            case 1: //공격력
                 {
                     var value = GetApplyValueType(skillData.applyValueType, applyCharacter.finalAttack, this);
-                    applyCharacter.finalAttack = value * skillData.applyValue;
+                    var finalValue = value * skillData.applyValue;
+
+                    applyCharacter.finalAttack = finalValue;
                     break;
                 }
-            case 2:
+            case 2: //방어력
                 {
                     var value = GetApplyValueType(skillData.applyValueType, applyCharacter.finalDefence, this);
-                    applyCharacter.finalDefence = value * skillData.applyValue;
+                    var finalValue = value * skillData.applyValue;
+
+                    applyCharacter.finalDefence = finalValue;
                     break;
                 }
-            case 3:
+            case 3: //충격량
                 {
-                    var value = GetApplyValueType(skillData.applyValueType, applyCharacter.addImpulse, this);
+                    var value = GetApplyValueType(skillData.applyValueType, applyCharacter.ImpulseAddValue, this);
                     var finalValue = value * skillData.applyValue;
+
+                    applyCharacter.ImpulsePercentValue = skillData.applyPercentValue;
 
                     if (isAllStop)
                     {
@@ -468,13 +537,21 @@ public class Character : MonoBehaviour
                     }
                     else
                     {
-                        applyCharacter.addImpulse = applyCharacter.GetImpulseValue(finalValue);
+                        applyCharacter.ImpulseAddValue = applyCharacter.GetImpulseValue(finalValue);
                     }
                     break;
                 }
-            case 4:
+            case 4: //스킬 면역 횟수
+                {
+                    var finalValue = skillData.applyValue;
+                    applyCharacter.ImmuneCount = finalValue;
+                }
                 break;
-            case 5:
+            case 5: //스킬 봉인 횟수
+                {
+                    var finalValue = skillData.applyValue;
+                    applyCharacter.lockCount = finalValue;
+                }
                 break;
         }
 
@@ -498,6 +575,9 @@ public class Character : MonoBehaviour
     {
         this.data = data;
         physics.RefreshData(data);
+
+        InitState();
+        InitEvent();
     }
 
     public void RemoveCharacterPhysics()

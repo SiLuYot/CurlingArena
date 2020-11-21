@@ -134,10 +134,11 @@ public class SkillData : ReadData
     public int applyType;
     public int applyValueType;
     public float applyValue;
+    public float applyPercentValue;
     public int changingValue;
     public int checkSize;
-    public int checkRarity;
-    public int checkDefenceOver;
+    public int checkOtherRarity;
+    public int isDefanceOver;
     public int isOneShot;
     public int isFirstCollide;
     public string desc;
@@ -145,7 +146,7 @@ public class SkillData : ReadData
     public enum ConditionType
     {
         None,
-        Shoot,
+        Init,
         Collide,
         BeCollide,
         AllStop

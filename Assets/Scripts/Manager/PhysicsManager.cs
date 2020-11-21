@@ -297,9 +297,9 @@ public class PhysicsManager : MonoBehaviour
         //check오브젝트의 충격량
         var checkImpulse = attackValue * (1.0f - pDefenceValue);
 
-        //공,방 계산후 추가로 더해지는 충격량까지 고려
-        var finalMoveImpulse = moveImpulse + moveObj.character.addImpulse;
-        var finalCheckImpulse = checkImpulse + checkObj.character.addImpulse;
+        //공,방 계산후 추가로 더해지는 충격량, 충격량을 가할 퍼센트까지 고려
+        var finalMoveImpulse = (moveImpulse + moveObj.character.ImpulseAddValue) * moveObj.character.ImpulsePercentValue;
+        var finalCheckImpulse = (checkImpulse + checkObj.character.ImpulseAddValue) * checkObj.character.ImpulsePercentValue;
 
         //충격량이 날아갈 총 거리이므로 
         //마찰력을 공차로 가지는 등차수열의 합이 충격량이다.
@@ -333,8 +333,8 @@ public class PhysicsManager : MonoBehaviour
         Debug.Log(checkObjTrans.name + " 의 방어력 : " + checkObj.character.finalDefence);
         Debug.Log(checkObjTrans.name + " 의 방어율 : " + defenceValue);
 
-        Debug.Log(string.Format("{0}의 충격량 : {1} ({2}+{3})", moveObjTrans.name, finalMoveImpulse, moveImpulse, moveObj.character.addImpulse));
-        Debug.Log(string.Format("{0}의 충격량 : {1} ({2}+{3})", checkObjTrans.name, finalCheckImpulse, checkImpulse, checkObj.character.addImpulse));
+        Debug.Log(string.Format("{0}의 충격량 : {1} ({2}+{3})", moveObjTrans.name, finalMoveImpulse, moveImpulse, moveObj.character.ImpulseAddValue));
+        Debug.Log(string.Format("{0}의 충격량 : {1} ({2}+{3})", checkObjTrans.name, finalCheckImpulse, checkImpulse, checkObj.character.ImpulseAddValue));
 
         Debug.Log(moveObjTrans.name + " 방향 : " + newv1.normalized);
         Debug.Log(moveObjTrans.name + " 속도 : " + moveSpeed);
