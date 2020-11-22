@@ -232,6 +232,7 @@ public class Character : MonoBehaviour
                 this.transform.localPosition,
                 obj.characterTransform.localPosition);
 
+            range *= GameManager.DISTACNE;
             if (dis <= range)
             {
                 if (findObjList == null)

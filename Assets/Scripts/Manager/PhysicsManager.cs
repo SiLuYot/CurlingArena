@@ -183,7 +183,6 @@ public class PhysicsManager : MonoBehaviour
         float difference = sumRadius - vc.magnitude;
 
         //충분히 가까워서 충돌 가능
-        //if (difference >= 0)
         if (difference > 0)
         {
             //현재 변화중인 오브젝트의 벡터
@@ -308,8 +307,8 @@ public class PhysicsManager : MonoBehaviour
 
         //충격량이 날아갈 총 거리이므로 
         //마찰력을 공차로 가지는 등차수열의 합이 충격량이다.
-        var moveSpeed = moveObj.GetQuadraticEquationValue((finalMoveImpulse) * 2);
-        var checkSpeed = checkObj.GetQuadraticEquationValue((finalCheckImpulse) * 2);
+        var moveSpeed = moveObj.GetQuadraticEquationValue((finalMoveImpulse * GameManager.DISTACNE) * 2);
+        var checkSpeed = checkObj.GetQuadraticEquationValue((finalCheckImpulse * GameManager.DISTACNE) * 2);
 
         //방향과 속력 업데이트 등록
         moveObj.updateForce = () =>

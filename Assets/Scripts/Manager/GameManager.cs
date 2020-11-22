@@ -11,6 +11,9 @@ public enum RoundStep
 
 public class GameManager : MonoBehaviour
 {
+    //임시 상수값
+    public static float DISTACNE = 1.5f;
+
     public static RoundStep CurRoundStep;    
 
     public Transform stoneRoot;
