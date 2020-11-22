@@ -22,6 +22,7 @@ public class CharacterPhysics
     private float friction;
     public float sweepValue;
     public float attackBouns;
+    public float firstSpeed;
     public bool isFirstCollide;
 
     public float Mass => pData.mass;
@@ -34,8 +35,6 @@ public class CharacterPhysics
             return vaule <= 0 ? 0.001f : vaule;
         }
     }
-
-    //public float DefenceValue => data.defence * 100 / (data.defence + 100);
 
     public CharacterData data;
     public CharacterPhysicsData pData;
@@ -56,6 +55,7 @@ public class CharacterPhysics
         this.friction = 0.1f;
         this.sweepValue = 0;
         this.attackBouns = 1.0f;
+        this.firstSpeed = 0;
         this.isFirstCollide = false;
 
         this.data = data;
@@ -80,10 +80,14 @@ public class CharacterPhysics
     }
 
     public void ApplyForce(Vector3 dir, float force, float attackBouns = 1.0f)
-    {
+    {        
         this.dir = dir;
         this.speed = force;
+        this.firstSpeed = force;
         this.attackBouns = attackBouns;
+
+        Debug.Log(string.Format("ApplyForce -> {0}\ndir : {1} speed : {2} ab : {3}",
+            characterTransform.name, dir, speed, attackBouns));
     }
 
     public void ApplyDir(Vector3 dir)
@@ -102,10 +106,7 @@ public class CharacterPhysics
     //등차수열의 합과 이차방정식으로 속도를 알아낸다
     public float GetQuadraticEquationValue(float impulse)
     {
-        //var d = Friction / Time.fixedDeltaTime;
         var d = Friction;
-
-        //impulse /= Time.fixedDeltaTime;
 
         var a = (1 / d);
         var b = (d * a);

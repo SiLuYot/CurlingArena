@@ -1,21 +1,21 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class ShootUI : UIBase
 {
     public UISlider slider;
     public Transform rotateRoot;
-    
-    private readonly float maxPower = 20.0f;
-    private readonly float multiply = 3.2f;
-    public float PowerValue { get => slider.value * maxPower * multiply; }
 
-    public void Init(Vector3 pos)
+    private Character selectedCharacter;
+    private float maxPower;
+
+    public void Init(Vector3 pos, Character selectedCharacter)
     {
         var e1 = Camera.main.ScreenToViewportPoint(pos);
         var e2 = UICamera.mainCamera.ViewportToWorldPoint(e1);
         transform.position = e2;
+
+        this.selectedCharacter = selectedCharacter;
+        this.maxPower = selectedCharacter.GetShootSpeed();
     }
 
     public void RotateArrow(Vector3 clickStartPixelPos)
@@ -35,9 +35,23 @@ public class ShootUI : UIBase
     {
         var dragVector = clickStartPos - Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
-        float power = dragVector.magnitude;
+        float power = dragVector.magnitude * (maxPower * 0.05f);
         power = power > maxPower ? maxPower : power;
 
-        slider.value = power / maxPower;
+        slider.value = power / maxPower;        
+    }
+
+    public float GetAttackBouns()
+    {
+        var attackBouns = slider.value * 1.2f;
+        if (attackBouns < 0.5f)
+            attackBouns = 0.5f;
+
+        return attackBouns;
+    }
+
+    public float GetPowerValue()
+    {
+        return selectedCharacter.GetShootSpeed(GetAttackBouns());
     }
 }

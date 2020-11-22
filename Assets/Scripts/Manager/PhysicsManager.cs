@@ -152,7 +152,7 @@ public class PhysicsManager : MonoBehaviour
         {
             GameManager.Instance.End();
             return;
-        }            
+        }
 
         isAllStopEventEnd = true;
         foreach (var moveObj in physicsObjectList)
@@ -181,7 +181,8 @@ public class PhysicsManager : MonoBehaviour
         float difference = sumRadius - vc.magnitude;
 
         //충분히 가까워서 충돌 가능
-        if (difference >= 0)
+        //if (difference >= 0)
+        if (difference > 0)
         {
             //오브젝트가 도달할 위치 예상
             var moveObjEndPos = (moveObj.dir * moveObj.speed) + moveObjTrans.localPosition;
@@ -287,15 +288,22 @@ public class PhysicsManager : MonoBehaviour
         //공격력과 공격보너스를 합친 값 (발사단계에서 게이지 퍼센트 만큼 50%~120% 보너스)
         var attackValue = moveObj.character.finalAttack * moveObj.attackBouns;
 
+        //발사 할때와 충돌 했을때의 속도 감소율
+        var speedRate = GameManager.Instance.IsCurrentPlayer(moveObj.character) ?
+            (moveObj.speed / moveObj.firstSpeed) : 1.0f;
+
+        //최종 공격력
+        var finalAttackValue = attackValue * speedRate;
+
         //방어율
         var defenceValue = checkObj.character.GetDefenceValue();
         //방어율 (퍼센트)
         var pDefenceValue = defenceValue * 0.01f;
 
         //move오브젝트의 충격량
-        var moveImpulse = attackValue * pDefenceValue;
+        var moveImpulse = finalAttackValue * pDefenceValue;
         //check오브젝트의 충격량
-        var checkImpulse = attackValue * (1.0f - pDefenceValue);
+        var checkImpulse = finalAttackValue * (1.0f - pDefenceValue);
 
         //공,방 계산후 추가로 더해지는 충격량, 충격량을 가할 퍼센트까지 고려
         var finalMoveImpulse = (moveImpulse + moveObj.character.ImpulseAddValue) * moveObj.character.ImpulsePercentValue;
@@ -303,13 +311,13 @@ public class PhysicsManager : MonoBehaviour
 
         //충격량이 날아갈 총 거리이므로 
         //마찰력을 공차로 가지는 등차수열의 합이 충격량이다.
-        var moveSpeed = moveObj.GetQuadraticEquationValue(finalMoveImpulse * 2);
-        var checkSpeed = checkObj.GetQuadraticEquationValue(finalCheckImpulse * 2);
+        var moveSpeed = moveObj.GetQuadraticEquationValue((finalMoveImpulse) * 2);
+        var checkSpeed = checkObj.GetQuadraticEquationValue((finalCheckImpulse) * 2);
 
         //방향과 속력 업데이트 등록
         moveObj.updateForce = () =>
         {
-            moveObj.dir = newv1.normalized;            
+            moveObj.dir = newv1.normalized;
             moveObj.speed = moveSpeed;
             //moveObj.speed = newv1.magnitude;
         };
@@ -317,7 +325,7 @@ public class PhysicsManager : MonoBehaviour
         //방향과 속력 업데이트 등록
         checkObj.updateForce = () =>
         {
-            checkObj.dir = newv2.normalized;            
+            checkObj.dir = newv2.normalized;
             checkObj.speed = checkSpeed;
             //checkObj.speed = newv2.magnitude;
         };
@@ -329,17 +337,21 @@ public class PhysicsManager : MonoBehaviour
         Debug.Log(moveObjTrans.name + " 충돌 전 속도 : " + moveObj.speed);
         Debug.Log(checkObjTrans.name + " 충돌 전 속도 : " + checkObj.speed);
 
-        Debug.Log(moveObjTrans.name + " 의 공격력 : " + attackValue);
-        Debug.Log(checkObjTrans.name + " 의 방어력 : " + checkObj.character.finalDefence);
-        Debug.Log(checkObjTrans.name + " 의 방어율 : " + defenceValue);
+        Debug.Log(string.Format("{0}의 공격력 : {1} ({2}*{3})",
+            moveObjTrans.name, finalAttackValue, attackValue, speedRate));
 
-        Debug.Log(string.Format("{0}의 충격량 : {1} ({2}+{3})", moveObjTrans.name, finalMoveImpulse, moveImpulse, moveObj.character.ImpulseAddValue));
-        Debug.Log(string.Format("{0}의 충격량 : {1} ({2}+{3})", checkObjTrans.name, finalCheckImpulse, checkImpulse, checkObj.character.ImpulseAddValue));
+        Debug.Log(string.Format("{0}의 방어력 : {1}\n방어율 : {2}",
+            checkObjTrans.name, checkObj.character.finalDefence, defenceValue));
 
-        Debug.Log(moveObjTrans.name + " 방향 : " + newv1.normalized);
-        Debug.Log(moveObjTrans.name + " 속도 : " + moveSpeed);
-        Debug.Log(checkObjTrans.name + " 방향 : " + newv2.normalized);
-        Debug.Log(checkObjTrans.name + " 속도 : " + checkSpeed);
+        Debug.Log(string.Format("{0}의 충격량 : {1} ({2}+{3})", 
+            moveObjTrans.name, finalMoveImpulse, moveImpulse, moveObj.character.ImpulseAddValue));
+        Debug.Log(string.Format("{0}의 충격량 : {1} ({2}+{3})", 
+            checkObjTrans.name, finalCheckImpulse, checkImpulse, checkObj.character.ImpulseAddValue));
+
+        Debug.Log(string.Format("[{0}]\n방향 : {1} 속도 : {2}", 
+            moveObjTrans.name, newv1.normalized, moveSpeed));
+        Debug.Log(string.Format("[{0}]\n방향 : {1} 속도 : {2}",
+           checkObjTrans.name, newv2.normalized, checkSpeed));
     }
 
     private void OnDestroy()

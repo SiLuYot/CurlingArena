@@ -29,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 9045846341631651331}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2, y: 0.1, z: 2}
+  m_LocalScale: {x: 3, y: 0.1, z: 3}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -93,6 +93,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 680a4fcd8cb78e74da5338c8fe494fdc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  finalAttack: 0
+  finalDefence: 0
+  ImpulseAddValue: 0
+  ImpulsePercentValue: 0
+  ImmuneCount: 0
+  lockCount: 0
+  team: 0
 --- !u!64 &2530764278573215582
 MeshCollider:
   m_ObjectHideFlags: 0

@@ -40,9 +40,10 @@ public class InputManager : MonoBehaviour
                 var obj = hit.transform.gameObject.GetComponent<Character>();
                 if (obj != null && !CameraManager.IsFixed)
                 {
-                    shootUI = UIManager.Instance.Get<ShootUI>() as ShootUI;
-                    shootUI.Init(clickStartScreenPos);
                     selectedCharacter = obj;
+
+                    shootUI = UIManager.Instance.Get<ShootUI>() as ShootUI;
+                    shootUI.Init(clickStartScreenPos, selectedCharacter);                    
                 }
             }
         }
@@ -70,10 +71,8 @@ public class InputManager : MonoBehaviour
                     Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
                 var dir = dragVector.normalized;
-                var force = shootUI.PowerValue;
-
-                var attackBouns = shootUI.slider.value * 1.2f;
-                if (attackBouns < 0.5f) attackBouns = 0.5f;
+                var force = shootUI.GetPowerValue();
+                var attackBouns = shootUI.GetAttackBouns();
 
                 GameManager.Instance.Shoot(selectedCharacter, dir, force, attackBouns);
 

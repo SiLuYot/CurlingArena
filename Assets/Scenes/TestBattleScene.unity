@@ -4115,7 +4115,6 @@ MonoBehaviour:
     type: 3}
   playerID: 0
   EnemyID: 0
-  CurrentCharacter: {fileID: 0}
 --- !u!1 &1821682095
 GameObject:
   m_ObjectHideFlags: 0

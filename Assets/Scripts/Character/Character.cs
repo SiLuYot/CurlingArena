@@ -24,7 +24,7 @@ public class Character : MonoBehaviour
         this.data = data;
         this.team = team;
 
-        var pData = new CharacterPhysicsData(1, 1f);
+        var pData = new CharacterPhysicsData(1, 1.5f);
         this.physics = new CharacterPhysics(
             data, pData, this,
             CollideEvent,
@@ -569,6 +569,11 @@ public class Character : MonoBehaviour
             default:
                 return type;
         }
+    }
+
+    public float GetShootSpeed(float attackBouns = 1f)
+    {
+        return Mathf.Sqrt(100f * ((0.6f * (Data.attack * attackBouns)) + 30f)) + 15f;
     }
 
     public void RefreshData(CharacterData data)

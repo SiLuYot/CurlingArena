@@ -22,7 +22,7 @@ public class GameManager : MonoBehaviour
     public int playerID = 0;
     public int EnemyID = 0;
 
-    public Character CurrentCharacter;
+    private Character currentCharacter;
     private List<Character> enemyList = new List<Character>();
 
     private static GameManager instance = null;
@@ -91,7 +91,7 @@ public class GameManager : MonoBehaviour
         player.Init(characterData, 0);
 
         var enemy1 = Instantiate(characterPrefab2, stoneRoot).GetComponent<Character>();
-        enemy1.transform.position = new Vector3(housePos.position.x, enemy1.transform.position.y, housePos.position.z - 3f);        
+        enemy1.transform.position = new Vector3(housePos.position.x, enemy1.transform.position.y, housePos.position.z - 5f);        
         enemy1.name = "enemy1";
         enemy1.Init(enemyData, 1);
         enemyList.Add(enemy1);
@@ -103,19 +103,19 @@ public class GameManager : MonoBehaviour
         enemyList.Add(enemy2);
 
         var enemy3 = Instantiate(characterPrefab2, stoneRoot).GetComponent<Character>();
-        enemy3.transform.position = new Vector3(housePos.position.x, enemy3.transform.position.y, housePos.position.z + 3f);
+        enemy3.transform.position = new Vector3(housePos.position.x, enemy3.transform.position.y, housePos.position.z + 5f);
         enemy3.name = "enemy3";
         enemy3.Init(enemyData, 1);
         enemyList.Add(enemy3);
 
-        CurrentCharacter = player;
+        currentCharacter = player;
     }
 
     public void TestSceneRefresh()
     {
-        CurrentCharacter.RemoveCharacterPhysics();
-        Destroy(CurrentCharacter.gameObject);
-        CurrentCharacter = null;
+        currentCharacter.RemoveCharacterPhysics();
+        Destroy(currentCharacter.gameObject);
+        currentCharacter = null;
 
         foreach (var enemy in enemyList)
         {
@@ -130,7 +130,7 @@ public class GameManager : MonoBehaviour
     public void SetPlayerCharacter(CharacterData data)
     {
         playerID = data.id;
-        CurrentCharacter.RefreshData(data);
+        currentCharacter.RefreshData(data);
     }
 
     public void SetEnemyCharacter(CharacterData data)
@@ -140,5 +140,10 @@ public class GameManager : MonoBehaviour
         {
             enemy.RefreshData(data);
         }
+    }
+
+    public bool IsCurrentPlayer(Character character)
+    {
+        return currentCharacter.Physics.pid == character.Physics.pid;
     }
 }
