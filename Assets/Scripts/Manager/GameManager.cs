@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour
     //임시 상수값
     public static float DISTACNE = 1.5f;
 
-    public static RoundStep CurRoundStep;    
+    public static RoundStep CurRoundStep;
 
     public Transform stoneRoot;
     public Transform playerStartPos;
@@ -53,7 +53,7 @@ public class GameManager : MonoBehaviour
         CameraManager.Instance.Init();
         PhysicsManager.Instance.Init();
 
-        TestSceneStart();        
+        TestSceneStart();
     }
 
     public void Shoot(Character character, Vector3 dir, float force, float attackBouns)
@@ -62,7 +62,7 @@ public class GameManager : MonoBehaviour
         Debug.Log("Round Step : " + CurRoundStep);
 
         CameraManager.IsFixed = true;
-        CameraManager.Instance.SetFollowTrans(character.transform);        
+        CameraManager.Instance.SetFollowTrans(character.transform);
 
         character.Physics.ApplyForce(dir, force, attackBouns);
 
@@ -73,6 +73,12 @@ public class GameManager : MonoBehaviour
     {
         CurRoundStep = RoundStep.MOVE;
         Debug.Log("Round Step : " + CurRoundStep);
+
+        //enemyList[1].Physics.ApplyForce(new Vector3(-1, 0, 0), 10);
+        //enemyList[3].Physics.ApplyForce(new Vector3(-1, 0, 0), 15);
+
+        //enemyList[1].Physics.ApplyForce(new Vector3(1, 0, 0), 15);
+        //enemyList[3].Physics.ApplyForce(new Vector3(1, 0, 0), 10);
     }
 
     public void End()
@@ -82,7 +88,7 @@ public class GameManager : MonoBehaviour
     }
 
     public void TestSceneStart()
-    {        
+    {
         var characterList = DataBaseManager.Instance.loader.GetDataBase("CharacterDB");
 
         var enemyData = characterList.GetDataList().Find(v => v.ID == EnemyID) as CharacterData;
@@ -94,22 +100,28 @@ public class GameManager : MonoBehaviour
         player.Init(characterData, 0);
 
         var enemy1 = Instantiate(characterPrefab2, stoneRoot).GetComponent<Character>();
-        enemy1.transform.position = new Vector3(housePos.position.x, enemy1.transform.position.y, housePos.position.z - 5f);        
+        enemy1.transform.position = new Vector3(housePos.position.x, enemy1.transform.position.y, housePos.position.z - 5f);
         enemy1.name = "enemy1";
         enemy1.Init(enemyData, 1);
         enemyList.Add(enemy1);
 
         var enemy2 = Instantiate(characterPrefab2, stoneRoot).GetComponent<Character>();
-        enemy2.transform.position = new Vector3(housePos.position.x + 3f, enemy2.transform.position.y, housePos.position.z);
+        enemy2.transform.position = new Vector3(housePos.position.x, enemy2.transform.position.y, housePos.position.z + 5f);
         enemy2.name = "enemy2";
         enemy2.Init(enemyData, 1);
         enemyList.Add(enemy2);
 
         var enemy3 = Instantiate(characterPrefab2, stoneRoot).GetComponent<Character>();
-        enemy3.transform.position = new Vector3(housePos.position.x, enemy3.transform.position.y, housePos.position.z + 5f);
+        enemy3.transform.position = new Vector3(housePos.position.x + 5f, enemy3.transform.position.y, housePos.position.z - 2f);
         enemy3.name = "enemy3";
         enemy3.Init(enemyData, 1);
         enemyList.Add(enemy3);
+
+        var enemy4 = Instantiate(characterPrefab2, stoneRoot).GetComponent<Character>();
+        enemy4.transform.position = new Vector3(housePos.position.x + 5f, enemy3.transform.position.y, housePos.position.z + 2f);
+        enemy4.name = "enemy4";
+        enemy4.Init(enemyData, 1);
+        enemyList.Add(enemy4);
 
         currentCharacter = player;
     }

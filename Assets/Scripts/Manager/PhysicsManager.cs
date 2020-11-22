@@ -92,6 +92,10 @@ public class PhysicsManager : MonoBehaviour
                     if (moveObj.pid == checkObj.pid)
                         continue;
 
+                    //둘 다 움직이고 있을때 더 빠른 오브젝트를 기준으로 판단
+                    if (moveObj.speed < checkObj.speed)
+                        continue;
+
                     //두 오브젝트 충돌 체크
                     var difference = CheckCollision(moveObj, checkObj);
 
@@ -208,10 +212,10 @@ public class PhysicsManager : MonoBehaviour
     }
 
     //올바른 충돌 위치 계산
-    private Vector3 GetCorrectPosition(Vector3 moveObjPos, Vector3 checkObjPos, Vector3 vc, Vector3 moveObjNextPosDir, float sumRadius)
+    private Vector3 GetCorrectPosition(Vector3 moveObjPos, Vector3 checkObjPos, Vector3 vc, Vector3 moveObjDir, float sumRadius)
     {
         //두 오브젝트 사이의 벡터를 현재 오브젝트 방향 벡터에 투영
-        var vp = Vector3.Project(vc, moveObjNextPosDir);
+        var vp = Vector3.Project(vc, moveObjDir);
         //현재 오브젝트가 투영된 위치
         var vn = moveObjPos + vp;
         //체크할 오브젝트와 투영된 위치의 벡터
@@ -223,7 +227,7 @@ public class PhysicsManager : MonoBehaviour
             checkProjectVec.magnitude * checkProjectVec.magnitude);
 
         //올바른 충돌 위치
-        var correctPosition = vn - moveBack * moveObjNextPosDir;
+        var correctPosition = vn - moveBack * moveObjDir;
 
         return correctPosition;
     }
