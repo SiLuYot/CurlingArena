@@ -96,7 +96,7 @@ public class PhysicsManager : MonoBehaviour
                     var difference = CheckCollision(moveObj, checkObj);
 
                     //충돌하기에 충분히 가까운 거리라면
-                    if (difference >= 0)
+                    if (difference > 0)
                     {
                         //반동 계산
                         CalculateBouncing(moveObj, checkObj, difference);
@@ -132,6 +132,8 @@ public class PhysicsManager : MonoBehaviour
             //아직 변하는 중이라면
             if (moveObj.speed > 0)
             {
+                //이전 위치 저장 후
+                moveObj.prevPostion = moveObj.characterTransform.localPosition;
                 //방향과 속력을 곱해서 힘을 계산하고
                 var force = (moveObj.dir * moveObj.speed) * Time.fixedDeltaTime;
                 //현재 위치에 더해준다.
@@ -184,10 +186,9 @@ public class PhysicsManager : MonoBehaviour
         //if (difference >= 0)
         if (difference > 0)
         {
-            //오브젝트가 도달할 위치 예상
-            var moveObjEndPos = (moveObj.dir * moveObj.speed) + moveObjTrans.localPosition;
             //현재 변화중인 오브젝트의 벡터
-            var moveObjVec = moveObjEndPos - moveObjTrans.localPosition;
+            var moveObjVec = moveObjTrans.localPosition - moveObj.prevPostion;
+
             //현재 변화중인 오브젝트의 방향
             var moveObjDir = moveObjVec.normalized;
 
@@ -246,20 +247,16 @@ public class PhysicsManager : MonoBehaviour
         var vcd = vc.normalized;
         //vc의 노말 벡터
         var vcn = new Vector3(vcd.z, 0, -vcd.x);
-
-        //오브젝트가 도달할 위치 예상
-        var moveObjEndPos = (moveObj.dir * moveObj.speed) + moveObjTrans.localPosition;
+       
         //현재 오브젝트 벡터
-        var v1 = moveObjEndPos - moveObjTrans.localPosition;
+        var v1 = moveObjTrans.localPosition - moveObj.prevPostion;
         //현재 오브젝트 벡터에 vc의 방향 벡터를 투영
         var proj11 = Vector3.Project(v1, vcd);
         //현재 오브젝트 벡터에 vc의 노말 벡터를 투영
         var proj12 = Vector3.Project(v1, vcn);
 
-        //오브젝트가 도달할 위치 예상
-        var checkObjEndPos = (checkObj.dir * checkObj.speed) + checkObjTrans.localPosition;
         //충돌된 오브젝트 벡터
-        var v2 = checkObjEndPos - checkObjTrans.localPosition;
+        var v2 = checkObjTrans.localPosition - checkObj.prevPostion;
         //충돌된 오브젝트 벡터에 vc의 방향 벡터를 투영
         var proj21 = Vector3.Project(v2, vcd);
         //충돌된 오브젝트 벡터에 vc의 노말 벡터를 투영

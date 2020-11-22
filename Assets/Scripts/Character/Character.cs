@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -287,14 +286,6 @@ public class Character : MonoBehaviour
                skillData.desc, otherCharacter.name));
             return false;
         }
-
-        //스킬이 발동되는 등급이 아니라면
-        //if (!CheckRarity(skillData, otherCharacter))
-        //{
-        //    Debug.Log(string.Format("스킬 '{0} 발동 무시'\n{1} - 'CheckRarity'에서 제외",
-        //       skillData.desc, otherCharacter.name));
-        //    return false;
-        //}
 
         //상대의 공격력이 자신의 방어력을 넘겼다면
         if (!CheckDefanceOver(skillData, otherCharacter))

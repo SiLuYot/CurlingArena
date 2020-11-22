@@ -40,6 +40,7 @@ public class CharacterPhysics
     public CharacterPhysicsData pData;
     public Character character;
     public Transform characterTransform;
+    public Vector3 prevPostion;
 
     public Action updateForce;
     public Action<CharacterPhysics> collideEvent;
@@ -62,6 +63,7 @@ public class CharacterPhysics
         this.pData = pData;
         this.character = character;
         this.characterTransform = character.transform;
+        this.prevPostion = character.transform.localPosition;
         this.collideEvent = collideEvent;
         this.beCollidedEvent = beCollidedEvent;
         this.allStopEvent = allStopEvent;
