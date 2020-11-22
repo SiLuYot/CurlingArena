@@ -275,7 +275,7 @@ public class Character : MonoBehaviour
         //첫 충돌이 아니라면
         if (!CheckFirstCollide(skillData))
         {
-            Debug.Log(string.Format("스킬 '{0} 발동 무시'\n{1} - 'CheckFirstCollide'에서 제외", 
+            Debug.Log(string.Format("스킬 '{0}'\n발동 무시 {1} - 'CheckFirstCollide'에서 제외", 
                 skillData.desc, otherCharacter.name));
             return false;
         }
@@ -283,7 +283,7 @@ public class Character : MonoBehaviour
         //스킬이 발동되는 사이즈가 아니라면
         if (!CheckSize(skillData, otherCharacter))
         {
-            Debug.Log(string.Format("스킬 '{0} 발동 무시'\n{1} - 'CheckSize'에서 제외",
+            Debug.Log(string.Format("스킬 '{0}'\n발동 무시 {1} - 'CheckSize'에서 제외",
                skillData.desc, otherCharacter.name));
             return false;
         }
@@ -291,7 +291,7 @@ public class Character : MonoBehaviour
         //상대의 공격력이 자신의 방어력을 넘겼다면
         if (!CheckDefanceOver(skillData, otherCharacter))
         {
-            Debug.Log(string.Format("스킬 '{0} 발동 무시'\n{1} - 'CheckDefanceOver'에서 제외",
+            Debug.Log(string.Format("스킬 '{0}'\n발동 무시 {1} - 'CheckDefanceOver'에서 제외",
                skillData.desc, otherCharacter.name));
             return false;
         }
@@ -299,7 +299,7 @@ public class Character : MonoBehaviour
         //발동되는 팀 조건이 아니라면
         if (!CheckObjectTeam(skillData, otherCharacter))
         {
-            Debug.Log(string.Format("스킬 '{0} 발동 무시'\n{1} - 'CheckObjectTeam'에서 제외",
+            Debug.Log(string.Format("스킬 '{0}'\n발동 무시 {1} - 'CheckObjectTeam'에서 제외",
                skillData.desc, otherCharacter.name));
             return false;
         }
@@ -520,7 +520,7 @@ public class Character : MonoBehaviour
                     if (isAllStop)
                     {
                         var dir = Vector3.Normalize(applyCharacter.transform.localPosition - this.transform.localPosition);
-                        var speed = applyCharacter.Physics.GetQuadraticEquationValue(finalValue);
+                        var speed = applyCharacter.Physics.GetQuadraticEquationValue((finalValue * GameManager.DISTACNE) * 2);
 
                         applyCharacter.Physics.ApplyForce(dir, speed);
 
