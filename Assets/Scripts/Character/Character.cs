@@ -14,6 +14,7 @@ public class Character : MonoBehaviour
     public float finalDefence;
     public float ImpulseAddValue;
     public float ImpulsePercentValue;
+    public Vector3 ImpulseAddDir;
     public float ImmuneCount;
     public float lockCount;
     public int team;
@@ -40,6 +41,7 @@ public class Character : MonoBehaviour
         finalDefence = data.defence;
         ImpulseAddValue = 0;
         ImpulsePercentValue = 1.0f;
+        ImpulseAddDir = Vector3.zero;
         ImmuneCount = 0;
         lockCount = 0;
     }
@@ -513,16 +515,16 @@ public class Character : MonoBehaviour
                 }
             case 3: //충격량
                 {
+                    var dir = Vector3.Normalize(applyCharacter.transform.localPosition - this.transform.localPosition);
+
                     var value = GetApplyValueType(skillData.applyValueType, applyCharacter.ImpulseAddValue, this);
                     var finalValue = value * skillData.applyValue;
 
                     applyCharacter.ImpulsePercentValue = skillData.applyPercentValue;
 
                     if (isAllStop)
-                    {
-                        var dir = Vector3.Normalize(applyCharacter.transform.localPosition - this.transform.localPosition);
+                    {                        
                         var speed = applyCharacter.Physics.GetQuadraticEquationValue((finalValue * GameManager.DISTACNE) * 2);
-
                         applyCharacter.Physics.ApplyForce(dir, speed);
 
                         Debug.Log(string.Format("준 충격량 : {0}\n방향 : {1} 속도 : {2}",
@@ -530,7 +532,11 @@ public class Character : MonoBehaviour
                     }
                     else
                     {
+                        applyCharacter.ImpulseAddDir = dir;
                         applyCharacter.ImpulseAddValue = applyCharacter.GetImpulseValue(finalValue);
+
+                        Debug.Log(string.Format("준 충격량 : {0}\n방향 : {1}",
+                            finalValue, dir));
                     }
                     break;
                 }

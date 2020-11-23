@@ -95,6 +95,7 @@ public class CharacterPhysics
     public void ApplyDir(Vector3 dir)
     {
         this.dir += dir;
+        this.dir.Normalize();
     }
 
     public void Sweep(float value)

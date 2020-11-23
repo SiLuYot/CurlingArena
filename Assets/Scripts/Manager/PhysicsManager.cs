@@ -79,31 +79,33 @@ public class PhysicsManager : MonoBehaviour
             if (moveObj.speed < 0)
             {
                 moveObj.speed = 0;
+                moveObj.dir = Vector3.zero;
             }
 
             //아직 변하는 중이라면
             if (moveObj.speed > 0)
             {
-                allStop = false;
-                //체크할 오브젝트 리스트 순환
-                foreach (var checkObj in physicsObjectList)
+                //방향이 (0,0,0) 인 경우 변화 X
+                if (moveObj.dir != Vector3.zero)
                 {
-                    //자신은 제외한다.
-                    if (moveObj.pid == checkObj.pid)
-                        continue;
-
-                    //둘 다 움직이고 있을때 더 빠른 오브젝트를 기준으로 판단
-                    if (moveObj.speed < checkObj.speed)
-                        continue;
-
-                    //두 오브젝트 충돌 체크
-                    var difference = CheckCollision(moveObj, checkObj);
-
-                    //충돌하기에 충분히 가까운 거리라면
-                    if (difference > 0)
+                    allStop = false;
+                    //체크할 오브젝트 리스트 순환
+                    foreach (var checkObj in physicsObjectList)
                     {
-                        //반동 계산
-                        CalculateBouncing(moveObj, checkObj, difference);
+                        //자신은 제외한다.
+                        if (moveObj.pid == checkObj.pid)
+                            continue;
+
+                        //둘 다 움직이고 있을때 더 빠른 오브젝트를 기준으로 판단
+                        if (moveObj.speed < checkObj.speed)
+                            continue;
+
+                        //충돌하기에 충분히 가까운 거리라면
+                        if (CheckCollision(moveObj, checkObj))
+                        {
+                            //반동 계산
+                            CalculateBouncing(moveObj, checkObj);
+                        }
                     }
                 }
             }
@@ -134,7 +136,8 @@ public class PhysicsManager : MonoBehaviour
                 continue;
 
             //아직 변하는 중이라면
-            if (moveObj.speed > 0)
+            if (moveObj.speed > 0 && 
+                moveObj.dir != Vector3.zero)
             {
                 //이전 위치 저장 후
                 moveObj.prevPostion = moveObj.characterTransform.localPosition;
@@ -170,7 +173,7 @@ public class PhysicsManager : MonoBehaviour
         }
     }
 
-    private float CheckCollision(CharacterPhysics moveObj, CharacterPhysics checkObj)
+    private bool CheckCollision(CharacterPhysics moveObj, CharacterPhysics checkObj)
     {
         //현재 변화중인 오브젝트의 트랜스폼
         var moveObjTrans = moveObj.characterTransform;
@@ -184,10 +187,14 @@ public class PhysicsManager : MonoBehaviour
 
         //두 오브젝트의 반지름을 더한 값보다
         //vc의 길이가 크다면 서로 충돌하지 않음.
-        float difference = sumRadius - vc.magnitude;
+        var difference = sumRadius - vc.magnitude;
 
-        //충분히 가까워서 충돌 가능
-        if (difference > 0)
+        //현재 오브젝트의 방향과 두 오브젝트 사이의 벡터의 내적
+        var dot = Vector3.Dot(moveObj.dir, vc);
+
+        //충분히 가깝거나 두 벡터의 내적이 0인 경우 (자신의 앞에 있는 경우)
+        bool isCollision = (difference > 0) && (dot > 0);
+        if (isCollision)
         {
             //현재 변화중인 오브젝트의 벡터
             var moveObjVec = moveObjTrans.localPosition - moveObj.prevPostion;
@@ -208,7 +215,7 @@ public class PhysicsManager : MonoBehaviour
             moveObjTrans.localPosition = correctPosition;
         }
 
-        return difference;
+        return isCollision;
     }
 
     //올바른 충돌 위치 계산
@@ -233,7 +240,7 @@ public class PhysicsManager : MonoBehaviour
     }
 
     //충돌 뒤 반동 계산
-    private void CalculateBouncing(CharacterPhysics moveObj, CharacterPhysics checkObj, float difference)
+    private void CalculateBouncing(CharacterPhysics moveObj, CharacterPhysics checkObj)
     {
         //현재 변화중인 오브젝트의 트랜스폼
         var moveObjTrans = moveObj.characterTransform;
@@ -242,10 +249,6 @@ public class PhysicsManager : MonoBehaviour
 
         //체크할 오브젝트와 현재 오브젝트의 벡터
         var vc = checkObjTrans.localPosition - moveObjTrans.localPosition;
-
-        //현재 오브젝트의 방향 전환
-        moveObj.dir -= vc.normalized * difference;
-
         //vc의 방향 벡터
         var vcd = vc.normalized;
         //vc의 노말 벡터
@@ -314,20 +317,22 @@ public class PhysicsManager : MonoBehaviour
         var moveSpeed = moveObj.GetQuadraticEquationValue((finalMoveImpulse * GameManager.DISTACNE) * 2);
         var checkSpeed = checkObj.GetQuadraticEquationValue((finalCheckImpulse * GameManager.DISTACNE) * 2);
 
+        //추가로 더해지는 충격량의 방향까지 고려
+        var moveDir = (newv1.normalized + moveObj.character.ImpulseAddDir).normalized;
+        var checkDir = (newv2.normalized + checkObj.character.ImpulseAddDir).normalized;
+
         //방향과 속력 업데이트 등록
         moveObj.updateForce = () =>
         {
-            moveObj.dir = newv1.normalized;
+            moveObj.dir = moveDir;
             moveObj.speed = moveSpeed;
-            //moveObj.speed = newv1.magnitude;
         };
 
         //방향과 속력 업데이트 등록
         checkObj.updateForce = () =>
         {
-            checkObj.dir = newv2.normalized;
+            checkObj.dir = checkDir;
             checkObj.speed = checkSpeed;
-            //checkObj.speed = newv2.magnitude;
         };
 
         moveObj.isFirstCollide = true;
@@ -343,15 +348,15 @@ public class PhysicsManager : MonoBehaviour
         Debug.Log(string.Format("{0}의 방어력 : {1}\n방어율 : {2}",
             checkObjTrans.name, checkObj.character.finalDefence, defenceValue));
 
-        Debug.Log(string.Format("{0}의 충격량 : {1} ({2}+{3})", 
-            moveObjTrans.name, finalMoveImpulse, moveImpulse, moveObj.character.ImpulseAddValue));
-        Debug.Log(string.Format("{0}의 충격량 : {1} ({2}+{3})", 
-            checkObjTrans.name, finalCheckImpulse, checkImpulse, checkObj.character.ImpulseAddValue));
+        Debug.Log(string.Format("{0}의 충격량 : {1} = ({2}+{3})*{4}", 
+            moveObjTrans.name, finalMoveImpulse, moveImpulse, moveObj.character.ImpulseAddValue, moveObj.character.ImpulsePercentValue));
+        Debug.Log(string.Format("{0}의 충격량 : {1} = ({2}+{3})*{4}", 
+            checkObjTrans.name, finalCheckImpulse, checkImpulse, checkObj.character.ImpulseAddValue, checkObj.character.ImpulsePercentValue));
 
         Debug.Log(string.Format("[{0}]\n방향 : {1} 속도 : {2}", 
-            moveObjTrans.name, newv1.normalized, moveSpeed));
+            moveObjTrans.name, moveDir, moveSpeed));
         Debug.Log(string.Format("[{0}]\n방향 : {1} 속도 : {2}",
-           checkObjTrans.name, newv2.normalized, checkSpeed));
+           checkObjTrans.name, checkDir, checkSpeed));
     }
 
     private void OnDestroy()
