@@ -23,7 +23,7 @@ public class Character : MonoBehaviour
         this.data = data;
         this.team = team;
 
-        var pData = new CharacterPhysicsData(1, 1.5f);
+        var pData = new CharacterPhysicsData(1, GameManager.DISTACNE);
         this.physics = new CharacterPhysics(
             data, pData, this,
             CollideEvent,
@@ -223,6 +223,8 @@ public class Character : MonoBehaviour
     {
         List<CharacterPhysics> findObjList = null;
 
+        range *= GameManager.DISTACNE;
+
         foreach (var obj in physicsObjectList)
         {
             if (obj.pid == this.Physics.pid)
@@ -232,7 +234,6 @@ public class Character : MonoBehaviour
                 this.transform.localPosition,
                 obj.characterTransform.localPosition);
 
-            range *= GameManager.DISTACNE;
             if (dis <= range)
             {
                 if (findObjList == null)
@@ -275,7 +276,7 @@ public class Character : MonoBehaviour
         //첫 충돌이 아니라면
         if (!CheckFirstCollide(skillData))
         {
-            Debug.Log(string.Format("스킬 '{0}'\n발동 무시 {1} - 'CheckFirstCollide'에서 제외", 
+            Debug.Log(string.Format("스킬 '{0}'\n발동 무시 {1} - 'CheckFirstCollide'에서 제외",
                 skillData.desc, otherCharacter.name));
             return false;
         }

@@ -12,7 +12,7 @@ public enum RoundStep
 public class GameManager : MonoBehaviour
 {
     //임시 상수값
-    public static float DISTACNE = 1.5f;
+    public static float DISTACNE = 1.45f;
 
     public static RoundStep CurRoundStep;
 
@@ -112,13 +112,13 @@ public class GameManager : MonoBehaviour
         enemyList.Add(enemy2);
 
         var enemy3 = Instantiate(characterPrefab2, stoneRoot).GetComponent<Character>();
-        enemy3.transform.position = new Vector3(housePos.position.x + 5f, enemy3.transform.position.y, housePos.position.z - 2f);
+        enemy3.transform.position = new Vector3(housePos.position.x + 5f, enemy3.transform.position.y, housePos.position.z);
         enemy3.name = "enemy3";
         enemy3.Init(enemyData, 1);
         enemyList.Add(enemy3);
 
         var enemy4 = Instantiate(characterPrefab2, stoneRoot).GetComponent<Character>();
-        enemy4.transform.position = new Vector3(housePos.position.x + 5f, enemy3.transform.position.y, housePos.position.z + 2f);
+        enemy4.transform.position = new Vector3(housePos.position.x + 10f, enemy3.transform.position.y, housePos.position.z);
         enemy4.name = "enemy4";
         enemy4.Init(enemyData, 1);
         enemyList.Add(enemy4);
