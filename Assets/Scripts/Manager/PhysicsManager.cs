@@ -1,8 +1,26 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+
+class CollisionData
+{
+    public int index;
+    public int collideObjPID;
+    public int beCollidedPID;
+
+    public CollisionData(int index, int collideObjPID, int beCollidedPID)
+    {
+        this.index = index;
+        this.collideObjPID = collideObjPID;
+        this.beCollidedPID = beCollidedPID;
+    }
+}
 
 public class PhysicsManager : MonoBehaviour
 {
+    public Transform hoglineLine;
+    public Transform backLine;
+
     private static PhysicsManager instance = null;
     public static PhysicsManager Instance
     {
@@ -17,6 +35,8 @@ public class PhysicsManager : MonoBehaviour
 
     //물리 영향을 받는 모든 오브젝트들의 리스트
     private List<CharacterPhysics> physicsObjectList = new List<CharacterPhysics>();
+    //충돌 발생 시 순서대로 기록되는 리스트
+    private List<CollisionData> collisionDataList = new List<CollisionData>();
 
     public bool isAllStop = false;
     public bool isAllStopEventEnd = false;
@@ -25,6 +45,9 @@ public class PhysicsManager : MonoBehaviour
     {
         isAllStop = false;
         isAllStopEventEnd = false;
+
+        physicsObjectList.Clear();
+        collisionDataList.Clear();
     }
 
     private void FixedUpdate()
@@ -41,21 +64,24 @@ public class PhysicsManager : MonoBehaviour
         UpdateForce();
         //갱신된 방향과 속력 적용
         ApplyForce();
-
+        //모두 멈춘 경우 이벤트 발생
         AllStopEvent();
     }
 
     public void AddPhysicsObject(CharacterPhysics obj)
     {
+        //가장 마지막 데이터의 다음 id 부여
+        var firstData = physicsObjectList.LastOrDefault();
+        var newPID = firstData != null ? firstData.PID + 1 : 0;
         //인덱스 부여 후
-        obj.pid = physicsObjectList.Count;
+        obj.SetPID(newPID);
         //리스트에 추가
         physicsObjectList.Add(obj);
 
         Debug.Log(string.Format("" +
-            "*AddPhysicsObject*\n" +
+            "[AddPhysicsObject]\n" +
             "이름 : {0} / PID : {1} / 등급 : {2} / 이름 : {3}",
-            obj.characterTransform.name, obj.pid, obj.data.rarity, obj.data.name));
+            obj.characterTransform.name, obj.PID, obj.character.Data.rarity, obj.character.Data.name));
     }
 
     public void RemovePhysicsObject(CharacterPhysics obj)
@@ -83,29 +109,26 @@ public class PhysicsManager : MonoBehaviour
             }
 
             //아직 변하는 중이라면
-            if (moveObj.speed > 0)
+            if (moveObj.speed > 0 &&
+                moveObj.dir != Vector3.zero)
             {
-                //방향이 (0,0,0) 인 경우 변화 X
-                if (moveObj.dir != Vector3.zero)
+                allStop = false;
+                //체크할 오브젝트 리스트 순환
+                foreach (var checkObj in physicsObjectList)
                 {
-                    allStop = false;
-                    //체크할 오브젝트 리스트 순환
-                    foreach (var checkObj in physicsObjectList)
+                    //자신은 제외한다.
+                    if (moveObj.PID == checkObj.PID)
+                        continue;
+
+                    //둘 다 움직이고 있을때 더 빠른 오브젝트를 기준으로 판단
+                    if (moveObj.speed < checkObj.speed)
+                        continue;
+
+                    //충돌하기에 충분히 가까운 거리라면
+                    if (CheckCollision(moveObj, checkObj))
                     {
-                        //자신은 제외한다.
-                        if (moveObj.pid == checkObj.pid)
-                            continue;
-
-                        //둘 다 움직이고 있을때 더 빠른 오브젝트를 기준으로 판단
-                        if (moveObj.speed < checkObj.speed)
-                            continue;
-
-                        //충돌하기에 충분히 가까운 거리라면
-                        if (CheckCollision(moveObj, checkObj))
-                        {
-                            //반동 계산
-                            CalculateBouncing(moveObj, checkObj);
-                        }
+                        //반동 계산
+                        CalculateBouncing(moveObj, checkObj);
                     }
                 }
             }
@@ -119,7 +142,8 @@ public class PhysicsManager : MonoBehaviour
     {
         foreach (var moveObj in physicsObjectList)
         {
-            if (moveObj != null && moveObj.updateForce != null)
+            if (moveObj != null &&
+                moveObj.updateForce != null)
             {
                 moveObj.updateForce();
                 moveObj.updateForce = null;
@@ -136,7 +160,7 @@ public class PhysicsManager : MonoBehaviour
                 continue;
 
             //아직 변하는 중이라면
-            if (moveObj.speed > 0 && 
+            if (moveObj.speed > 0 &&
                 moveObj.dir != Vector3.zero)
             {
                 //이전 위치 저장 후
@@ -149,14 +173,13 @@ public class PhysicsManager : MonoBehaviour
         }
     }
 
+    //모두 멈추면 발생하는 이벤트 (수정필요)
     private void AllStopEvent()
     {
-        if (physicsObjectList == null)
-            return;
-
         if (!isAllStop)
             return;
 
+        //단 한번만 발생한다.
         if (isAllStopEventEnd)
         {
             GameManager.Instance.End();
@@ -164,12 +187,35 @@ public class PhysicsManager : MonoBehaviour
         }
 
         isAllStopEventEnd = true;
-        foreach (var moveObj in physicsObjectList)
-        {
-            if (moveObj == null)
-                continue;
 
-            moveObj.allStopEvent(physicsObjectList);
+        List<int> removeList = null;
+        foreach (var obj in physicsObjectList)
+        {
+            if (obj.characterTransform.position.x < hoglineLine.position.x ||
+                obj.characterTransform.position.x > backLine.position.x)
+            {
+                if (removeList == null)
+                    removeList = new List<int>();
+
+                removeList.Add(obj.PID);
+            }
+        }
+
+        if (removeList != null)
+        {
+            foreach (var pid in removeList)
+            {
+                GameManager.Instance.RemoveCharacter(pid);
+            }
+
+            removeList.Clear();
+            removeList = null;
+        }           
+
+        foreach (var moveObj in physicsObjectList)
+        {            
+            var findObj = GetFirstCollisionObject(moveObj.PID);
+            moveObj?.allStopEvent(findObj, physicsObjectList);
         }
     }
 
@@ -196,6 +242,8 @@ public class PhysicsManager : MonoBehaviour
         bool isCollision = (difference > 0) && (dot > 0);
         if (isCollision)
         {
+            Debug.Log(string.Format("충돌 발생!\n{0} -> {1}", moveObjTrans.name, checkObjTrans.name));
+
             //현재 변화중인 오브젝트의 벡터
             var moveObjVec = moveObjTrans.localPosition - moveObj.prevPostion;
 
@@ -204,8 +252,7 @@ public class PhysicsManager : MonoBehaviour
 
             //충돌 위치 보정
             var correctPosition = GetCorrectPosition(
-                moveObjTrans.localPosition,
-                checkObjTrans.localPosition,
+                moveObjTrans.localPosition, checkObjTrans.localPosition,
                 vc, moveObjDir, sumRadius);
 
             Debug.Log(string.Format("{0} 위치 보정\n{1} -> {2}",
@@ -253,7 +300,7 @@ public class PhysicsManager : MonoBehaviour
         var vcd = vc.normalized;
         //vc의 노말 벡터
         var vcn = new Vector3(vcd.z, 0, -vcd.x);
-       
+
         //현재 오브젝트 벡터
         var v1 = moveObjTrans.localPosition - moveObj.prevPostion;
         //현재 오브젝트 벡터에 vc의 방향 벡터를 투영
@@ -268,15 +315,18 @@ public class PhysicsManager : MonoBehaviour
         //충돌된 오브젝트 벡터에 vc의 노말 벡터를 투영
         var proj22 = Vector3.Project(v2, vcn);
 
+        //서로의 운동벡터 교환 (x축)
         float P = moveObj.Mass * proj11.x + checkObj.Mass * proj21.x;
         float V = proj11.x - proj21.x;
         float v2fx = (P + V * moveObj.Mass) / (moveObj.Mass + checkObj.Mass);
         float v1fx = v2fx - V;
 
+        //서로의 운동벡터 교환 (z축)
         P = moveObj.Mass * proj11.z + checkObj.Mass * proj21.z;
         V = proj11.z - proj21.z;
         float v2fz = (P + V * moveObj.Mass) / (moveObj.Mass + checkObj.Mass);
         float v1fz = v2fz - V;
+        //참조 -> https://brownsoo.github.io/2DVectors/moving_balls/
 
         //반동이 계산된 현재 오브젝트 벡터
         var newv1 = new Vector3(proj12.x + v1fx, 0, proj12.z + v1fz);
@@ -284,16 +334,16 @@ public class PhysicsManager : MonoBehaviour
         var newv2 = new Vector3(proj22.x + v2fx, 0, proj22.z + v2fz);
 
         //충돌 이벤트 발생
-        moveObj?.collideEvent(checkObj);
+        moveObj?.collideEvent(checkObj, physicsObjectList);
         //충돌 된 이벤트 발생
-        checkObj?.beCollidedEvent(moveObj);
+        checkObj?.beCollidedEvent(moveObj, physicsObjectList);
 
         //공격력과 공격보너스를 합친 값 (발사단계에서 게이지 퍼센트 만큼 50%~120% 보너스)
-        var attackValue = moveObj.character.finalAttack * moveObj.attackBouns;
+        var attackValue = moveObj.character.finalAttack * moveObj.AttackBouns;
 
         //발사 할때와 충돌 했을때의 속도 감소율
         var speedRate = GameManager.Instance.IsCurrentPlayer(moveObj.character) ?
-            (moveObj.speed / moveObj.firstSpeed) : 1.0f;
+            (moveObj.speed / moveObj.FirstSpeed) : 1.0f;
 
         //최종 공격력
         var finalAttackValue = attackValue * speedRate;
@@ -314,8 +364,8 @@ public class PhysicsManager : MonoBehaviour
 
         //충격량이 날아갈 총 거리이므로 
         //마찰력을 공차로 가지는 등차수열의 합이 충격량이다.
-        var moveSpeed = moveObj.GetQuadraticEquationValue((finalMoveImpulse * GameManager.DISTACNE) * 2);
-        var checkSpeed = checkObj.GetQuadraticEquationValue((finalCheckImpulse * GameManager.DISTACNE) * 2);
+        var moveSpeed = moveObj.GetQuadraticEquationValue(finalMoveImpulse);
+        var checkSpeed = checkObj.GetQuadraticEquationValue(finalCheckImpulse);
 
         //추가로 더해지는 충격량의 방향까지 고려
         var moveDir = (newv1.normalized + moveObj.character.ImpulseAddDir).normalized;
@@ -335,10 +385,11 @@ public class PhysicsManager : MonoBehaviour
             checkObj.speed = checkSpeed;
         };
 
-        moveObj.isFirstCollide = true;
-        checkObj.isFirstCollide = true;
+        //충돌 데이터 기록
+        var collisionData = new CollisionData(collisionDataList.Count, moveObj.PID, checkObj.PID);
+        collisionDataList.Add(collisionData);
 
-        Debug.Log(string.Format("충돌 발생!\n{0} -> {1}", moveObjTrans.name, checkObjTrans.name));
+        //로깅        
         Debug.Log(moveObjTrans.name + " 충돌 전 속도 : " + moveObj.speed);
         Debug.Log(checkObjTrans.name + " 충돌 전 속도 : " + checkObj.speed);
 
@@ -348,22 +399,56 @@ public class PhysicsManager : MonoBehaviour
         Debug.Log(string.Format("{0}의 방어력 : {1}\n방어율 : {2}",
             checkObjTrans.name, checkObj.character.finalDefence, defenceValue));
 
-        Debug.Log(string.Format("{0}의 충격량 : {1} = ({2}+{3})*{4}", 
+        Debug.Log(string.Format("{0}의 충격량 : {1} = ({2}+{3})*{4}",
             moveObjTrans.name, finalMoveImpulse, moveImpulse, moveObj.character.ImpulseAddValue, moveObj.character.ImpulsePercentValue));
-        Debug.Log(string.Format("{0}의 충격량 : {1} = ({2}+{3})*{4}", 
+        Debug.Log(string.Format("{0}의 충격량 : {1} = ({2}+{3})*{4}",
             checkObjTrans.name, finalCheckImpulse, checkImpulse, checkObj.character.ImpulseAddValue, checkObj.character.ImpulsePercentValue));
 
-        Debug.Log(string.Format("[{0}]\n방향 : {1} 속도 : {2}", 
+        Debug.Log(string.Format("[{0} final Vector]\n방향 : {1} 속도 : {2}",
             moveObjTrans.name, moveDir, moveSpeed));
-        Debug.Log(string.Format("[{0}]\n방향 : {1} 속도 : {2}",
+        Debug.Log(string.Format("[{0} final Vector]\n방향 : {1} 속도 : {2}",
            checkObjTrans.name, checkDir, checkSpeed));
+    }
+
+    public int FindFirstCollision(int pid)
+    {
+        foreach (var data in collisionDataList)
+        {
+            if (data.collideObjPID == pid)
+            {
+                return data.beCollidedPID;
+            }
+            else if (data.beCollidedPID == pid)
+            {
+                return data.collideObjPID;
+            }
+        }
+
+        //첫 충돌이 아직 발생하지 않았다.
+        return -1;
+    }
+
+    public CharacterPhysics GetPhysicsObject(int pid)
+    {
+        var findObj = physicsObjectList.Find(v => v.PID == pid);
+        return findObj;
+    }
+
+    public CharacterPhysics GetFirstCollisionObject(int pid)
+    {
+        var findPID = FindFirstCollision(pid);
+        var findObj = GetPhysicsObject(findPID);
+        return findObj;
     }
 
     private void OnDestroy()
     {
         physicsObjectList.Clear();
+        collisionDataList.Clear();
+
+        physicsObjectList = null;
+        collisionDataList = null;
 
         instance = null;
-        physicsObjectList = null;
     }
 }

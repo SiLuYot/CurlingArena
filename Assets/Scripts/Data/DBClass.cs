@@ -129,7 +129,9 @@ public class SkillData : ReadData
     public string name;
     public int conditionType;
     public int conditionObjectType;
+    public int occurStandard;
     public int applyObject;
+    public float applyAngle;
     public float applyRange;
     public int applyType;
     public int applyValueType;
@@ -142,6 +144,8 @@ public class SkillData : ReadData
     public int isOneShot;
     public int isFirstCollide;
     public string desc;
+
+    public ConditionType cType => (ConditionType)conditionType;
 
     public enum ConditionType
     {

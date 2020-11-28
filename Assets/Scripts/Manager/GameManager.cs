@@ -13,6 +13,8 @@ public class GameManager : MonoBehaviour
 {
     //임시 상수값
     public static float DISTACNE = 1.45f;
+    public static float MASS = 1f;
+    public static float SWEEP = 0.0001f;
 
     public static RoundStep CurRoundStep;
 
@@ -26,7 +28,7 @@ public class GameManager : MonoBehaviour
     public int EnemyID = 0;
 
     private Character currentCharacter;
-    private List<Character> enemyList = new List<Character>();
+    private List<Character> chracterList = new List<Character>();
 
     private static GameManager instance = null;
     public static GameManager Instance
@@ -95,49 +97,72 @@ public class GameManager : MonoBehaviour
         var characterData = characterList.GetDataList().Find(v => v.ID == playerID) as CharacterData;
 
         var player = Instantiate(characterPrefab1, stoneRoot).GetComponent<Character>();
-        player.transform.localPosition = playerStartPos.localPosition;
+        player.transform.position = playerStartPos.position;
         player.name = "player";
         player.Init(characterData, 0);
+        chracterList.Add(player);
+
+        var playerTeam1 = Instantiate(characterPrefab1, stoneRoot).GetComponent<Character>();
+        playerTeam1.transform.position = new Vector3(housePos.position.x, playerTeam1.transform.position.y, housePos.position.z);
+        playerTeam1.name = "playerTeam1";
+        playerTeam1.Init(characterData, 0);
+        chracterList.Add(playerTeam1);
 
         var enemy1 = Instantiate(characterPrefab2, stoneRoot).GetComponent<Character>();
         enemy1.transform.position = new Vector3(housePos.position.x, enemy1.transform.position.y, housePos.position.z - 4f);
         enemy1.name = "enemy1";
         enemy1.Init(enemyData, 1);
-        enemyList.Add(enemy1);
+        chracterList.Add(enemy1);
 
         var enemy2 = Instantiate(characterPrefab2, stoneRoot).GetComponent<Character>();
         enemy2.transform.position = new Vector3(housePos.position.x, enemy2.transform.position.y, housePos.position.z + 4f);
         enemy2.name = "enemy2";
         enemy2.Init(enemyData, 1);
-        enemyList.Add(enemy2);
+        chracterList.Add(enemy2);
 
         var enemy3 = Instantiate(characterPrefab2, stoneRoot).GetComponent<Character>();
         enemy3.transform.position = new Vector3(housePos.position.x + 5f, enemy3.transform.position.y, housePos.position.z);
         enemy3.name = "enemy3";
         enemy3.Init(enemyData, 1);
-        enemyList.Add(enemy3);
+        chracterList.Add(enemy3);
 
         var enemy4 = Instantiate(characterPrefab2, stoneRoot).GetComponent<Character>();
         enemy4.transform.position = new Vector3(housePos.position.x + 10f, enemy3.transform.position.y, housePos.position.z);
         enemy4.name = "enemy4";
         enemy4.Init(enemyData, 1);
-        enemyList.Add(enemy4);
+        chracterList.Add(enemy4);
 
         currentCharacter = player;
     }
 
-    public void TestSceneRefresh()
+    public void RemoveCharacter(int pid)
     {
-        currentCharacter.RemoveCharacterPhysics();
-        Destroy(currentCharacter.gameObject);
-        currentCharacter = null;
+        var findCharacter = chracterList.Find(v => v.Physics.PID == pid);
 
-        foreach (var enemy in enemyList)
+        if (findCharacter != null)
         {
-            enemy.RemoveCharacterPhysics();
-            Destroy(enemy.gameObject);
+            if (findCharacter.Physics.PID == currentCharacter.Physics.PID)
+            {
+                CameraManager.Instance.Init();
+            }
+
+            chracterList.Remove(findCharacter);
+            findCharacter.RemoveCharacterPhysics();
+            Destroy(findCharacter.gameObject);
+            findCharacter = null;
         }
-        enemyList.Clear();
+    }
+
+    public void TestSceneRefresh()
+    {        
+        foreach (var player in chracterList)
+        {
+            player.RemoveCharacterPhysics();
+            Destroy(player.gameObject);
+        }
+        chracterList.Clear();
+
+        currentCharacter = null;
 
         Ready();
     }
@@ -145,20 +170,27 @@ public class GameManager : MonoBehaviour
     public void SetPlayerCharacter(CharacterData data)
     {
         playerID = data.id;
-        currentCharacter.RefreshData(data);
+        foreach (var player in chracterList)
+        {
+            if (player.Team == 0)
+                player.RefreshData(data);
+        }        
     }
 
     public void SetEnemyCharacter(CharacterData data)
     {
         EnemyID = data.id;
-        foreach (var enemy in enemyList)
+        foreach (var enemy in chracterList)
         {
-            enemy.RefreshData(data);
+            if (enemy.Team == 1)
+                enemy.RefreshData(data);
         }
     }
 
     public bool IsCurrentPlayer(Character character)
     {
-        return currentCharacter.Physics.pid == character.Physics.pid;
+        return currentCharacter == null ? 
+            false : 
+            currentCharacter.Physics.PID == character.Physics.PID;
     }
 }

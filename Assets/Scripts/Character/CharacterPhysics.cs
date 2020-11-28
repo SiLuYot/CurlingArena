@@ -16,15 +16,18 @@ public class CharacterPhysicsData
 
 public class CharacterPhysics
 {
-    public int pid;
+    private int pid;
+    private float attackBouns;
+    private float firstSpeed;    
+    private float friction;
+
     public float speed;
     public Vector3 dir;
-    private float friction;
     public float sweepValue;
-    public float attackBouns;
-    public float firstSpeed;
-    public bool isFirstCollide;
 
+    public int PID { get => pid; }
+    public float AttackBouns => attackBouns;
+    public float FirstSpeed => firstSpeed;    
     public float Mass => pData.mass;
     public float Radius => pData.radius;
     public float Friction
@@ -36,19 +39,21 @@ public class CharacterPhysics
         }
     }
 
-    public CharacterData data;
-    public CharacterPhysicsData pData;
     public Character character;
+    public CharacterPhysicsData pData;
+
     public Transform characterTransform;
     public Vector3 prevPostion;
 
     public Action updateForce;
-    public Action<CharacterPhysics> collideEvent;
-    public Action<CharacterPhysics> beCollidedEvent;
-    public Action<List<CharacterPhysics>> allStopEvent;
+    public Action<CharacterPhysics, List<CharacterPhysics>> collideEvent;
+    public Action<CharacterPhysics, List<CharacterPhysics>> beCollidedEvent;
+    public Action<CharacterPhysics, List<CharacterPhysics>> allStopEvent;
 
-    public CharacterPhysics(CharacterData data, CharacterPhysicsData pData, Character character,
-        Action<CharacterPhysics> collideEvent, Action<CharacterPhysics> beCollidedEvent, Action<List<CharacterPhysics>> allStopEvent)
+    public CharacterPhysics(Character character, CharacterPhysicsData pData,
+        Action<CharacterPhysics, List<CharacterPhysics>> collideEvent, 
+        Action<CharacterPhysics, List<CharacterPhysics>> beCollidedEvent, 
+        Action<CharacterPhysics, List<CharacterPhysics>> allStopEvent)
     {
         this.pid = 0;
         this.speed = 0;
@@ -56,14 +61,14 @@ public class CharacterPhysics
         this.friction = 0.1f;
         this.sweepValue = 0;
         this.attackBouns = 1.0f;
-        this.firstSpeed = 0;
-        this.isFirstCollide = false;
+        this.firstSpeed = 0;        
 
-        this.data = data;
-        this.pData = pData;
         this.character = character;
+        this.pData = pData;
+
         this.characterTransform = character.transform;
         this.prevPostion = character.transform.localPosition;
+
         this.collideEvent = collideEvent;
         this.beCollidedEvent = beCollidedEvent;
         this.allStopEvent = allStopEvent;
@@ -71,9 +76,14 @@ public class CharacterPhysics
         PhysicsManager.Instance.AddPhysicsObject(this);
     }
 
-    public void RefreshData(CharacterData data)
+    public void SetPID(int pid)
     {
-        this.data = data;
+        this.pid = pid;
+    }
+
+    public void RefreshData(Character character)
+    {
+        this.character = character;
     }
 
     public void RemovePhysicsObject()
@@ -82,7 +92,7 @@ public class CharacterPhysics
     }
 
     public void ApplyForce(Vector3 dir, float force, float attackBouns = 1.0f)
-    {        
+    {
         this.dir = dir;
         this.speed = force;
         this.firstSpeed = force;
@@ -109,6 +119,8 @@ public class CharacterPhysics
     //등차수열의 합과 이차방정식으로 속도를 알아낸다
     public float GetQuadraticEquationValue(float impulse)
     {
+        impulse = (impulse * GameManager.DISTACNE) * 2;
+
         var d = Friction;
 
         var a = (1 / d);

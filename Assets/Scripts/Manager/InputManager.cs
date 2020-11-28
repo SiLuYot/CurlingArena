@@ -6,9 +6,7 @@ public class InputManager : MonoBehaviour
     private ShootUI shootUI;
 
     private Vector3 clickStartWorldPos = Vector3.zero;
-    private Vector3 clickStartScreenPos = Vector3.zero;
-
-    public float sweep = 0.0001f;
+    private Vector3 clickStartScreenPos = Vector3.zero;    
 
     private void Start()
     {

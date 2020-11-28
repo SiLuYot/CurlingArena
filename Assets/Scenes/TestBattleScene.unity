@@ -761,7 +761,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f217a279c202f8c41a707b9768a29652, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sweep: 0.005
 --- !u!1 &559933987
 GameObject:
   m_ObjectHideFlags: 0
@@ -1305,7 +1304,7 @@ GameObject:
   - component: {fileID: 714281130}
   - component: {fileID: 714281129}
   m_Layer: 0
-  m_Name: IceHoglineLine (1)
+  m_Name: IceHoglineLine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3025,7 +3024,7 @@ GameObject:
   - component: {fileID: 1426979514}
   - component: {fileID: 1426979513}
   m_Layer: 0
-  m_Name: IceBackLine (2)
+  m_Name: IceBackLine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4599,6 +4598,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 563eb2d45e05b0449ab7c6efa3356dec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hoglineLine: {fileID: 714281128}
+  backLine: {fileID: 1426979512}
   isAllStop: 0
   isAllStopEventEnd: 0
 --- !u!1 &2036583671
@@ -4613,7 +4614,7 @@ GameObject:
   - component: {fileID: 2036583674}
   - component: {fileID: 2036583673}
   m_Layer: 0
-  m_Name: IceHoglineLine
+  m_Name: IceHoglineLine0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
