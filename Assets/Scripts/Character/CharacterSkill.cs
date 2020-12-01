@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -12,7 +13,7 @@ public class BaseSkillEvent
     {
         this.type = type;
         this.characterSkill = characterSkill;
-        this.skillArray = characterSkill.skillArray;     
+        this.skillArray = characterSkill.skillArray;
     }
 
     public void Event(CharacterPhysics otherObj = null, List<CharacterPhysics> physicsObjectList = null)
@@ -31,13 +32,48 @@ public class BaseSkillEvent
                 continue;
             }
 
+            //충돌된 오브젝트 체크 후 발동 되는지 판단
+            if (characterSkill.CheckSkill(skill, otherObj))
+            {
+                //적용될 오브젝트들 모두 체크
+                var checkObjList = characterSkill.CheckSkill(skill, applyObjList);
+                foreach (var obj in checkObjList)
+                {
+                    //선발된 오브젝트들만 스킬 적용
+                    characterSkill.ApplySkill(skill, occurStandardObject, obj);
+                }
+            }
+        }
+    }
+
+    public IEnumerator EventCoroutine(CharacterPhysics otherObj = null, List<CharacterPhysics> physicsObjectList = null)
+    {
+        foreach (var skill in skillArray)
+        {
+            if (skill.cType != type)
+                continue;
+
+            yield return PhysicsManager.Instance.StartPhysicsCoroutine(
+                characterSkill.GetOccurStandardObjectCoroutine(skill, otherObj));
+
+            var occurStandardObject = characterSkill.occurStandardObject;
+
+            var applyObjList = characterSkill.GetApplyObject(skill, occurStandardObject, otherObj, physicsObjectList);
+            if (applyObjList == null)
+            {
+                Debug.Log("적용될 오브젝트가 없다.");
+                continue;
+            }
+
+            //충돌된 오브젝트가 있을수도 있고 없을수도 있다.
             var checkObjList = characterSkill.CheckSkill(skill, applyObjList);
             foreach (var obj in checkObjList)
             {
                 characterSkill.ApplySkill(skill, occurStandardObject, obj);
             }
         }
-    }    
+    }
+
 }
 
 public class CharacterSkill
@@ -51,11 +87,7 @@ public class CharacterSkill
     private BaseSkillEvent beCollidedEvent;
     private BaseSkillEvent allStopEvent;
 
-    private float immuneCount;
-    private float lockCount;
-
-    public float ImmuneCount => immuneCount;
-    public float LockCount => lockCount;
+    public CharacterPhysics occurStandardObject;
 
     public CharacterSkill(Character character)
     {
@@ -67,8 +99,6 @@ public class CharacterSkill
         collideEvent = new BaseSkillEvent(SkillData.ConditionType.Collide, this);
         beCollidedEvent = new BaseSkillEvent(SkillData.ConditionType.BeCollide, this);
         allStopEvent = new BaseSkillEvent(SkillData.ConditionType.AllStop, this);
-
-        InitState();
     }
 
     public void InitEvent()
@@ -86,52 +116,92 @@ public class CharacterSkill
         beCollidedEvent.Event(otherObj, physicsObjectList);
     }
 
-    public void AllStopEvent(CharacterPhysics firstCollisionObj, List<CharacterPhysics> physicsObjectList)
+    public IEnumerator AllStopEvent(CharacterPhysics firstCollisionObj, List<CharacterPhysics> physicsObjectList)
     {
-        allStopEvent.Event(firstCollisionObj, physicsObjectList);
+        yield return PhysicsManager.Instance.StartPhysicsCoroutine(allStopEvent.EventCoroutine(firstCollisionObj, physicsObjectList));
     }
 
-    public void InitState()
+    public IEnumerator GetOccurStandardObjectCoroutine(SkillData skill, CharacterPhysics collisionObj)
     {
-        immuneCount = 0;
-        lockCount = 0;
-    }
-
-    public CharacterPhysics GetOccurStandardObject(SkillData skill, CharacterPhysics collisionObj)
-    {        
+        occurStandardObject = null;
         switch (skill.occurStandard)
         {
             case 0:
                 {
                     Debug.Log(string.Format("{0}의 OccurStandardObject : {1} (본인)", characterTransform.name, skill.occurStandard));
-                    return character.Physics;
-                }                
+                    occurStandardObject = character.Physics;
+                    break;
+                }
             case 1:
                 {
                     Debug.Log(string.Format("{0}의 OccurStandardObject : {1} (충돌 된 상대)", characterTransform.name, skill.occurStandard));
-                    return collisionObj;
+                    occurStandardObject = collisionObj;
+                    break;
                 }
             case 2:
                 {
                     Debug.Log(string.Format("{0}의 OccurStandardObject : {1} (위치 직접 지정)", characterTransform.name, skill.occurStandard));
-                    
+
                     var findPID = PhysicsManager.Instance.FindFirstCollision(character.Physics.PID);
                     //첫 충돌한 기록은 있지만
                     if (findPID != -1)
                     {
-                        //그 오브젝트가 없을때
+                        //그 오브젝트가 비활성화(삭제대기) 상태라면
                         var findObj = PhysicsManager.Instance.GetPhysicsObject(findPID);
-                        if (findObj == null)
+                        if (findObj.isInActive)
                         {
-                            //위치 지정 스킬 발동
+                            //오픈된 모든 UI들을 숨기고
+                            UIManager.Instance.SetAllActive(false);
 
+                            //위치 지정 UI 오픈
+                            var selectUI = UIManager.Instance.Get<PositionSelectUI>() as PositionSelectUI;
+                            selectUI.Init(skill.desc, findObj);
+
+                            //위치를 지정할때 까지 기다린다.
+                            yield return PhysicsManager.Instance.StartPhysicsCoroutine(
+                                selectUI.WaitSelectPosition());
+
+                            //위치가업데이트 된 오브젝트를 받아온다
+                            occurStandardObject = selectUI.newPosObj;
+
+                            //위치 지정 UI를 닫고
+                            selectUI.Close();
+
+                            //다시 오픈 된 UI들을 활성화
+                            UIManager.Instance.SetAllActive(true);
                         }
                     }
 
                     break;
                 }
         }
-        return null;
+    }
+
+    public CharacterPhysics GetOccurStandardObject(SkillData skill, CharacterPhysics collisionObj)
+    {
+        occurStandardObject = null;
+        switch (skill.occurStandard)
+        {
+            case 0:
+                {
+                    Debug.Log(string.Format("{0}의 OccurStandardObject : {1} (본인)", characterTransform.name, skill.occurStandard));
+                    occurStandardObject = character.Physics;
+                    break;
+                }
+            case 1:
+                {
+                    Debug.Log(string.Format("{0}의 OccurStandardObject : {1} (충돌 된 상대)", characterTransform.name, skill.occurStandard));
+                    occurStandardObject = collisionObj;
+                    break;
+                }
+            case 2:
+                {
+                    Debug.Log(string.Format("{0}의 OccurStandardObject : {1} (위치 직접 지정)", characterTransform.name, skill.occurStandard));
+                    break;
+                }
+        }
+
+        return occurStandardObject;
     }
 
     public List<CharacterPhysics> GetApplyObject(SkillData skill, CharacterPhysics occurStandardObj, CharacterPhysics collisionObj, List<CharacterPhysics> physicsObjectList)
@@ -232,22 +302,22 @@ public class CharacterSkill
 
         if (collisionObj != null)
             dir = Vector3.Normalize(
-                collisionObj.characterTransform.localPosition - 
+                collisionObj.characterTransform.localPosition -
                 characterTransform.localPosition);
 
-        rangeValue = (rangeValue * GameManager.DISTACNE) + occurStandardObj.Radius;        
+        rangeValue = (rangeValue * GameManager.DISTACNE) + occurStandardObj.Radius;
 
         foreach (var obj in physicsObjectList)
         {
             if (obj.PID == occurStandardObj.PID)
                 continue;
-            
+
             var dis = Vector3.Distance(
                 occurStandardObj.characterTransform.localPosition,
                 obj.characterTransform.localPosition);
 
             var targetDir = Vector3.Normalize(
-                obj.characterTransform.localPosition - 
+                obj.characterTransform.localPosition -
                 occurStandardObj.characterTransform.localPosition);
 
             var angle = Vector3.Angle(dir, targetDir);
@@ -336,7 +406,7 @@ public class CharacterSkill
         if (!CheckSkillLockCount())
         {
             Debug.Log(string.Format("스킬 '{0} 발동 무시'\n{1} - 'lockCount'에서 제외 {2}의 남은 스킬 봉인 횟수 {3}",
-                skillData.desc, otherCharacter.name, character.name, LockCount));
+                skillData.desc, otherCharacter.name, character.name, character.lockCount));
 
             return false;
         }
@@ -345,7 +415,7 @@ public class CharacterSkill
         if (!CheckSkillImmuneCount(otherCharacter))
         {
             Debug.Log(string.Format("스킬 '{0} 발동 무시'\n{1} - 'ImmuneCount'에서 제외 {2}의 남은 스킬 면역 횟수 {3}",
-                   skillData.desc, otherCharacter.name, otherCharacter.name, otherCharacter.ImmuneCount));
+                   skillData.desc, otherCharacter.name, otherCharacter.name, otherCharacter.immuneCount));
 
             return false;
         }
@@ -465,7 +535,7 @@ public class CharacterSkill
     public bool CheckSkillLockCount()
     {
         // (-1 = 무한)
-        if (LockCount > 0 || LockCount == -1)
+        if (character.lockCount > 0 || character.lockCount == -1)
         {
             DecreaseLockCount();
             return false;
@@ -477,7 +547,7 @@ public class CharacterSkill
     public bool CheckSkillImmuneCount(Character otherCharacter)
     {
         // (-1 = 무한)
-        if (otherCharacter.ImmuneCount > 0 || otherCharacter.ImmuneCount == -1)
+        if (otherCharacter.immuneCount > 0 || otherCharacter.immuneCount == -1)
         {
             //상대 기준으로 면역 스킬 조건 체크
             if (otherCharacter.Skill.CheckImmuneSkill(character))
@@ -539,7 +609,7 @@ public class CharacterSkill
     public void ApplySkill(SkillData skillData, CharacterPhysics occurStandardObj, CharacterPhysics applyObj)
     {
         Debug.Log(string.Format("{0}의 스킬 발동 {1} -> {2}\n{3}",
-           characterTransform.name, occurStandardObj.characterTransform.name, 
+           characterTransform.name, occurStandardObj.characterTransform.name,
            applyObj.characterTransform.name, skillData.desc));
 
         var applyCharacter = applyObj.character;
@@ -564,7 +634,7 @@ public class CharacterSkill
             case 3: //충격량
                 {
                     var dir = Vector3.Normalize(
-                        applyCharacter.transform.localPosition - 
+                        applyCharacter.transform.localPosition -
                         occurStandardObj.characterTransform.localPosition);
 
                     var value = GetApplyValueType(skillData.applyValueType, applyCharacter.ImpulseAddValue, character);
@@ -595,13 +665,29 @@ public class CharacterSkill
             case 4: //스킬 면역 횟수
                 {
                     var finalValue = skillData.applyValue;
-                    applyCharacter.ImmuneCount = finalValue;
+
+                    //이미 무한인 경우 제외
+                    if (applyCharacter.immuneCount != -1)
+                    {
+                        if (finalValue == -1)
+                            applyCharacter.immuneCount = finalValue;
+                        else
+                            applyCharacter.immuneCount += finalValue;
+                    }
                 }
                 break;
             case 5: //스킬 봉인 횟수
                 {
                     var finalValue = skillData.applyValue;
-                    applyCharacter.lockCount = finalValue;
+
+                    //이미 무한인 경우 제외
+                    if (applyCharacter.lockCount != -1)
+                    {
+                        if (finalValue == -1)
+                            applyCharacter.lockCount = finalValue;
+                        else
+                            applyCharacter.lockCount += finalValue;
+                    }
                 }
                 break;
         }
@@ -624,19 +710,19 @@ public class CharacterSkill
 
     public void DecreaseImmuneCount(float count = 1)
     {
-        if (immuneCount == 0)
+        if (character.immuneCount == 0)
             return;
 
-        if (immuneCount != -1)
-            immuneCount -= count;
+        if (character.immuneCount != -1)
+            character.immuneCount -= count;
     }
 
     public void DecreaseLockCount(float count = 1)
     {
-        if (lockCount == 0)
+        if (character.lockCount == 0)
             return;
 
-        if (lockCount != -1)
-            lockCount -= count;
+        if (character.lockCount != -1)
+            character.lockCount -= count;
     }
 }

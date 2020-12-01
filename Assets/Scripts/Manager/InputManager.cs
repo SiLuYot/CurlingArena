@@ -25,7 +25,7 @@ public class InputManager : MonoBehaviour
         if (GameManager.CurRoundStep != RoundStep.READY)
             return;
 
-        //누를떄
+        //누를때
         if (Input.GetMouseButtonDown(0))
         {
             clickStartScreenPos = Input.mousePosition;
@@ -51,7 +51,7 @@ public class InputManager : MonoBehaviour
             //누르는 위치가 UI가 아니고 캐릭터를 누른것도 아닐때
             if (!UICamera.isOverUI && selectedCharacter == null)
             {
-                CameraManager.Instance.DragScreen(clickStartWorldPos);
+                CameraManager.Instance.DragScreen_X(clickStartWorldPos);
             }
             else if (selectedCharacter != null)
             {

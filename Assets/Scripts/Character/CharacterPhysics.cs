@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -25,6 +26,8 @@ public class CharacterPhysics
     public Vector3 dir;
     public float sweepValue;
 
+    public bool isInActive;
+
     public int PID { get => pid; }
     public float AttackBouns => attackBouns;
     public float FirstSpeed => firstSpeed;    
@@ -48,12 +51,12 @@ public class CharacterPhysics
     public Action updateForce;
     public Action<CharacterPhysics, List<CharacterPhysics>> collideEvent;
     public Action<CharacterPhysics, List<CharacterPhysics>> beCollidedEvent;
-    public Action<CharacterPhysics, List<CharacterPhysics>> allStopEvent;
+    public Func<CharacterPhysics, List<CharacterPhysics>, IEnumerator> allStopEvent;
 
     public CharacterPhysics(Character character, CharacterPhysicsData pData,
-        Action<CharacterPhysics, List<CharacterPhysics>> collideEvent, 
-        Action<CharacterPhysics, List<CharacterPhysics>> beCollidedEvent, 
-        Action<CharacterPhysics, List<CharacterPhysics>> allStopEvent)
+        Action<CharacterPhysics, List<CharacterPhysics>> collideEvent,
+        Action<CharacterPhysics, List<CharacterPhysics>> beCollidedEvent,
+        Func<CharacterPhysics, List<CharacterPhysics>, IEnumerator> allStopEvent)
     {
         this.pid = 0;
         this.speed = 0;
@@ -61,7 +64,8 @@ public class CharacterPhysics
         this.friction = 0.1f;
         this.sweepValue = 0;
         this.attackBouns = 1.0f;
-        this.firstSpeed = 0;        
+        this.firstSpeed = 0;
+        this.isInActive = false;
 
         this.character = character;
         this.pData = pData;

@@ -1,21 +1,96 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
-public class TestBattleSceneUI : MonoBehaviour
+public class TestBattleSceneUI : UIBase
 {
+    public GameObject editModeRoot;
+    public GameObject playModeRoot;
+
     public GameObject playerScrollRoot;
     public GameObject playerlistSlot;
     public UIGrid playerListGrid;
     public UILabel playerButtonLabel;
 
-    public GameObject enemyScrollRoot;
-    public GameObject enemylistSlot;
-    public UIGrid enemyListGrid;
-    public UILabel enemyButtonLabel;
+    public GameObject teamScrollRoot;
+    public GameObject teamlistSlot;
+    public UIGrid teamListGrid;
+    public UILabel teamButtonLabel;
 
-    public void OnEnable()
+    public CharacterData curCharacterData;
+    public Team curTeam;
+    public bool isCreateMode;
+    public bool isPlayerChacter;
+
+    private void Update()
     {
-        DataBaseManager.Instance.EndDataLoadEvent += SetPlayerCharacterDataList;
-        DataBaseManager.Instance.EndDataLoadEvent += SetEnemyCharacterDataList;
+        if (!UICamera.isOverUI)
+        {
+            if (editModeRoot.activeSelf)
+            {
+                if (Input.GetMouseButtonDown(0))
+                {
+                    if (isCreateMode)
+                    {
+                        var clickStartScreenPos = Input.mousePosition;
+                        var clickStartWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+
+                        if (curTeam == Team.NONE)
+                            return;
+
+                        GameManager.Instance.AddCharacter(curTeam, curCharacterData, clickStartWorldPos, isPlayerChacter);
+                    }
+                    else
+                    {
+                        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                        RaycastHit hit;
+                        if (Physics.Raycast(ray, out hit))
+                        {
+                            var obj = hit.transform.gameObject.GetComponent<Character>();
+                            if (obj != null)
+                            {
+                                GameManager.Instance.RemoveCharacter(obj.Physics.PID);
+                                GameManager.Instance.RemoveCreateCharacterData(obj.Team, obj.Data, obj.transform.position);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public void Init()
+    {
+        isCreateMode = false;
+        isPlayerChacter = false;
+
+        EditModeInit();
+
+        SetCharacterDataList();
+        SetTeamDataList();
+    }
+
+    public void EditModeInit()
+    {
+        GameManager.Instance.None();
+        GameManager.Instance.TestSceneReset();
+
+        isCreateMode = true;
+
+        var initPos = GameManager.Instance.housePos.position;
+        CameraManager.Instance.Init(initPos);
+
+        editModeRoot.SetActive(true);
+        playModeRoot.SetActive(false);
+    }
+
+    public void PlayModeInit()
+    {
+        CameraManager.Instance.Init();
+
+        ClickResetButton();
+
+        editModeRoot.SetActive(false);
+        playModeRoot.SetActive(true);
     }
 
     public void TogglePlayerList()
@@ -24,13 +99,13 @@ public class TestBattleSceneUI : MonoBehaviour
         playerScrollRoot.SetActive(!isActive);
     }
 
-    public void ToggleEnemyList()
+    public void ToggleTeamList()
     {
-        bool isActive = enemyScrollRoot.activeInHierarchy;
-        enemyScrollRoot.SetActive(!isActive);
+        bool isActive = teamScrollRoot.activeInHierarchy;
+        teamScrollRoot.SetActive(!isActive);
     }
 
-    public void SetPlayerCharacterDataList()
+    public void SetCharacterDataList()
     {
         var characterList = DataBaseManager.Instance.loader.GetDataList("CharacterDB");
 
@@ -40,52 +115,98 @@ public class TestBattleSceneUI : MonoBehaviour
             var newSlot = Instantiate(playerlistSlot, playerListGrid.transform);
 
             var newSlotUI = newSlot.GetComponent<TestBattleSceneScrollSlotUI>();
-            newSlotUI.Init(character, ClickPlayerSlotEvent);
+            newSlotUI.Init(character, ClickCharacterSlotEvent);
 
-            if (GameManager.Instance.EnemyID == character.id)
+            if (curCharacterData == null)
             {
-                playerButtonLabel.text = newSlotUI.GetName();
+                curCharacterData = character;
+                playerButtonLabel.text = newSlotUI.GetCharacterName();
             }
 
             newSlot.SetActive(true);
         }
     }
 
-    public void SetEnemyCharacterDataList()
+    public void SetTeamDataList()
     {
-        var characterList = DataBaseManager.Instance.loader.GetDataList("CharacterDB");
+        var teamList = Enum.GetValues(typeof(Team));
 
-        foreach (var data in characterList)
+        foreach (var data in teamList)
         {
-            var character = data as CharacterData;
-            var newSlot = Instantiate(enemylistSlot, enemyListGrid.transform);
+            var team = (Team)data;
+            var newSlot = Instantiate(teamlistSlot, teamListGrid.transform);
 
             var newSlotUI = newSlot.GetComponent<TestBattleSceneScrollSlotUI>();
-            newSlotUI.Init(character, ClicEnemySlotEvent);
+            newSlotUI.Init(team, ClickTeamSlotEvent);
 
-            if (GameManager.Instance.playerID == character.id)
+            if (curTeam == Team.NONE)
             {
-                enemyButtonLabel.text = newSlotUI.GetName();
+                curTeam = team;
+                teamButtonLabel.text = newSlotUI.GetTeamName();
             }
 
             newSlot.SetActive(true);
         }
     }
 
-    public void ClickPlayerSlotEvent(TestBattleSceneScrollSlotUI slot, CharacterData data)
+    public void ClickCharacterSlotEvent(TestBattleSceneScrollSlotUI slot, CharacterData data)
     {
-        playerButtonLabel.text = slot.GetName();
-        GameManager.Instance.SetPlayerCharacter(data);
+        playerButtonLabel.text = slot.GetCharacterName();
+        curCharacterData = data;
     }
 
-    public void ClicEnemySlotEvent(TestBattleSceneScrollSlotUI slot, CharacterData data)
+    public void ClickTeamSlotEvent(TestBattleSceneScrollSlotUI slot, Team team)
     {
-        enemyButtonLabel.text = slot.GetName();
-        GameManager.Instance.SetEnemyCharacter(data);
+        teamButtonLabel.text = slot.GetTeamName();
+        curTeam = team;
     }
 
-    public void ClickRefreshButton()
+    public void ClickChagneModeButton()
     {
-        GameManager.Instance.TestSceneRefresh();
+        editModeRoot.SetActive(!editModeRoot.activeSelf);
+        playModeRoot.SetActive(!playModeRoot.activeSelf);
+
+        if (editModeRoot.activeSelf)
+        {
+            EditModeInit();
+        }
+        else if (playModeRoot.activeSelf)
+        {
+            PlayModeInit();
+        }
+    }
+
+    public void ClickMoveStartPosButton()
+    {
+        isPlayerChacter = true;
+        CameraManager.Instance.Init();        
+    }
+
+    public void ClickMoveHousePosButton()
+    {
+        isPlayerChacter = false;
+        var initPos = GameManager.Instance.housePos.position;
+        CameraManager.Instance.Init(initPos);
+    }
+
+    public void ClickCreateModeButton()
+    {
+        isCreateMode = true;
+    }
+
+    public void ClickRemoveModeButton()
+    {
+        isCreateMode = false;
+    }
+
+    public void ClickGameStartButton()
+    {
+        
+    }
+
+    public void ClickResetButton()
+    {
+        GameManager.Instance.TestSceneReset();
+        GameManager.Instance.Ready();
     }
 }

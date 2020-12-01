@@ -25,6 +25,8 @@ public class UIManager : MonoBehaviour
     private void Start()
     {
         AddUIPath(UIData.ShootUI);
+        AddUIPath(UIData.TestSceneUI);
+        AddUIPath(UIData.PositionSelectUI);
     }
 
     private void AddUIPath(UIData data)
@@ -75,6 +77,25 @@ public class UIManager : MonoBehaviour
             openedUI.Remove(id);
         }
     }
+
+    public void SetActive(int id, bool active)
+    {
+        if (openedUI.ContainsKey(id))
+        {
+            openedUI[id].gameObject.SetActive(active);
+        }
+    }
+
+    public void SetAllActive(bool active)
+    {
+        for (int id = 0; id < uiData.Count; id++)
+        {
+            if (openedUI.ContainsKey(id))
+            {
+                SetActive(id, active);
+            }
+        }
+    }
 }
 
 public class UIData
@@ -91,4 +112,6 @@ public class UIData
     }
 
     public static UIData ShootUI = new UIData(0, typeof(ShootUI), "Prefabs/UI/ShootUI");
+    public static UIData TestSceneUI = new UIData(1, typeof(TestBattleSceneUI), "Prefabs/UI/TestBattleSceneUI");
+    public static UIData PositionSelectUI = new UIData(2, typeof(PositionSelectUI), "Prefabs/UI/PositionSelectUI");
 }

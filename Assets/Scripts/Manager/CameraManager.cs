@@ -40,6 +40,18 @@ public class CameraManager : MonoBehaviour
         mainCamera.transform.position = newPos;
     }
 
+    public void Init(Vector3 pos)
+    {
+        IsFixed = false;
+
+        var newPos = new Vector3(
+                pos.x,
+                pos.y + y,
+                pos.z);
+
+        mainCamera.transform.position = newPos;
+    }
+
     public void LateUpdate()
     {
         if (IsFixed)
@@ -60,9 +72,15 @@ public class CameraManager : MonoBehaviour
         this.followTrans = followTrans;
     }
 
-    public void DragScreen(Vector3 clickStartPos)
+    public void DragScreen_X(Vector3 clickStartPos)
     {
         var dragVector = clickStartPos - Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Camera.main.transform.position += new Vector3(dragVector.x, 0, 0);
+    }
+
+    public void DragScreen_XZ(Vector3 clickStartPos)
+    {
+        var dragVector = clickStartPos - Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Camera.main.transform.position += new Vector3(dragVector.x, 0, dragVector.z);
     }
 }
