@@ -6,8 +6,9 @@ public enum RoundStep
     NONE = 0,
     READY = 1,
     SHOOT = 2,
-    MOVE = 3,
-    END = 4,
+    SWEEP = 3,
+    MOVE = 4,
+    END = 5,
 }
 
 public enum Team
@@ -38,7 +39,9 @@ public class GameManager : MonoBehaviour
     //임시 상수값
     public static float DISTACNE = 1.45f;
     public static float MASS = 1f;
-    public static float SWEEP = 0.0001f;
+    public static float SWEEP = 0.001f;
+    public static float SWEEP_MAX = 0.01f;
+    public static float SWEEP_MIN_DISTACNE = 100.0f;
 
     public static RoundStep CurRoundStep;
 
@@ -49,7 +52,7 @@ public class GameManager : MonoBehaviour
     public GameObject characterPrefab1;
     public GameObject characterPrefab2;
 
-    private Character currentCharacter;
+    public Character CurrentCharacter { get; private set; }
     private List<CharacterCreateData> characterCreateDataList = new List<CharacterCreateData>();
     private List<Character> chracterList = new List<Character>();
 
@@ -98,7 +101,13 @@ public class GameManager : MonoBehaviour
 
         character.Physics.ApplyForce(dir, force, attackBouns);
 
-        Move();
+        Sweep();
+    }
+
+    public void Sweep()
+    {
+        CurRoundStep = RoundStep.SWEEP;
+        Debug.Log("Round Step : " + CurRoundStep);
     }
 
     public void Move()
@@ -156,7 +165,7 @@ public class GameManager : MonoBehaviour
 
     public void SetCurrentCharacter(Character character)
     {
-        currentCharacter = character;
+        CurrentCharacter = character;
     }
 
     public void RemoveCharacter(int pid)
@@ -165,13 +174,13 @@ public class GameManager : MonoBehaviour
 
         if (findCharacter != null)
         {
-            if (currentCharacter != null)
+            if (CurrentCharacter != null)
             {
-                if (findCharacter.Physics.PID == currentCharacter.Physics.PID)
+                if (findCharacter.Physics.PID == CurrentCharacter.Physics.PID)
                 {
                     var activeObj = chracterList.Find(v => v.Physics.isInActive == false);
                     CameraManager.Instance.SetFollowTrans(activeObj.transform);
-                    currentCharacter = null;
+                    CurrentCharacter = null;
                 }
             }
 
@@ -203,7 +212,7 @@ public class GameManager : MonoBehaviour
         }
         chracterList.Clear();
 
-        currentCharacter = null;
+        CurrentCharacter = null;
 
         foreach (var data in characterCreateDataList)
         {
@@ -213,8 +222,8 @@ public class GameManager : MonoBehaviour
 
     public bool IsCurrentPlayer(Character character)
     {
-        return currentCharacter == null ? 
+        return CurrentCharacter == null ? 
             false : 
-            currentCharacter.Physics.PID == character.Physics.PID;
+            CurrentCharacter.Physics.PID == character.Physics.PID;
     }
 }

@@ -62,7 +62,8 @@ public class PhysicsManager : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (GameManager.CurRoundStep != RoundStep.MOVE)
+        if (GameManager.CurRoundStep != RoundStep.SWEEP &&
+            GameManager.CurRoundStep != RoundStep.MOVE)
             return;
 
         if (physicsObjectList == null)
@@ -111,7 +112,7 @@ public class PhysicsManager : MonoBehaviour
             //삭제 예정 오브젝트 제외
             if (moveObj.isInActive)
                 continue;
-
+            
             //속도를 마찰력만큼 감소 시킨다.
             moveObj.speed -= moveObj.Friction;
 

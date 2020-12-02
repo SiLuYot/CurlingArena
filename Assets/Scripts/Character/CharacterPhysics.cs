@@ -38,7 +38,7 @@ public class CharacterPhysics
         get
         {
             var vaule = friction - sweepValue;
-            return vaule <= 0 ? 0.001f : vaule;
+            return vaule <= 0 ? GameManager.SWEEP_MAX : vaule;
         }
     }
 
@@ -114,9 +114,7 @@ public class CharacterPhysics
 
     public void Sweep(float value)
     {
-        sweepValue += Math.Abs(value);
-
-        ApplyDir(new Vector3(0, 0, value));
+        sweepValue += value;        
     }
 
     //충격량을 속도로 변환
