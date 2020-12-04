@@ -97,6 +97,23 @@ public class UIManager : MonoBehaviour
             }
         }
     }
+
+    public UIBase IsUIOpened<T>() where T : UIBase
+    {
+        UIBase loadObj = null;
+
+        if (uiData.ContainsKey(typeof(T)))
+        {
+            var data = uiData[typeof(T)];
+            if (openedUI.ContainsKey(data.id))
+            {
+                loadObj = openedUI[data.id];
+            }
+        }
+        else Debug.LogError(string.Format("{0} 타입의 UI DATA 없음", typeof(T)));
+
+        return loadObj;
+    }
 }
 
 public class UIData

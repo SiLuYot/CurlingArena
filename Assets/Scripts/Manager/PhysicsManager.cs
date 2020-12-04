@@ -65,12 +65,26 @@ public class PhysicsManager : MonoBehaviour
         if (GameManager.CurRoundStep == RoundStep.SWEEP)
         {
             var obj = GameManager.Instance.CurrentCharacter;
-            if (obj != null &&
-                obj.transform.position.x > hoglineLine.position.x)
+            if (obj != null)
             {
-                //스윕 중지
-                GameManager.Instance.Move();
+                //플레이어 캐릭터가 호그라인을 넘긴 경우
+                if (obj.transform.position.x > hoglineLine.position.x)
+                {
+                    //스윕 중지
+                    GameManager.Instance.Move();
+                }
             }
+            else
+            {
+                //플레이어 캐릭터가 호그라인을 넘지 못해서 삭제되고
+                //모두 멈춰 있는 경우
+                if (isAllStop)
+                {
+                    //스윕 중지
+                    GameManager.Instance.Move();
+                }
+            }
+
         }
 
         if (GameManager.CurRoundStep == RoundStep.SWEEP ||
@@ -85,6 +99,59 @@ public class PhysicsManager : MonoBehaviour
             //모두 멈춘 경우 이벤트 발생
             AllStopEvent();
         }
+    }
+
+    public void SweepStep()
+    {
+        if (GameManager.CurRoundStep != RoundStep.SWEEP)
+            return;
+
+        var obj = GameManager.Instance.CurrentCharacter;
+        //현재 플레이어 캐릭터가 존재할때
+        if (obj != null)
+        {
+            //플레이어 캐릭터가 호그라인을 넘긴 경우
+            if (obj.transform.position.x > hoglineLine.position.x)
+            {
+                //스윕 중지
+                GameManager.Instance.Move();
+            }
+        }
+        //현재 플레이어 캐릭터가 없을때
+        else
+        {
+            //플레이어 캐릭터가 호그라인을 넘지 못해서 삭제되고
+            //모두 멈춰 있는 경우
+            if (isAllStop)
+            {
+                //스윕 중지
+                GameManager.Instance.Move();
+            }
+        }
+
+        //물리적 힘 처리
+        ForceProcess();
+    }
+
+    public void MoveStep()
+    {
+        if (GameManager.CurRoundStep != RoundStep.MOVE)
+            return;
+
+        //물리적 힘 처리
+        ForceProcess();
+        //모두 멈춘 경우 이벤트 발생
+        AllStopEvent();
+    }
+
+    public void ForceProcess()
+    {
+        //방향과 속력 계산
+        CalculateForce();
+        //계산된 방향과 속력 갱신
+        UpdateForce();
+        //갱신된 방향과 속력 적용
+        ApplyForce();
     }
 
     public void AddPhysicsObject(CharacterPhysics obj)
@@ -222,10 +289,29 @@ public class PhysicsManager : MonoBehaviour
     {
         var removeList = GetRemoveObjList();
 
-        foreach (var moveObj in physicsObjectList)
+        List<int> collisionPIDList = null;
+        foreach (var coll in collisionDataList)
         {
-            var findObj = GetFirstCollisionObject(moveObj.PID);
-            yield return StartCoroutine(moveObj.allStopEvent(findObj, physicsObjectList));
+            if (collisionPIDList == null)
+                collisionPIDList = new List<int>();
+
+            //중복체크
+            if (!collisionPIDList.Contains(coll.collideObjPID))
+                collisionPIDList.Add(coll.collideObjPID);
+            //중복체크
+            if (!collisionPIDList.Contains(coll.beCollidedPID))
+                collisionPIDList.Add(coll.beCollidedPID);
+        }
+
+        if (collisionPIDList != null)
+        {
+            //충돌이 일어난 오브젝트들만 이벤트 발생
+            foreach (var pid in collisionPIDList)
+            {
+                var moveObj = GetPhysicsObject(pid);
+                var findObj = GetFirstCollisionObject(pid);
+                yield return StartCoroutine(moveObj.allStopEvent(findObj, physicsObjectList));
+            }
         }
 
         RemoveObj(removeList);

@@ -75,12 +75,10 @@ public class TestBattleSceneUI : UIBase
         GameManager.Instance.TestSceneReset();
 
         isCreateMode = true;
-
-        var initPos = GameManager.Instance.housePos.position;
-        CameraManager.Instance.Init(initPos);
+        ClickMoveHousePosButton();
 
         editModeRoot.SetActive(true);
-        playModeRoot.SetActive(false);
+        playModeRoot.SetActive(false);        
     }
 
     public void PlayModeInit()

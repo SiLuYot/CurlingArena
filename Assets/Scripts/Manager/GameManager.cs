@@ -117,7 +117,11 @@ public class GameManager : MonoBehaviour
         CurRoundStep = RoundStep.MOVE;
         Debug.Log("Round Step : " + CurRoundStep);
 
-        UIManager.Instance.Get<SweepUI>().Close();
+        var sweepUI = UIManager.Instance.IsUIOpened<SweepUI>();
+        if (sweepUI != null)
+        {
+            sweepUI.Close();
+        }
     }
 
     public void End()
@@ -170,6 +174,9 @@ public class GameManager : MonoBehaviour
     public void SetCurrentCharacter(Character character)
     {
         CurrentCharacter = character;
+
+        Debug.Log(string.Format("Set Player Character\nPID : {0} Name : {1}",
+            CurrentCharacter.Physics.PID, CurrentCharacter.name));
     }
 
     public void RemoveCharacter(int pid)
@@ -221,6 +228,12 @@ public class GameManager : MonoBehaviour
         foreach (var data in characterCreateDataList)
         {
             CreateCharacter(data);
+        }
+
+        var sweepUI = UIManager.Instance.IsUIOpened<SweepUI>();
+        if (sweepUI != null)
+        {
+            sweepUI.Close();
         }
     }
 
