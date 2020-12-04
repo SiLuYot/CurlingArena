@@ -114,13 +114,13 @@ public class InputManager : MonoBehaviour
                         if (cross.y > 0)
                         {
                             curCharacter.Physics.ApplyDir(dirNormal * Time.deltaTime);
-                            curCharacter.Physics.Sweep(GameManager.SWEEP * Time.deltaTime);
+                            curCharacter.Physics.Sweep(GameManager.SWEEP);
                         }
                         //오브젝트 기준 왼쪽
                         else
                         {
                             curCharacter.Physics.ApplyDir(-dirNormal * Time.deltaTime);
-                            curCharacter.Physics.Sweep(GameManager.SWEEP * Time.deltaTime);
+                            curCharacter.Physics.Sweep(GameManager.SWEEP);
                         }
 
                         //첫 클릭 위치 초기화

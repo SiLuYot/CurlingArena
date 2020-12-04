@@ -19,7 +19,7 @@ public class CharacterPhysics
 {
     private int pid;
     private float attackBouns;
-    private float firstSpeed;    
+    private float firstSpeed;
     private float friction;
 
     public float speed;
@@ -30,7 +30,7 @@ public class CharacterPhysics
 
     public int PID { get => pid; }
     public float AttackBouns => attackBouns;
-    public float FirstSpeed => firstSpeed;    
+    public float FirstSpeed => firstSpeed;
     public float Mass => pData.mass;
     public float Radius => pData.radius;
     public float Friction
@@ -114,7 +114,10 @@ public class CharacterPhysics
 
     public void Sweep(float value)
     {
-        sweepValue += value;        
+        sweepValue += value;
+
+        Debug.Log(string.Format("현재 마찰력 : {0} ({1} - {2})\n마찰력 최소치 {3}",
+            Friction, friction, sweepValue, GameManager.SWEEP_MAX));
     }
 
     //충격량을 속도로 변환

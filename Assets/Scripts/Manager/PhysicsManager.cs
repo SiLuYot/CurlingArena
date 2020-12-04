@@ -62,21 +62,29 @@ public class PhysicsManager : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (GameManager.CurRoundStep != RoundStep.SWEEP &&
-            GameManager.CurRoundStep != RoundStep.MOVE)
-            return;
+        if (GameManager.CurRoundStep == RoundStep.SWEEP)
+        {
+            var obj = GameManager.Instance.CurrentCharacter;
+            if (obj != null &&
+                obj.transform.position.x > hoglineLine.position.x)
+            {
+                //스윕 중지
+                GameManager.Instance.Move();
+            }
+        }
 
-        if (physicsObjectList == null)
-            return;
-
-        //방향과 속력 계산
-        CalculateForce();
-        //계산된 방향과 속력 갱신
-        UpdateForce();
-        //갱신된 방향과 속력 적용
-        ApplyForce();
-        //모두 멈춘 경우 이벤트 발생
-        AllStopEvent();
+        if (GameManager.CurRoundStep == RoundStep.SWEEP ||
+            GameManager.CurRoundStep == RoundStep.MOVE)
+        {
+            //방향과 속력 계산
+            CalculateForce();
+            //계산된 방향과 속력 갱신
+            UpdateForce();
+            //갱신된 방향과 속력 적용
+            ApplyForce();
+            //모두 멈춘 경우 이벤트 발생
+            AllStopEvent();
+        }
     }
 
     public void AddPhysicsObject(CharacterPhysics obj)
@@ -105,14 +113,14 @@ public class PhysicsManager : MonoBehaviour
     {
         bool allStop = true;
         foreach (var moveObj in physicsObjectList)
-        {            
+        {
             if (moveObj == null)
                 continue;
 
             //삭제 예정 오브젝트 제외
             if (moveObj.isInActive)
                 continue;
-            
+
             //속도를 마찰력만큼 감소 시킨다.
             moveObj.speed -= moveObj.Friction;
 
@@ -273,7 +281,7 @@ public class PhysicsManager : MonoBehaviour
                     if (moveObj.speed > checkObj.speed)
                     {
                         isCollision = true;
-                    }                    
+                    }
                 }
                 //상대방이 나의 앞에 있고
                 //상대방 기준으로 내가 상대방의 뒤에 있다면
@@ -289,10 +297,10 @@ public class PhysicsManager : MonoBehaviour
                 isCollision = true;
             }
         }
-        
+
         //충돌이 일어났다면
         if (isCollision)
-        {                         
+        {
             Debug.Log(string.Format("충돌 발생!\n{0} -> {1}", moveObjTrans.name, checkObjTrans.name));
 
             //현재 변화중인 오브젝트의 벡터

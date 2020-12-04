@@ -108,12 +108,16 @@ public class GameManager : MonoBehaviour
     {
         CurRoundStep = RoundStep.SWEEP;
         Debug.Log("Round Step : " + CurRoundStep);
+
+        UIManager.Instance.Get<SweepUI>();
     }
 
     public void Move()
     {
         CurRoundStep = RoundStep.MOVE;
         Debug.Log("Round Step : " + CurRoundStep);
+
+        UIManager.Instance.Get<SweepUI>().Close();
     }
 
     public void End()
