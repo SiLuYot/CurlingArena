@@ -63,8 +63,9 @@ public class GameManager : MonoBehaviour
         get
         {
             if (instance == null)
+            {
                 instance = FindObjectOfType(typeof(GameManager)) as GameManager;
-
+            }                
             return instance;
         }
     }
@@ -74,7 +75,6 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         //Ready();
-
         TestSceneStart();
     }
 

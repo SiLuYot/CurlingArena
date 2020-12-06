@@ -8,8 +8,9 @@ public class CameraManager : MonoBehaviour
         get
         {
             if (instance == null)
-                instance = FindObjectOfType(typeof(CameraManager)) as CameraManager;
-
+            {
+                instance = FindObjectOfType(typeof(CameraManager)) as CameraManager;                
+            }                
             return instance;
         }
     }

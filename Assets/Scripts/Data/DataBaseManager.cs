@@ -12,8 +12,24 @@ public class DataBaseManager : MonoBehaviour
     {
         get
         {
+            //인스턴스가 없다면 씬에서 찾는다.
             if (instance == null)
+            {
                 instance = FindObjectOfType(typeof(DataBaseManager)) as DataBaseManager;
+            }
+
+            //인스턴스가 찾아도 없다면 새로 만든다.
+            if (instance == null)
+            {
+                var newObj = new GameObject("DataBaseManager");
+                instance = newObj.AddComponent<DataBaseManager>();
+            }
+
+            //초기화가 안된경우 초기화
+            if (instance != null && !instance.IsInit)
+            {
+                instance.Init();
+            }
 
             return instance;
         }
@@ -23,9 +39,21 @@ public class DataBaseManager : MonoBehaviour
 
     public event Action EndDataLoadEvent;
 
-    public void Start()
+    public bool IsInit { get; private set; }
+
+    public void Awake()
     {
-        DataLoadStart();
+        DontDestroyOnLoad(gameObject);
+    }
+
+    public void Init()
+    {
+        if (!IsInit)
+        {
+            IsInit = true;
+
+            DataLoadStart();            
+        }        
     }
 
     public void DataLoadStart()
@@ -34,7 +62,7 @@ public class DataBaseManager : MonoBehaviour
             loader = new DataBaseLoader("CurlingArena", new MonoSQLite());
 
         IDataBase[] dataBase = new IDataBase[]
-        {            
+        {
             new AffiliationDataBase(),
             new CharacterDataBase(),
             new JobDataBase(),
@@ -89,11 +117,11 @@ public class DataBaseLoader : SQLiteLoadHelperClass
         var copyFilePath = Application.persistentDataPath + "/" + path;
 
         if (Application.platform == RuntimePlatform.Android)
-        {            
+        {
             var www = new WWW(filePath);
-            while (!www.isDone) 
-            { 
-            
+            while (!www.isDone)
+            {
+
             }
 
             var directoryInfo = new DirectoryInfo(Path.GetDirectoryName(copyFilePath));

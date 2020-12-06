@@ -35,8 +35,9 @@ public class PhysicsManager : MonoBehaviour
         get
         {
             if (instance == null)
+            {
                 instance = FindObjectOfType(typeof(PhysicsManager)) as PhysicsManager;
-
+            }                
             return instance;
         }
     }

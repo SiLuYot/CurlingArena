@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class TestBattleSceneUI : UIBase
 {
@@ -194,5 +195,10 @@ public class TestBattleSceneUI : UIBase
     {
         GameManager.Instance.TestSceneReset();
         GameManager.Instance.Ready();
+    }
+
+    public void ClickMainMenuButton()
+    {
+        SceneManager.LoadScene("MainMenuScene");
     }
 }

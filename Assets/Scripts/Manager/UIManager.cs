@@ -10,8 +10,9 @@ public class UIManager : MonoBehaviour
         get
         {
             if (instance == null)
+            {
                 instance = FindObjectOfType(typeof(UIManager)) as UIManager;
-
+            }
             return instance;
         }
     }
@@ -28,6 +29,8 @@ public class UIManager : MonoBehaviour
         AddUIPath(UIData.TestSceneUI);
         AddUIPath(UIData.PositionSelectUI);
         AddUIPath(UIData.SweepUI);
+        AddUIPath(UIData.MainMenuUI);
+        AddUIPath(UIData.IntroUI);
     }
 
     private void AddUIPath(UIData data)
@@ -133,4 +136,6 @@ public class UIData
     public static UIData TestSceneUI = new UIData(1, typeof(TestBattleSceneUI), "Prefabs/UI/TestBattleSceneUI");
     public static UIData PositionSelectUI = new UIData(2, typeof(PositionSelectUI), "Prefabs/UI/PositionSelectUI");
     public static UIData SweepUI = new UIData(3, typeof(SweepUI), "Prefabs/UI/SweepUI");
+    public static UIData MainMenuUI = new UIData(4, typeof(MainMenuUI), "Prefabs/UI/MainMenuUI");
+    public static UIData IntroUI = new UIData(5, typeof(IntroUI), "Prefabs/UI/IntroUI");
 }
