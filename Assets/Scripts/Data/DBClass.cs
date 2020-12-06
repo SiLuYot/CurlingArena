@@ -116,6 +116,16 @@ public class SizeData : ReadData
 
     public override int ID => id;
     public override string NAME => name;
+
+    public float GetCharacterScale()
+    {
+        return GetCharacterRadius() * 2.0f;
+    }
+
+    public float GetCharacterRadius()
+    {
+        return GameManager.DISTACNE * size;
+    }
 }
 
 public class SizeDataBase : DataBase<SizeData>

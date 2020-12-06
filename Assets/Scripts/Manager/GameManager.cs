@@ -36,7 +36,8 @@ public class CharacterCreateData
 
 public class GameManager : MonoBehaviour
 {
-    //임시 상수값
+    //임시 상수값들
+    //거리 1 = 1.45f = 크기 중의 반지름 모두 동일
     public static float DISTACNE = 1.45f;
     public static float MASS = 1f;
     public static float SWEEP = 0.001f;
@@ -158,6 +159,7 @@ public class GameManager : MonoBehaviour
 
         var newCharacter = Instantiate(prefab, stoneRoot).GetComponent<Character>();
         newCharacter.transform.position = new Vector3(createData.pos.x, stoneRoot.transform.position.y, createData.pos.z);
+        newCharacter.transform.localScale = new Vector3(createData.data.sizeData.GetCharacterScale(), 0.1f, createData.data.sizeData.GetCharacterScale());
 
         var findList = chracterList.FindAll(v => (int)v.Team == (int)createData.team);
         string name = createData.team.ToString() + "_" + findList.Count;

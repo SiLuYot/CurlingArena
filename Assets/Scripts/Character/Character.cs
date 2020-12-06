@@ -28,7 +28,7 @@ public class Character : MonoBehaviour
     {
         this.data = data;
 
-        var pData = new CharacterPhysicsData(GameManager.MASS, GameManager.DISTACNE);
+        var pData = new CharacterPhysicsData(GameManager.MASS, data.sizeData.GetCharacterRadius());
 
         this.physics = new CharacterPhysics(this ,pData,
             CollideEvent, BeCollidedEvent, AllStopEvent);
