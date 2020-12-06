@@ -16,9 +16,11 @@ public class TestBattleSceneUI : UIBase
     public UIGrid teamListGrid;
     public UILabel teamButtonLabel;
 
+    public UIToggle createModeToggle;
+    public UIToggle removeModeToggle;
+
     public CharacterData curCharacterData;
-    public Team curTeam;
-    public bool isCreateMode;
+    public Team curTeam;    
     public bool isPlayerChacter;
 
     private void Update()
@@ -29,7 +31,7 @@ public class TestBattleSceneUI : UIBase
             {
                 if (Input.GetMouseButtonDown(0))
                 {
-                    if (isCreateMode)
+                    if (createModeToggle.value)
                     {
                         var clickStartScreenPos = Input.mousePosition;
                         var clickStartWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -39,7 +41,7 @@ public class TestBattleSceneUI : UIBase
 
                         GameManager.Instance.AddCharacter(curTeam, curCharacterData, clickStartWorldPos, isPlayerChacter);
                     }
-                    else
+                    else if(removeModeToggle.value)
                     {
                         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                         RaycastHit hit;
@@ -60,7 +62,6 @@ public class TestBattleSceneUI : UIBase
 
     public void Init()
     {
-        isCreateMode = false;
         isPlayerChacter = false;
 
         EditModeInit();
@@ -73,8 +74,10 @@ public class TestBattleSceneUI : UIBase
     {
         GameManager.Instance.None();
         GameManager.Instance.TestSceneReset();
+        
+        createModeToggle.value = true;
+        removeModeToggle.value = false;
 
-        isCreateMode = true;
         ClickMoveHousePosButton();
 
         editModeRoot.SetActive(true);
@@ -185,21 +188,6 @@ public class TestBattleSceneUI : UIBase
         isPlayerChacter = false;
         var initPos = GameManager.Instance.housePos.position;
         CameraManager.Instance.Init(initPos);
-    }
-
-    public void ClickCreateModeButton()
-    {
-        isCreateMode = true;
-    }
-
-    public void ClickRemoveModeButton()
-    {
-        isCreateMode = false;
-    }
-
-    public void ClickGameStartButton()
-    {
-        
     }
 
     public void ClickResetButton()
