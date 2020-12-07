@@ -1014,7 +1014,7 @@ MonoBehaviour:
   anchorOffset: 0
   softBorderPadding: 1
   renderQueue: 0
-  startingRenderQueue: 3004
+  startingRenderQueue: 3000
   mClipTexture: {fileID: 0}
   mAlpha: 1
   mClipping: 0
@@ -3397,6 +3397,22 @@ PrefabInstance:
       propertyPath: mFontStyle
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 11400002, guid: fee46b827274e694aa251e2d36700135, type: 3}
+      propertyPath: leftAnchor.target
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400002, guid: fee46b827274e694aa251e2d36700135, type: 3}
+      propertyPath: rightAnchor.target
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400002, guid: fee46b827274e694aa251e2d36700135, type: 3}
+      propertyPath: bottomAnchor.target
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400002, guid: fee46b827274e694aa251e2d36700135, type: 3}
+      propertyPath: topAnchor.target
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 11400004, guid: fee46b827274e694aa251e2d36700135, type: 3}
       propertyPath: mWidth
       value: 197
@@ -3424,6 +3440,58 @@ PrefabInstance:
     - target: {fileID: 11400004, guid: fee46b827274e694aa251e2d36700135, type: 3}
       propertyPath: mPivot
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400004, guid: fee46b827274e694aa251e2d36700135, type: 3}
+      propertyPath: leftAnchor.target
+      value: 
+      objectReference: {fileID: 7718673656870137619}
+    - target: {fileID: 11400004, guid: fee46b827274e694aa251e2d36700135, type: 3}
+      propertyPath: rightAnchor.target
+      value: 
+      objectReference: {fileID: 7718673656870137619}
+    - target: {fileID: 11400004, guid: fee46b827274e694aa251e2d36700135, type: 3}
+      propertyPath: bottomAnchor.target
+      value: 
+      objectReference: {fileID: 7718673656870137619}
+    - target: {fileID: 11400004, guid: fee46b827274e694aa251e2d36700135, type: 3}
+      propertyPath: topAnchor.target
+      value: 
+      objectReference: {fileID: 7718673656870137619}
+    - target: {fileID: 11400004, guid: fee46b827274e694aa251e2d36700135, type: 3}
+      propertyPath: leftAnchor.relative
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400004, guid: fee46b827274e694aa251e2d36700135, type: 3}
+      propertyPath: leftAnchor.absolute
+      value: 438
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400004, guid: fee46b827274e694aa251e2d36700135, type: 3}
+      propertyPath: rightAnchor.relative
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400004, guid: fee46b827274e694aa251e2d36700135, type: 3}
+      propertyPath: rightAnchor.absolute
+      value: 635
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400004, guid: fee46b827274e694aa251e2d36700135, type: 3}
+      propertyPath: bottomAnchor.relative
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400004, guid: fee46b827274e694aa251e2d36700135, type: 3}
+      propertyPath: bottomAnchor.absolute
+      value: 263
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400004, guid: fee46b827274e694aa251e2d36700135, type: 3}
+      propertyPath: topAnchor.relative
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400004, guid: fee46b827274e694aa251e2d36700135, type: 3}
+      propertyPath: topAnchor.absolute
+      value: 337
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400004, guid: fee46b827274e694aa251e2d36700135, type: 3}
+      propertyPath: updateAnchors
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 11400014, guid: fee46b827274e694aa251e2d36700135, type: 3}
       propertyPath: m_Enabled

@@ -43,7 +43,7 @@ public class DataBaseManager : MonoBehaviour
 
     public void Awake()
     {
-        DontDestroyOnLoad(gameObject);
+        //DontDestroyOnLoad(gameObject);
     }
 
     public void Init()

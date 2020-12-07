@@ -380,7 +380,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 11400002, guid: fee46b827274e694aa251e2d36700135, type: 3}
       propertyPath: mText
-      value: "\uD14C\uC2A4\uD2B8 \uC52C \uC9C4\uC785"
+      value: "\uD14C\uC2A4\uD2B8 \uBAA8\uB4DC"
       objectReference: {fileID: 0}
     - target: {fileID: 11400002, guid: fee46b827274e694aa251e2d36700135, type: 3}
       propertyPath: mColor.r

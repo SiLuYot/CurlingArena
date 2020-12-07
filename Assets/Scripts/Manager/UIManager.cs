@@ -9,22 +9,35 @@ public class UIManager : MonoBehaviour
     {
         get
         {
+            //인스턴스가 없다면 씬에서 찾는다.
             if (instance == null)
             {
                 instance = FindObjectOfType(typeof(UIManager)) as UIManager;
             }
+
+            //인스턴스가 찾아도 없다면 새로 만든다.
+            if (instance == null)
+            {
+                var newObj = new GameObject("UIManager");
+                instance = newObj.AddComponent<UIManager>();
+            }
+
             return instance;
         }
     }
 
-    public Camera UICamera;
     public UIRoot uiRoot;
 
-    private Dictionary<Type, UIData> uiData = new Dictionary<Type, UIData>();
-    private Dictionary<int, UIBase> openedUI = new Dictionary<int, UIBase>();
+    private Dictionary<Type, UIData> uiData;
+    private Dictionary<int, UIBase> openedUI;
 
-    private void Start()
+    public void Awake()
     {
+        //DontDestroyOnLoad(gameObject);
+
+        uiData = new Dictionary<Type, UIData>();
+        openedUI = new Dictionary<int, UIBase>();
+
         AddUIPath(UIData.ShootUI);
         AddUIPath(UIData.TestSceneUI);
         AddUIPath(UIData.PositionSelectUI);

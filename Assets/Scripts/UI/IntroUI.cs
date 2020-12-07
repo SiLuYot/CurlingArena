@@ -10,7 +10,8 @@ public class IntroUI : UIBase
 
     public void ClickGameStartButton()
     {
-        SceneManager.LoadScene("MainMenuScene");
+        Close();
+        UIManager.Instance.Get<MainMenuUI>();
     }
 
     public void ClickGameEndButton()

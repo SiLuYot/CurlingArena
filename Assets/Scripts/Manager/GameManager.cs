@@ -39,9 +39,13 @@ public class GameManager : MonoBehaviour
     //임시 상수값들
     //거리 1 = 1.45f = 크기 중의 반지름 모두 동일
     public static float DISTACNE = 1.45f;
+    //물리 오브젝트들의 질량
     public static float MASS = 1f;
+    //스윕시 감소시킬 마찰력
     public static float SWEEP = 0.001f;
+    //스윕으로 감소되는 마찰력의 최솟값
     public static float SWEEP_MAX = 0.01f;
+    //스윕으로 판정되는 최소 거리
     public static float SWEEP_MIN_DISTACNE = 100.0f;
 
     public static RoundStep CurRoundStep;
@@ -54,28 +58,42 @@ public class GameManager : MonoBehaviour
     public GameObject characterPrefab2;
 
     public Character CurrentCharacter { get; private set; }
-    private List<CharacterCreateData> characterCreateDataList = new List<CharacterCreateData>();
-    private List<Character> chracterList = new List<Character>();
+    public List<CharacterCreateData> CharacterCreateDataList { get; private set; }
+    public List<Character> ChracterList { get; private set; }    
 
     private static GameManager instance = null;
     public static GameManager Instance
     {
         get
         {
+            //인스턴스가 없다면 씬에서 찾는다.
             if (instance == null)
             {
                 instance = FindObjectOfType(typeof(GameManager)) as GameManager;
-            }                
+            }
+
+            //인스턴스가 찾아도 없다면 새로 만든다.
+            if (instance == null)
+            {
+                var newObj = new GameObject("GameManager");
+                instance = newObj.AddComponent<GameManager>();
+            }
+
             return instance;
         }
     }
 
-    private TestBattleSceneUI testSceneUI;
+    public void Awake()
+    {
+        //DontDestroyOnLoad(gameObject);
+
+        CharacterCreateDataList = new List<CharacterCreateData>();
+        ChracterList = new List<Character>();
+    }
 
     void Start()
     {
-        //Ready();
-        TestSceneStart();
+        UIManager.Instance.Get<IntroUI>();
     }
 
     public void None()
@@ -133,17 +151,14 @@ public class GameManager : MonoBehaviour
 
     public void TestSceneStart()
     {
-        if (testSceneUI == null)
-        {
-            testSceneUI = UIManager.Instance.Get<TestBattleSceneUI>() as TestBattleSceneUI;
-            testSceneUI.Init();
-        }
+        var testUI = UIManager.Instance.Get<TestBattleSceneUI>() as TestBattleSceneUI;
+        testUI?.Init();
     }
 
     public void AddCharacter(Team team, CharacterData data, Vector3 pos, bool isPlayerChacter)
     {
         var newData = new CharacterCreateData(team, data, pos, isPlayerChacter);
-        characterCreateDataList.Add(newData);
+        CharacterCreateDataList.Add(newData);
 
         CreateCharacter(newData);
     }
@@ -161,13 +176,13 @@ public class GameManager : MonoBehaviour
         newCharacter.transform.position = new Vector3(createData.pos.x, stoneRoot.transform.position.y, createData.pos.z);
         newCharacter.transform.localScale = new Vector3(createData.data.sizeData.GetCharacterScale(), 0.1f, createData.data.sizeData.GetCharacterScale());
 
-        var findList = chracterList.FindAll(v => (int)v.Team == (int)createData.team);
+        var findList = GameManager.Instance.ChracterList.FindAll(v => (int)v.Team == (int)createData.team);
         string name = createData.team.ToString() + "_" + findList.Count;
 
         newCharacter.name = name;
         newCharacter.Init(createData.data, createData.team);
 
-        chracterList.Add(newCharacter);
+        ChracterList.Add(newCharacter);
 
         if (createData.isPlayerChacter)
             SetCurrentCharacter(newCharacter);
@@ -183,7 +198,7 @@ public class GameManager : MonoBehaviour
 
     public void RemoveCharacter(int pid)
     {
-        var findCharacter = chracterList.Find(v => v.Physics.PID == pid);
+        var findCharacter = ChracterList.Find(v => v.Physics.PID == pid);
 
         if (findCharacter != null)
         {
@@ -191,13 +206,13 @@ public class GameManager : MonoBehaviour
             {
                 if (findCharacter.Physics.PID == CurrentCharacter.Physics.PID)
                 {
-                    var activeObj = chracterList.Find(v => v.Physics.isInActive == false);
+                    var activeObj = ChracterList.Find(v => v.Physics.isInActive == false);
                     CameraManager.Instance.SetFollowTrans(activeObj.transform);
                     CurrentCharacter = null;
                 }
             }
 
-            chracterList.Remove(findCharacter);
+            ChracterList.Remove(findCharacter);
             findCharacter.RemoveCharacterPhysics();
             Destroy(findCharacter.gameObject);
             findCharacter = null;
@@ -206,28 +221,42 @@ public class GameManager : MonoBehaviour
 
     public void RemoveCreateCharacterData(Team team, CharacterData data, Vector3 pos)
     {
-        var findData = characterCreateDataList.Find(
+        var findData = CharacterCreateDataList.Find(
             v => v.team == team && 
             v.data.id == data.id && 
             v.pos.x == pos.x &&
             v.pos.z == pos.z);
 
-        characterCreateDataList.Remove(findData);
+        CharacterCreateDataList.Remove(findData);
         findData = null;
     }
 
-    public void TestSceneReset()
+    public void RemoveAllData()
     {
-        foreach (var player in chracterList)
+        foreach (var player in ChracterList)
         {
             player.RemoveCharacterPhysics();
             Destroy(player.gameObject);
         }
-        chracterList.Clear();
+        ChracterList.Clear();
 
         CurrentCharacter = null;
 
-        foreach (var data in characterCreateDataList)
+        CharacterCreateDataList.Clear();
+    }
+
+    public void TestSceneReset()
+    {
+        foreach (var player in ChracterList)
+        {
+            player.RemoveCharacterPhysics();
+            Destroy(player.gameObject);
+        }
+        ChracterList.Clear();
+
+        CurrentCharacter = null;
+
+        foreach (var data in CharacterCreateDataList)
         {
             CreateCharacter(data);
         }

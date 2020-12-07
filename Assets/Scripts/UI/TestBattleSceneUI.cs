@@ -199,6 +199,8 @@ public class TestBattleSceneUI : UIBase
 
     public void ClickMainMenuButton()
     {
-        SceneManager.LoadScene("MainMenuScene");
+        Close();
+        GameManager.Instance.RemoveAllData();
+        UIManager.Instance.Get<MainMenuUI>();        
     }
 }

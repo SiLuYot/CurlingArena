@@ -15,7 +15,8 @@ public class MainMenuUI : UIBase
 
     public void ClickTestSceneButton()
     {
-        SceneManager.LoadScene("TestBattleScene");
+        Close();
+        GameManager.Instance.TestSceneStart();
     }
 
     public void ClickGameEndButton()
