@@ -14,14 +14,6 @@ public class UIManager : MonoBehaviour
             {
                 instance = FindObjectOfType(typeof(UIManager)) as UIManager;
             }
-
-            //인스턴스가 찾아도 없다면 새로 만든다.
-            if (instance == null)
-            {
-                var newObj = new GameObject("UIManager");
-                instance = newObj.AddComponent<UIManager>();
-            }
-
             return instance;
         }
     }
@@ -33,8 +25,6 @@ public class UIManager : MonoBehaviour
 
     public void Awake()
     {
-        //DontDestroyOnLoad(gameObject);
-
         uiData = new Dictionary<Type, UIData>();
         openedUI = new Dictionary<int, UIBase>();
 

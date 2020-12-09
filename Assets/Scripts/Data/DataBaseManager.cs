@@ -18,13 +18,6 @@ public class DataBaseManager : MonoBehaviour
                 instance = FindObjectOfType(typeof(DataBaseManager)) as DataBaseManager;
             }
 
-            //인스턴스가 찾아도 없다면 새로 만든다.
-            if (instance == null)
-            {
-                var newObj = new GameObject("DataBaseManager");
-                instance = newObj.AddComponent<DataBaseManager>();
-            }
-
             //초기화가 안된경우 초기화
             if (instance != null && !instance.IsInit)
             {
@@ -40,11 +33,6 @@ public class DataBaseManager : MonoBehaviour
     public event Action EndDataLoadEvent;
 
     public bool IsInit { get; private set; }
-
-    public void Awake()
-    {
-        //DontDestroyOnLoad(gameObject);
-    }
 
     public void Init()
     {

@@ -36,7 +36,7 @@ public class CharacterCreateData
 
 public class GameManager : MonoBehaviour
 {
-    //임시 상수값들
+    //임시 상수값들...
     //거리 1 = 1.45f = 크기 중의 반지름 모두 동일
     public static float DISTACNE = 1.45f;
     //물리 오브젝트들의 질량
@@ -47,6 +47,8 @@ public class GameManager : MonoBehaviour
     public static float SWEEP_MAX = 0.01f;
     //스윕으로 판정되는 최소 거리
     public static float SWEEP_MIN_DISTACNE = 100.0f;
+    //하우스 가장 큰 원의 반지름
+    public static float IN_HOUSE_DISTANCE = 18.288f;
 
     public static RoundStep CurRoundStep;
 
@@ -71,22 +73,12 @@ public class GameManager : MonoBehaviour
             {
                 instance = FindObjectOfType(typeof(GameManager)) as GameManager;
             }
-
-            //인스턴스가 찾아도 없다면 새로 만든다.
-            if (instance == null)
-            {
-                var newObj = new GameObject("GameManager");
-                instance = newObj.AddComponent<GameManager>();
-            }
-
             return instance;
         }
     }
 
     public void Awake()
     {
-        //DontDestroyOnLoad(gameObject);
-
         CharacterCreateDataList = new List<CharacterCreateData>();
         ChracterList = new List<Character>();
     }
@@ -147,6 +139,8 @@ public class GameManager : MonoBehaviour
     {
         CurRoundStep = RoundStep.END;
         Debug.Log("Round Step : " + CurRoundStep);
+
+        ScoreManager.Instance.GetScoreProcess(ChracterList, housePos.position);
     }
 
     public void TestSceneStart()

@@ -26,7 +26,7 @@ public class CameraManager : MonoBehaviour
 
     public void Start()
     {
-        //Init();
+        
     }
 
     public void Init()
