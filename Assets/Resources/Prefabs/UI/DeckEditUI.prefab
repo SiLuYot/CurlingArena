@@ -487,7 +487,7 @@ MonoBehaviour:
   mPivot: 4
   mWidth: 130
   mHeight: 130
-  mDepth: 0
+  mDepth: 1
   mMat: {fileID: 0}
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
@@ -694,6 +694,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8297127453842565452}
+  - component: {fileID: 6947034287884735587}
   m_Layer: 8
   m_Name: Slot1
   m_TagString: Untagged
@@ -718,6 +719,20 @@ Transform:
   m_Father: {fileID: 8297127454818709859}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6947034287884735587
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8297127453842565453}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73379c7927c45434c8b08eb0835f47c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  deckName: {fileID: 8297127453989706920}
+  selectHighlightRoot: {fileID: 8297127454995437541}
 --- !u!1 &8297127453853011166
 GameObject:
   m_ObjectHideFlags: 0
@@ -828,6 +843,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8297127453879841567}
+  - component: {fileID: 5078364465863632900}
   m_Layer: 8
   m_Name: Slot2
   m_TagString: Untagged
@@ -852,6 +868,20 @@ Transform:
   m_Father: {fileID: 8297127454818709859}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5078364465863632900
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8297127453879841536}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73379c7927c45434c8b08eb0835f47c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  deckName: {fileID: 8297127455374035545}
+  selectHighlightRoot: {fileID: 8297127454792033216}
 --- !u!1 &8297127453892175667
 GameObject:
   m_ObjectHideFlags: 0
@@ -949,6 +979,8 @@ GameObject:
   m_Component:
   - component: {fileID: 8297127453907900244}
   - component: {fileID: 8297127453907900243}
+  - component: {fileID: 2327220984628064276}
+  - component: {fileID: 3044540068822145975}
   m_Layer: 8
   m_Name: SlotBackGound
   m_TagString: Untagged
@@ -999,13 +1031,13 @@ MonoBehaviour:
     relative: 1
     absolute: 0
   updateAnchors: 1
-  mColor: {r: 1, g: 0.29836166, b: 0, a: 1}
+  mColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
   mPivot: 4
   mWidth: 220
   mHeight: 320
-  mDepth: 1
+  mDepth: 2
   mMat: {fileID: 0}
-  autoResizeBoxCollider: 0
+  autoResizeBoxCollider: 1
   hideIfOffScreen: 0
   keepAspectRatio: 0
   aspectRatio: 0.6875
@@ -1026,6 +1058,48 @@ MonoBehaviour:
   mSpriteName: Window
   mFixedAspect: 0
   mFillCenter: 1
+--- !u!65 &2327220984628064276
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8297127453907900245}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 220, y: 320, z: 0}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &3044540068822145975
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8297127453907900245}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e862f287df53bb64db191162f851a296, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  onHoverOver: []
+  onHoverOut: []
+  onPress: []
+  onRelease: []
+  onSelect: []
+  onDeselect: []
+  onClick:
+  - mTarget: {fileID: 5078364465863632900}
+    mMethodName: ClickSlot
+    mParameters: []
+    oneShot: 0
+  onDoubleClick: []
+  onDragStart: []
+  onDragEnd: []
+  onDragOver: []
+  onDragOut: []
+  onDrag: []
 --- !u!1 &8297127453947271590
 GameObject:
   m_ObjectHideFlags: 0
@@ -1191,7 +1265,7 @@ MonoBehaviour:
   mPivot: 4
   mWidth: 185
   mHeight: 54
-  mDepth: 2
+  mDepth: 3
   mMat: {fileID: 0}
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
@@ -1206,7 +1280,7 @@ MonoBehaviour:
   mAlignment: 0
   mEncoding: 1
   mMaxLineCount: 0
-  mEffectStyle: 0
+  mEffectStyle: 2
   mEffectColor: {r: 0, g: 0, b: 0, a: 1}
   mSymbols: 1
   mEffectDistance: {x: 1, y: 1}
@@ -1448,7 +1522,7 @@ MonoBehaviour:
   mPivot: 4
   mWidth: 130
   mHeight: 130
-  mDepth: 0
+  mDepth: 1
   mMat: {fileID: 0}
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
@@ -1656,6 +1730,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8297127454317764182}
+  - component: {fileID: 4875210392713337500}
   m_Layer: 8
   m_Name: CharacterSlot2
   m_TagString: Untagged
@@ -1679,6 +1754,20 @@ Transform:
   m_Father: {fileID: 8297127454073699349}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4875210392713337500
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8297127454317764183}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a6a434971b86c14b84492773c10a78d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  slotName: {fileID: 8297127455440446915}
+  selectHighlightRoot: {fileID: 0}
 --- !u!1 &8297127454368995032
 GameObject:
   m_ObjectHideFlags: 0
@@ -1877,7 +1966,7 @@ MonoBehaviour:
   mPivot: 4
   mWidth: 185
   mHeight: 54
-  mDepth: 2
+  mDepth: 3
   mMat: {fileID: 0}
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
@@ -1892,7 +1981,7 @@ MonoBehaviour:
   mAlignment: 0
   mEncoding: 1
   mMaxLineCount: 0
-  mEffectStyle: 0
+  mEffectStyle: 2
   mEffectColor: {r: 0, g: 0, b: 0, a: 1}
   mSymbols: 1
   mEffectDistance: {x: 1, y: 1}
@@ -2322,14 +2411,14 @@ MonoBehaviour:
   updateAnchors: 1
   mColor: {r: 1, g: 0, b: 0, a: 1}
   mPivot: 4
-  mWidth: 240
-  mHeight: 340
-  mDepth: 0
+  mWidth: 220
+  mHeight: 320
+  mDepth: 1
   mMat: {fileID: 0}
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 0.7058824
+  aspectRatio: 0.6875
   mType: 1
   mFillDirection: 4
   mFillAmount: 1
@@ -2344,7 +2433,7 @@ MonoBehaviour:
   bottomType: 1
   topType: 1
   mAtlas: {fileID: 11400000, guid: 62adb30369acbf943a67cee0f69267a3, type: 2}
-  mSpriteName: Window
+  mSpriteName: Highlight - Thin
   mFixedAspect: 0
   mFillCenter: 1
 --- !u!1 &8297127454688895128
@@ -2411,7 +2500,7 @@ MonoBehaviour:
   mPivot: 4
   mWidth: 130
   mHeight: 130
-  mDepth: 0
+  mDepth: 1
   mMat: {fileID: 0}
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
@@ -2449,7 +2538,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &8297127454692687684
 Transform:
   m_ObjectHideFlags: 0
@@ -2534,7 +2623,7 @@ MonoBehaviour:
   mPivot: 4
   mWidth: 185
   mHeight: 54
-  mDepth: 2
+  mDepth: 3
   mMat: {fileID: 0}
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
@@ -2549,7 +2638,7 @@ MonoBehaviour:
   mAlignment: 0
   mEncoding: 1
   mMaxLineCount: 0
-  mEffectStyle: 0
+  mEffectStyle: 2
   mEffectColor: {r: 0, g: 0, b: 0, a: 1}
   mSymbols: 1
   mEffectDistance: {x: 1, y: 1}
@@ -2635,7 +2724,7 @@ MonoBehaviour:
   mPivot: 4
   mWidth: 100
   mHeight: 100
-  mDepth: 1
+  mDepth: 2
   mMat: {fileID: 0}
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
@@ -2856,7 +2945,7 @@ MonoBehaviour:
   mPivot: 4
   mWidth: 100
   mHeight: 100
-  mDepth: 1
+  mDepth: 2
   mMat: {fileID: 0}
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
@@ -2955,14 +3044,14 @@ MonoBehaviour:
   updateAnchors: 1
   mColor: {r: 1, g: 0, b: 0, a: 1}
   mPivot: 4
-  mWidth: 240
-  mHeight: 340
-  mDepth: 0
+  mWidth: 220
+  mHeight: 320
+  mDepth: 1
   mMat: {fileID: 0}
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 0.7058824
+  aspectRatio: 0.6875
   mType: 1
   mFillDirection: 4
   mFillAmount: 1
@@ -2977,7 +3066,7 @@ MonoBehaviour:
   bottomType: 1
   topType: 1
   mAtlas: {fileID: 11400000, guid: 62adb30369acbf943a67cee0f69267a3, type: 2}
-  mSpriteName: Window
+  mSpriteName: Highlight - Thin
   mFixedAspect: 0
   mFillCenter: 1
 --- !u!1 &8297127454818709860
@@ -3265,14 +3354,14 @@ MonoBehaviour:
   updateAnchors: 1
   mColor: {r: 1, g: 0, b: 0, a: 1}
   mPivot: 4
-  mWidth: 240
-  mHeight: 340
-  mDepth: 0
+  mWidth: 220
+  mHeight: 320
+  mDepth: 1
   mMat: {fileID: 0}
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 0.7058824
+  aspectRatio: 0.6875
   mType: 1
   mFillDirection: 4
   mFillAmount: 1
@@ -3287,7 +3376,7 @@ MonoBehaviour:
   bottomType: 1
   topType: 1
   mAtlas: {fileID: 11400000, guid: 62adb30369acbf943a67cee0f69267a3, type: 2}
-  mSpriteName: Window
+  mSpriteName: Highlight - Thin
   mFixedAspect: 0
   mFillCenter: 1
 --- !u!1 &8297127454897105833
@@ -3528,7 +3617,7 @@ MonoBehaviour:
   mPivot: 4
   mWidth: 130
   mHeight: 130
-  mDepth: 0
+  mDepth: 1
   mMat: {fileID: 0}
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
@@ -3700,14 +3789,14 @@ MonoBehaviour:
   updateAnchors: 1
   mColor: {r: 1, g: 0, b: 0, a: 1}
   mPivot: 4
-  mWidth: 240
-  mHeight: 340
-  mDepth: 0
+  mWidth: 220
+  mHeight: 320
+  mDepth: 1
   mMat: {fileID: 0}
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 0.7058824
+  aspectRatio: 0.6875
   mType: 1
   mFillDirection: 4
   mFillAmount: 1
@@ -3722,7 +3811,7 @@ MonoBehaviour:
   bottomType: 1
   topType: 1
   mAtlas: {fileID: 11400000, guid: 62adb30369acbf943a67cee0f69267a3, type: 2}
-  mSpriteName: Window
+  mSpriteName: Highlight - Thin
   mFixedAspect: 0
   mFillCenter: 1
 --- !u!1 &8297127455001392184
@@ -3735,6 +3824,8 @@ GameObject:
   m_Component:
   - component: {fileID: 8297127455001392183}
   - component: {fileID: 8297127455001392182}
+  - component: {fileID: 3249063280518419799}
+  - component: {fileID: 1832589821653635561}
   m_Layer: 8
   m_Name: SlotBackGound
   m_TagString: Untagged
@@ -3785,13 +3876,13 @@ MonoBehaviour:
     relative: 1
     absolute: 0
   updateAnchors: 1
-  mColor: {r: 1, g: 0.29836166, b: 0, a: 1}
+  mColor: {r: 0.7830189, g: 0.7830189, b: 0.7830189, a: 1}
   mPivot: 4
   mWidth: 220
   mHeight: 320
-  mDepth: 1
+  mDepth: 2
   mMat: {fileID: 0}
-  autoResizeBoxCollider: 0
+  autoResizeBoxCollider: 1
   hideIfOffScreen: 0
   keepAspectRatio: 0
   aspectRatio: 0.6875
@@ -3812,6 +3903,48 @@ MonoBehaviour:
   mSpriteName: Window
   mFixedAspect: 0
   mFillCenter: 1
+--- !u!65 &3249063280518419799
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8297127455001392184}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 220, y: 320, z: 0}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1832589821653635561
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8297127455001392184}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e862f287df53bb64db191162f851a296, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  onHoverOver: []
+  onHoverOut: []
+  onPress: []
+  onRelease: []
+  onSelect: []
+  onDeselect: []
+  onClick:
+  - mTarget: {fileID: 6947034287884735587}
+    mMethodName: ClickSlot
+    mParameters: []
+    oneShot: 0
+  onDoubleClick: []
+  onDragStart: []
+  onDragEnd: []
+  onDragOver: []
+  onDragOut: []
+  onDrag: []
 --- !u!1 &8297127455011749777
 GameObject:
   m_ObjectHideFlags: 0
@@ -3822,6 +3955,8 @@ GameObject:
   m_Component:
   - component: {fileID: 8297127455011749776}
   - component: {fileID: 8297127455011749807}
+  - component: {fileID: 2718864696761637434}
+  - component: {fileID: 8336867104973203028}
   m_Layer: 8
   m_Name: SlotBackGound
   m_TagString: Untagged
@@ -3872,13 +4007,13 @@ MonoBehaviour:
     relative: 1
     absolute: 0
   updateAnchors: 1
-  mColor: {r: 1, g: 0.29836166, b: 0, a: 1}
+  mColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
   mPivot: 4
   mWidth: 220
   mHeight: 320
-  mDepth: 1
+  mDepth: 2
   mMat: {fileID: 0}
-  autoResizeBoxCollider: 0
+  autoResizeBoxCollider: 1
   hideIfOffScreen: 0
   keepAspectRatio: 0
   aspectRatio: 0.6875
@@ -3899,6 +4034,48 @@ MonoBehaviour:
   mSpriteName: Window
   mFixedAspect: 0
   mFillCenter: 1
+--- !u!65 &2718864696761637434
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8297127455011749777}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 220, y: 320, z: 0}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &8336867104973203028
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8297127455011749777}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e862f287df53bb64db191162f851a296, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  onHoverOver: []
+  onHoverOut: []
+  onPress: []
+  onRelease: []
+  onSelect: []
+  onDeselect: []
+  onClick:
+  - mTarget: {fileID: 7898623592256105106}
+    mMethodName: ClickSlot
+    mParameters: []
+    oneShot: 0
+  onDoubleClick: []
+  onDragStart: []
+  onDragEnd: []
+  onDragOver: []
+  onDragOut: []
+  onDrag: []
 --- !u!1 &8297127455053040300
 GameObject:
   m_ObjectHideFlags: 0
@@ -3946,6 +4123,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edc30ca0c44e8534e8c0db94f2a4584a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mainRoot: {fileID: 8297127454692687685}
+  deckEditRoot: {fileID: 8297127455102619285}
+  SlotEditRoot: {fileID: 8297127454600022982}
+  deckSlotUIArray:
+  - {fileID: 6947034287884735587}
+  - {fileID: 5078364465863632900}
+  - {fileID: 7898623592256105106}
+  - {fileID: 9173024018883097563}
+  infoSlotUIArray:
+  - {fileID: 8638410069636283845}
+  - {fileID: 4875210392713337500}
+  - {fileID: 6305394892777169375}
+  - {fileID: 7129699420072287585}
+  infoLabel: {fileID: 8297127455742467276}
 --- !u!1 &8297127455074227569
 GameObject:
   m_ObjectHideFlags: 0
@@ -4112,6 +4303,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8297127455224054882}
+  - component: {fileID: 7129699420072287585}
   m_Layer: 8
   m_Name: CharacterSlot4
   m_TagString: Untagged
@@ -4135,6 +4327,20 @@ Transform:
   m_Father: {fileID: 8297127454073699349}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7129699420072287585
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8297127455224054883}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a6a434971b86c14b84492773c10a78d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  slotName: {fileID: 8297127455609035344}
+  selectHighlightRoot: {fileID: 0}
 --- !u!1 &8297127455240198361
 GameObject:
   m_ObjectHideFlags: 0
@@ -4420,7 +4626,7 @@ MonoBehaviour:
   mPivot: 4
   mWidth: 185
   mHeight: 54
-  mDepth: 2
+  mDepth: 3
   mMat: {fileID: 0}
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
@@ -4435,7 +4641,7 @@ MonoBehaviour:
   mAlignment: 0
   mEncoding: 1
   mMaxLineCount: 0
-  mEffectStyle: 0
+  mEffectStyle: 2
   mEffectColor: {r: 0, g: 0, b: 0, a: 1}
   mSymbols: 1
   mEffectDistance: {x: 1, y: 1}
@@ -4755,7 +4961,7 @@ MonoBehaviour:
   mPivot: 4
   mWidth: 100
   mHeight: 100
-  mDepth: 1
+  mDepth: 2
   mMat: {fileID: 0}
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
@@ -4888,6 +5094,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8297127455471548384}
+  - component: {fileID: 7898623592256105106}
   m_Layer: 8
   m_Name: Slot3
   m_TagString: Untagged
@@ -4912,6 +5119,20 @@ Transform:
   m_Father: {fileID: 8297127454818709859}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7898623592256105106
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8297127455471548385}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73379c7927c45434c8b08eb0835f47c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  deckName: {fileID: 8297127454708702844}
+  selectHighlightRoot: {fileID: 8297127454872978087}
 --- !u!1 &8297127455518929870
 GameObject:
   m_ObjectHideFlags: 0
@@ -4921,6 +5142,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8297127455518929869}
+  - component: {fileID: 9173024018883097563}
   m_Layer: 8
   m_Name: Slot4
   m_TagString: Untagged
@@ -4945,6 +5167,20 @@ Transform:
   m_Father: {fileID: 8297127454818709859}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &9173024018883097563
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8297127455518929870}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73379c7927c45434c8b08eb0835f47c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  deckName: {fileID: 8297127454478882994}
+  selectHighlightRoot: {fileID: 8297127454624860135}
 --- !u!1 &8297127455538455380
 GameObject:
   m_ObjectHideFlags: 0
@@ -4955,6 +5191,8 @@ GameObject:
   m_Component:
   - component: {fileID: 8297127455538455379}
   - component: {fileID: 8297127455538455378}
+  - component: {fileID: 7214000510282191757}
+  - component: {fileID: 5156013338689072115}
   m_Layer: 8
   m_Name: SlotBackGound
   m_TagString: Untagged
@@ -5005,13 +5243,13 @@ MonoBehaviour:
     relative: 1
     absolute: 0
   updateAnchors: 1
-  mColor: {r: 1, g: 0.29836166, b: 0, a: 1}
+  mColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
   mPivot: 4
   mWidth: 220
   mHeight: 320
-  mDepth: 1
+  mDepth: 2
   mMat: {fileID: 0}
-  autoResizeBoxCollider: 0
+  autoResizeBoxCollider: 1
   hideIfOffScreen: 0
   keepAspectRatio: 0
   aspectRatio: 0.6875
@@ -5032,6 +5270,48 @@ MonoBehaviour:
   mSpriteName: Window
   mFixedAspect: 0
   mFillCenter: 1
+--- !u!65 &7214000510282191757
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8297127455538455380}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 220, y: 320, z: 0}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &5156013338689072115
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8297127455538455380}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e862f287df53bb64db191162f851a296, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  onHoverOver: []
+  onHoverOut: []
+  onPress: []
+  onRelease: []
+  onSelect: []
+  onDeselect: []
+  onClick:
+  - mTarget: {fileID: 9173024018883097563}
+    mMethodName: ClickSlot
+    mParameters: []
+    oneShot: 0
+  onDoubleClick: []
+  onDragStart: []
+  onDragEnd: []
+  onDragOver: []
+  onDragOut: []
+  onDrag: []
 --- !u!1 &8297127455575725031
 GameObject:
   m_ObjectHideFlags: 0
@@ -5166,7 +5446,7 @@ MonoBehaviour:
   mPivot: 4
   mWidth: 68
   mHeight: 300
-  mDepth: 0
+  mDepth: 1
   mMat: {fileID: 0}
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
@@ -5253,7 +5533,7 @@ MonoBehaviour:
   mPivot: 4
   mWidth: 100
   mHeight: 100
-  mDepth: 1
+  mDepth: 2
   mMat: {fileID: 0}
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
@@ -5431,6 +5711,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8297127455659259246}
+  - component: {fileID: 6305394892777169375}
   m_Layer: 8
   m_Name: CharacterSlot3
   m_TagString: Untagged
@@ -5454,6 +5735,20 @@ Transform:
   m_Father: {fileID: 8297127454073699349}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6305394892777169375
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8297127455659259247}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a6a434971b86c14b84492773c10a78d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  slotName: {fileID: 8297127454789159300}
+  selectHighlightRoot: {fileID: 0}
 --- !u!1 &8297127455676152398
 GameObject:
   m_ObjectHideFlags: 0
@@ -5619,12 +5914,12 @@ MonoBehaviour:
   mPivot: 4
   mWidth: 36
   mHeight: 108
-  mDepth: 1
+  mDepth: 2
   mMat: {fileID: 0}
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 0.25
+  aspectRatio: 0.33333334
   keepCrispWhenShrunk: 1
   mTrueTypeFont: {fileID: 0}
   mFont: {fileID: 11400000, guid: 1fa4b2d5a71627a44950fff5085e485c, type: 2}
@@ -5665,6 +5960,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8297127455737892793}
+  - component: {fileID: 8638410069636283845}
   m_Layer: 8
   m_Name: CharacterSlot1
   m_TagString: Untagged
@@ -5688,6 +5984,20 @@ Transform:
   m_Father: {fileID: 8297127454073699349}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8638410069636283845
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8297127455737892794}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a6a434971b86c14b84492773c10a78d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  slotName: {fileID: 8297127454736304552}
+  selectHighlightRoot: {fileID: 0}
 --- !u!1 &8297127455742467278
 GameObject:
   m_ObjectHideFlags: 0
@@ -5899,10 +6209,10 @@ PrefabInstance:
     - target: {fileID: 11400000, guid: fee46b827274e694aa251e2d36700135, type: 3}
       propertyPath: onClick.Array.data[0].mTarget
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1496790631456010343}
     - target: {fileID: 11400000, guid: fee46b827274e694aa251e2d36700135, type: 3}
       propertyPath: onClick.Array.data[0].mMethodName
-      value: ClickMainMenuButton
+      value: ClickExitButton
       objectReference: {fileID: 0}
     - target: {fileID: 11400002, guid: fee46b827274e694aa251e2d36700135, type: 3}
       propertyPath: mWidth
@@ -5914,7 +6224,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 11400002, guid: fee46b827274e694aa251e2d36700135, type: 3}
       propertyPath: aspectRatio
-      value: 2.8636363
+      value: 3.6190476
       objectReference: {fileID: 0}
     - target: {fileID: 11400002, guid: fee46b827274e694aa251e2d36700135, type: 3}
       propertyPath: mText
@@ -7398,7 +7708,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 11400002, guid: fee46b827274e694aa251e2d36700135, type: 3}
       propertyPath: aspectRatio
-      value: 3.6190476
+      value: 3.6923077
       objectReference: {fileID: 0}
     - target: {fileID: 11400002, guid: fee46b827274e694aa251e2d36700135, type: 3}
       propertyPath: mText
@@ -8034,7 +8344,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 11400002, guid: fee46b827274e694aa251e2d36700135, type: 3}
       propertyPath: aspectRatio
-      value: 3.6190476
+      value: 3.6923077
       objectReference: {fileID: 0}
     - target: {fileID: 11400002, guid: fee46b827274e694aa251e2d36700135, type: 3}
       propertyPath: mText
