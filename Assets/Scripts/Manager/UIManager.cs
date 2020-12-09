@@ -34,6 +34,7 @@ public class UIManager : MonoBehaviour
         AddUIPath(UIData.SweepUI);
         AddUIPath(UIData.MainMenuUI);
         AddUIPath(UIData.IntroUI);
+        AddUIPath(UIData.DeckEditUI);        
     }
 
     private void AddUIPath(UIData data)
@@ -141,4 +142,5 @@ public class UIData
     public static UIData SweepUI = new UIData(3, typeof(SweepUI), "Prefabs/UI/SweepUI");
     public static UIData MainMenuUI = new UIData(4, typeof(MainMenuUI), "Prefabs/UI/MainMenuUI");
     public static UIData IntroUI = new UIData(5, typeof(IntroUI), "Prefabs/UI/IntroUI");
+    public static UIData DeckEditUI = new UIData(6, typeof(DeckEditUI), "Prefabs/UI/DeckEditUI");
 }

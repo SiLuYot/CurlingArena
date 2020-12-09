@@ -10,7 +10,8 @@ public class MainMenuUI : UIBase
 
     public void ClickDeckEditButton()
     {
-
+        Close();
+        UIManager.Instance.Get<DeckEditUI>();
     }
 
     public void ClickTestSceneButton()
