@@ -20,6 +20,16 @@ public class DeckData
             DataDic.Add(key, data);
         }        
     }
+
+    public void CopyData(Dictionary<int, CharacterData> dataDic)
+    {
+        this.DataDic = new Dictionary<int, CharacterData>(dataDic);
+    }
+
+    public void ChangeDeckName(string deckName)
+    {
+        this.DeckName = deckName;
+    }
 }
 
 public class DeckManager : MonoBehaviour

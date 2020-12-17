@@ -754,41 +754,74 @@ public class UIInput : MonoBehaviour
 		}
 		else
 #endif // MOBILE
-		{
-			string ime = Input.compositionString;
+        {
+            string ime = Input.compositionString;
 
-			// There seems to be an inconsistency between IME on Windows, and IME on OSX.
-			// On Windows, Input.inputString is always empty while IME is active. On the OSX it is not.
-			if (string.IsNullOrEmpty(ime) && !string.IsNullOrEmpty(Input.inputString))
-			{
-				// Process input ignoring non-printable characters as they are not consistent.
-				// Windows has them, OSX may not. They get handled inside OnGUI() instead.
-				string s = Input.inputString;
+            // There seems to be an inconsistency between IME on Windows, and IME on OSX.
+            // On Windows, Input.inputString is always empty while IME is active. On the OSX it is not.
+#if UNITY_EDITOR
+            if (!string.IsNullOrEmpty(Input.inputString))
+            {
+                // Process input ignoring non-printable characters as they are not consistent.
+                // Windows has them, OSX may not. They get handled inside OnGUI() instead.
+                string s = Input.inputString;
 
-				for (int i = 0; i < s.Length; ++i)
-				{
-					char ch = s[i];
-					if (ch < ' ') continue;
+                for (int i = 0; i < s.Length; ++i)
+                {
+                    char ch = s[i];
+                    if (ch < ' ') continue;
 
-					// OSX inserts these characters for arrow keys
-					if (ch == '\uF700') continue;
-					if (ch == '\uF701') continue;
-					if (ch == '\uF702') continue;
-					if (ch == '\uF703') continue;
-					if (ch == '\uF728') continue;
+                    // OSX inserts these characters for arrow keys
+                    if (ch == '\uF700') continue;
+                    if (ch == '\uF701') continue;
+                    if (ch == '\uF702') continue;
+                    if (ch == '\uF703') continue;
+                    if (ch == '\uF728') continue;
 
-					Insert(ch.ToString());
-				}
-			}
+                    Insert(ch.ToString());
+                }
+            }
 
-			// Append IME composition
-			if (mLastIME != ime)
-			{
-				mSelectionEnd = string.IsNullOrEmpty(ime) ? mSelectionStart : mValue.Length + ime.Length;
-				mLastIME = ime;
-				UpdateLabel();
-				ExecuteOnChange();
-			}
+            // Append IME composition
+            if (mLastIME != ime)
+            {
+                mSelectionEnd = string.IsNullOrEmpty(ime) ? mSelectionStart : mValue.Length + ime.Length;
+                mLastIME = ime;
+                UpdateLabel();
+                ExecuteOnChange();
+            }
+#else
+            if (string.IsNullOrEmpty(ime) && !string.IsNullOrEmpty(Input.inputString))
+            {
+                // Process input ignoring non-printable characters as they are not consistent.
+                // Windows has them, OSX may not. They get handled inside OnGUI() instead.
+                string s = Input.inputString;
+
+                for (int i = 0; i < s.Length; ++i)
+                {
+                    char ch = s[i];
+                    if (ch < ' ') continue;
+
+                    // OSX inserts these characters for arrow keys
+                    if (ch == '\uF700') continue;
+                    if (ch == '\uF701') continue;
+                    if (ch == '\uF702') continue;
+                    if (ch == '\uF703') continue;
+                    if (ch == '\uF728') continue;
+
+                    Insert(ch.ToString());
+                }
+            }
+
+            // Append IME composition
+            if (mLastIME != ime)
+            {
+                mSelectionEnd = string.IsNullOrEmpty(ime) ? mSelectionStart : mValue.Length + ime.Length;
+                mLastIME = ime;
+                UpdateLabel();
+                ExecuteOnChange();
+            }
+#endif
 		}
 
 		// Blink the caret
