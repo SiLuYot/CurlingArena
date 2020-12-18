@@ -55,7 +55,7 @@ public class DeckEditUI : UIBase
             mainSlotUIArray[i].Init(i, deckData, ClickDeckSlot);
         }
 
-        //사융중인 덱 선택
+        //사용중인 덱 선택
         if (curSelectedMainSlot == null)
         {
             int index = DeckManager.Instance.CurDeckIndex;

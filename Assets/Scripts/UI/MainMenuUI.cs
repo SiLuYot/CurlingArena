@@ -4,7 +4,8 @@ public class MainMenuUI : UIBase
 {
     public void ClickGameStartButton()
     {
-
+        Close();
+        UIManager.Instance.Get<GameReadyUI>();
     }
 
     public void ClickDeckEditButton()
