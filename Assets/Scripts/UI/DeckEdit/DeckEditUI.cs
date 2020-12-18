@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 
 public class DeckEditUI : UIBase
@@ -9,14 +8,14 @@ public class DeckEditUI : UIBase
     public GameObject deckEditRoot;
     public GameObject SlotEditRoot;
 
-    public DeckSlotUI[] mainSlotUIArray;    
+    public DeckSlotUI[] mainSlotUIArray;
     public SlotUI[] mainInfoSlotUIArray;
     public UILabel mainInfoLabel;
-    
+
     public SlotUI[] deckEditSlotUIArray;
     public UILabel deckEditInfoLabel;
     public UIInput deckEditNameInput;
-    
+
     public UISprite slotEditInfoSprite;
     public UILabel slotEditInfoLabel;
     public SlotUI slotEditSlotPrefab;
@@ -31,20 +30,17 @@ public class DeckEditUI : UIBase
     private SlotUI curSelectedEditDeckSlot;
     //덱에 넣을 슬롯 데이터
     private SlotUI curSelectedEditSlot;
-    
+
     public void Start()
     {
         tempDeckData = null;
         isInitEditSlotList = false;
 
-        //테스트 용
-        DeckManager.Instance.AddTestDeck();
-
         ActiveMainUI();
     }
 
     public void ActiveMainUI()
-    {        
+    {
         //덱 세팅
         var deckDataDic = DeckManager.Instance.DeckDic;
         for (int i = 0; i < mainSlotUIArray.Length; i++)
@@ -59,10 +55,11 @@ public class DeckEditUI : UIBase
             mainSlotUIArray[i].Init(i, deckData, ClickDeckSlot);
         }
 
-        //가장 처음 덱을 기본으로 선택한다.
+        //사융중인 덱 선택
         if (curSelectedMainSlot == null)
         {
-            curSelectedMainSlot = mainSlotUIArray.FirstOrDefault();
+            int index = DeckManager.Instance.CurDeckIndex;
+            curSelectedMainSlot = mainSlotUIArray.ElementAtOrDefault(index);
         }
         curSelectedMainSlot?.ClickSlot();
 
@@ -95,11 +92,11 @@ public class DeckEditUI : UIBase
         {
             CharacterData charData = null;
             string slotName = "없음";
-            
+
             if (dataDic != null && dataDic.ContainsKey(i))
             {
                 charData = dataDic[i];
-                slotName = string.Format("{0} 등급\n{1}", 
+                slotName = string.Format("{0} 등급\n{1}",
                     charData.rarityData.rarity, charData.name);
             }
 
@@ -152,10 +149,22 @@ public class DeckEditUI : UIBase
         else
         {
             tempDeckData = new DeckData(curSelectedMainSlot.Data.DeckName);
-            tempDeckData.CopyData(curSelectedMainSlot.Data.DataDic);            
+            tempDeckData.CopyData(curSelectedMainSlot.Data.DataDic);
         }
 
         ActiveDeckEditUI();
+    }
+
+    public void ClickDeckSelectButton()
+    {
+        if (curSelectedMainSlot == null)
+            return;
+
+        int deckIndex = curSelectedMainSlot.Index;
+        if (DeckManager.Instance.ChangeUseDeck(deckIndex))
+        {
+            ClickExitButton();
+        }
     }
 
     public void ClickDeckSlot(DeckSlotUI slot)
@@ -166,7 +175,7 @@ public class DeckEditUI : UIBase
         curSelectedMainSlot?.ActiveHighlight(true);
 
         string infoText = "비어있음";
-        Dictionary<int, CharacterData> dataDic = null;        
+        Dictionary<int, CharacterData> dataDic = null;
 
         if (curSelectedMainSlot.Data != null)
         {
@@ -289,7 +298,7 @@ public class DeckEditUI : UIBase
                         Info = string.Format("{0}, ", Info);
 
                     Info = string.Format("{0}{1}", Info, skillArray[i].desc);
-                }                                   
+                }
             }
 
             if (Info == string.Empty)
