@@ -51,7 +51,7 @@ public class TestBattleSceneUI : UIBase
                             if (obj != null)
                             {
                                 GameManager.Instance.RemoveCharacter(obj.Physics.PID);
-                                GameManager.Instance.RemoveCreateCharacterData(obj.Team, obj.Data, obj.transform.position);
+                                GameManager.Instance.RemoveTestCreateCharacterData(obj.Team, obj.Data, obj.transform.position);
                             }
                         }
                     }
@@ -86,7 +86,7 @@ public class TestBattleSceneUI : UIBase
 
     public void PlayModeInit()
     {
-        CameraManager.Instance.Init();
+        CameraManager.Instance.InitCreatePos();
 
         ClickResetButton();
 
@@ -180,7 +180,7 @@ public class TestBattleSceneUI : UIBase
     public void ClickMoveStartPosButton()
     {
         isPlayerChacter = true;
-        CameraManager.Instance.Init();        
+        CameraManager.Instance.InitCreatePos();        
     }
 
     public void ClickMoveHousePosButton()

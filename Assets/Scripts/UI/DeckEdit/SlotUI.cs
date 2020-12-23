@@ -29,5 +29,7 @@ public class SlotUI : MonoBehaviour
     public void ClickSlot()
     {
         clickAction?.Invoke(this);
+
+        ActiveHighlight(true);
     }
 }

@@ -70,7 +70,8 @@ public class GameReadyUI : UIBase
 
     public void ClickReadyButton()
     {
-
+        Close();
+        UIManager.Instance.Get<GameCharacterSelectUI>();
     }
 
     public void ClickBackButton()

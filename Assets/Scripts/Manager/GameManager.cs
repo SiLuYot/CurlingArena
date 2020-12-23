@@ -59,9 +59,9 @@ public class GameManager : MonoBehaviour
     public GameObject characterPrefab1;
     public GameObject characterPrefab2;
 
-    public Character CurrentCharacter { get; private set; }
-    public List<CharacterCreateData> CharacterCreateDataList { get; private set; }
-    public List<Character> ChracterList { get; private set; }    
+    public Character CurrentCharacter { get; private set; }    
+    public List<Character> ChracterList { get; private set; }
+    public List<CharacterCreateData> TestCharacterCreateDataList { get; private set; }
 
     private static GameManager instance = null;
     public static GameManager Instance
@@ -78,9 +78,9 @@ public class GameManager : MonoBehaviour
     }
 
     public void Awake()
-    {
-        CharacterCreateDataList = new List<CharacterCreateData>();
+    {        
         ChracterList = new List<Character>();
+        TestCharacterCreateDataList = new List<CharacterCreateData>();
     }
 
     void Start()
@@ -98,7 +98,7 @@ public class GameManager : MonoBehaviour
         CurRoundStep = RoundStep.READY;
         Debug.Log("Round Step : " + CurRoundStep);
 
-        CameraManager.Instance.Init();
+        CameraManager.Instance.InitCreatePos();
         PhysicsManager.Instance.Init();
     }
 
@@ -149,15 +149,16 @@ public class GameManager : MonoBehaviour
         testUI?.Init();
     }
 
-    public void AddCharacter(Team team, CharacterData data, Vector3 pos, bool isPlayerChacter)
+    public Character AddCharacter(Team team, CharacterData data, Vector3 pos, bool isPlayerChacter)
     {
         var newData = new CharacterCreateData(team, data, pos, isPlayerChacter);
-        CharacterCreateDataList.Add(newData);
 
-        CreateCharacter(newData);
+        TestCharacterCreateDataList.Add(newData);
+
+        return CreateCharacter(newData);
     }
 
-    public void CreateCharacter(CharacterCreateData createData)
+    public Character CreateCharacter(CharacterCreateData createData)
     {
         GameObject prefab = null;
 
@@ -180,6 +181,8 @@ public class GameManager : MonoBehaviour
 
         if (createData.isPlayerChacter)
             SetCurrentCharacter(newCharacter);
+
+        return newCharacter;
     }
 
     public void SetCurrentCharacter(Character character)
@@ -213,15 +216,15 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void RemoveCreateCharacterData(Team team, CharacterData data, Vector3 pos)
+    public void RemoveTestCreateCharacterData(Team team, CharacterData data, Vector3 pos)
     {
-        var findData = CharacterCreateDataList.Find(
+        var findData = TestCharacterCreateDataList.Find(
             v => v.team == team && 
             v.data.id == data.id && 
             v.pos.x == pos.x &&
             v.pos.z == pos.z);
 
-        CharacterCreateDataList.Remove(findData);
+        TestCharacterCreateDataList.Remove(findData);
         findData = null;
     }
 
@@ -236,7 +239,7 @@ public class GameManager : MonoBehaviour
 
         CurrentCharacter = null;
 
-        CharacterCreateDataList.Clear();
+        TestCharacterCreateDataList.Clear();
     }
 
     public void TestSceneReset()
@@ -250,7 +253,7 @@ public class GameManager : MonoBehaviour
 
         CurrentCharacter = null;
 
-        foreach (var data in CharacterCreateDataList)
+        foreach (var data in TestCharacterCreateDataList)
         {
             CreateCharacter(data);
         }

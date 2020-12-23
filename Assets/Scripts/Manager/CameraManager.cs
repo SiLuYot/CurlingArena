@@ -18,27 +18,33 @@ public class CameraManager : MonoBehaviour
     public Camera mainCamera;
     public Transform stoneRoot;
     public Transform playerCreatePos;
+    public Transform playerSelectPos;
     public float y = 10.0f;
 
     public static bool IsFixed = false;
 
     private Transform followTrans;
 
+    private const int DEFAULT_SIZE = 15;
+    private const int SELECT_SIZE = 10;
+
     public void Start()
     {
         
     }
 
-    public void Init()
+    public void InitCreatePos()
     {
-        IsFixed = false;
+        Init(playerCreatePos.position);
 
-        var newPos = new Vector3(
-                playerCreatePos.position.x,
-                playerCreatePos.position.y + y,
-                playerCreatePos.position.z);
+        mainCamera.orthographicSize = DEFAULT_SIZE;
+    }
 
-        mainCamera.transform.position = newPos;
+    public void InitSelectPos()
+    {
+        Init(playerSelectPos.position);
+
+        mainCamera.orthographicSize = SELECT_SIZE;
     }
 
     public void Init(Vector3 pos)

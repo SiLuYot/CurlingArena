@@ -283,7 +283,7 @@ public class DeckEditUI : UIBase
         curSelectedEditSlot?.ActiveHighlight(false);
 
         curSelectedEditSlot = slot;
-        curSelectedEditSlot?.ActiveHighlight(true);
+        //curSelectedEditSlot?.ActiveHighlight(true);
 
         if (curSelectedEditSlot.Data.skillDataArray != null)
         {

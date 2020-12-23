@@ -53,6 +53,14 @@ public class DeckManager : MonoBehaviour
 
     public int CurDeckIndex { get; private set; }
 
+    public DeckData CurDeck
+    {
+        get
+        {
+            return DeckDic[CurDeckIndex];
+        }
+    }
+
     public void Init()
     {
         //테스트 용
