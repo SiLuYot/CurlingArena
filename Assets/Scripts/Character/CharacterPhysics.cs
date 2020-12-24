@@ -61,7 +61,7 @@ public class CharacterPhysics
         this.pid = 0;
         this.speed = 0;
         this.dir = Vector3.zero;
-        this.friction = 0.1f;
+        this.friction = GameManager.BASE_FRICTION;
         this.sweepValue = 0;
         this.attackBouns = 1.0f;
         this.firstSpeed = 0;

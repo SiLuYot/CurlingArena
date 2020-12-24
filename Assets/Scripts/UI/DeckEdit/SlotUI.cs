@@ -5,7 +5,8 @@ public class SlotUI : MonoBehaviour
 {
     public UILabel slotName;
     public GameObject selectHighlightRoot;
-    
+    public GameObject blockRoot;
+
     public int Index { get; private set; }
     public CharacterData Data { get; private set; }
     private Action<SlotUI> clickAction;
@@ -18,12 +19,19 @@ public class SlotUI : MonoBehaviour
         this.clickAction = clickAction;
 
         ActiveHighlight(false);
+        ActiveBlock(false);
     }
 
     public void ActiveHighlight(bool active)
     {
         if (selectHighlightRoot != null)
             selectHighlightRoot.SetActive(active);
+    }
+
+    public void ActiveBlock(bool active)
+    {
+        if (blockRoot != null)
+            blockRoot.SetActive(active);
     }
 
     public void ClickSlot()

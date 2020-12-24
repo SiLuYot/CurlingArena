@@ -30,6 +30,14 @@ public class DeckData
     {
         this.DeckName = deckName;
     }
+
+    public bool IsCompleteDeck()
+    {
+        if (DataDic.Count >= GameManager.DECK_CHARACTER_COUNT)
+            return true;
+
+        return false;
+    }
 }
 
 public class DeckManager : MonoBehaviour

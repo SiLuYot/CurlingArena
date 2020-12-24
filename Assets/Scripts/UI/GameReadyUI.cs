@@ -26,6 +26,9 @@ public class GameReadyUI : UIBase
 
         foreach (var key in deckKeyList)
         {
+            if (!deckDataDic[key].IsCompleteDeck())
+                continue;
+
             var newDeckSlot = Instantiate(deckSlotPrefab, uiGrid.transform);
             newDeckSlot.Init(key, deckDataDic[key], ClickDeckSlot);
             newDeckSlot.gameObject.SetActive(true);
@@ -71,7 +74,7 @@ public class GameReadyUI : UIBase
     public void ClickReadyButton()
     {
         Close();
-        UIManager.Instance.Get<GameCharacterSelectUI>();
+        GameManager.Instance.GameInit();        
     }
 
     public void ClickBackButton()

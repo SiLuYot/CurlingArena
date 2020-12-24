@@ -86,6 +86,7 @@ public class ScoreManager : MonoBehaviour
             }
         }
 
+        GameManager.Instance.GetScore(scoreGetTeam, score);
         Debug.Log(string.Format("{0} Team Get Score : {1}", scoreGetTeam, score));
     }
 }

@@ -160,6 +160,9 @@ public class DeckEditUI : UIBase
         if (curSelectedMainSlot == null)
             return;
 
+        if (!curSelectedMainSlot.Data.IsCompleteDeck())
+            return;
+
         int deckIndex = curSelectedMainSlot.Index;
         if (DeckManager.Instance.ChangeUseDeck(deckIndex))
         {

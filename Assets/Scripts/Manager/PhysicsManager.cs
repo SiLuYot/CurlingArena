@@ -62,7 +62,7 @@ public class PhysicsManager : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (GameManager.CurRoundStep == RoundStep.SWEEP)
+        if (GameManager.CurStep == Step.SWEEP)
         {
             var obj = GameManager.Instance.CurrentCharacter;
             if (obj != null)
@@ -84,11 +84,10 @@ public class PhysicsManager : MonoBehaviour
                     GameManager.Instance.Move();
                 }
             }
-
         }
 
-        if (GameManager.CurRoundStep == RoundStep.SWEEP ||
-            GameManager.CurRoundStep == RoundStep.MOVE)
+        if (GameManager.CurStep == Step.SWEEP ||
+            GameManager.CurStep == Step.MOVE)
         {
             //방향과 속력 계산
             CalculateForce();

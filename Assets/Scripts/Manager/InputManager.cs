@@ -22,7 +22,7 @@ public class InputManager : MonoBehaviour
     private void Update()
     {
         //준비 단계일때
-        if (GameManager.CurRoundStep == RoundStep.READY)
+        if (GameManager.CurStep == Step.READY)
         {
             //누를때
             if (Input.GetMouseButtonDown(0))
@@ -80,7 +80,7 @@ public class InputManager : MonoBehaviour
             }
         }
 
-        if (GameManager.CurRoundStep == RoundStep.SWEEP)
+        if (GameManager.CurStep == Step.SWEEP)
         {
             //누를때
             if (Input.GetMouseButtonDown(0))
@@ -93,38 +93,40 @@ public class InputManager : MonoBehaviour
                 //누르는 위치가 UI가 아닐때
                 if (!UICamera.isOverUI)
                 {
-                    var curMousePos = Input.mousePosition;
-                    var dragVector = clickStartScreenPos - curMousePos;
-
-                    //벡터의 길이가 최소 길이보다 길다면
-                    if (dragVector.magnitude > GameManager.SWEEP_MIN_DISTACNE)
+                    var curCharacter = GameManager.Instance.CurrentCharacter;
+                    if (curCharacter != null)
                     {
-                        var dragVectorWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                        var curMousePos = Input.mousePosition;
+                        var dragVector = clickStartScreenPos - curMousePos;
 
-                        var curCharacter = GameManager.Instance.CurrentCharacter;
-                        var dir = curCharacter.Physics.dir;
-
-                        var diff = dragVectorWorldPos - curCharacter.transform.position;
-                        var cross = Vector3.Cross(dir, diff);
-
-                        //방향 벡터의 노말
-                        var dirNormal = new Vector3(dir.z, 0, -dir.x);
-
-                        //오브젝트 기준 오른쪽
-                        if (cross.y > 0)
+                        //벡터의 길이가 최소 길이보다 길다면
+                        if (dragVector.magnitude > GameManager.SWEEP_MIN_DISTACNE)
                         {
-                            curCharacter.Physics.ApplyDir(dirNormal * Time.deltaTime);
-                            curCharacter.Physics.Sweep(GameManager.SWEEP);
-                        }
-                        //오브젝트 기준 왼쪽
-                        else
-                        {
-                            curCharacter.Physics.ApplyDir(-dirNormal * Time.deltaTime);
-                            curCharacter.Physics.Sweep(GameManager.SWEEP);
-                        }
+                            var dragVectorWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
-                        //첫 클릭 위치 초기화
-                        clickStartScreenPos = Input.mousePosition;
+                            var dir = curCharacter.Physics.dir;
+                            var diff = dragVectorWorldPos - curCharacter.transform.position;
+                            var cross = Vector3.Cross(dir, diff);
+
+                            //방향 벡터의 노말
+                            var dirNormal = new Vector3(dir.z, 0, -dir.x);
+
+                            //오브젝트 기준 오른쪽
+                            if (cross.y > 0)
+                            {
+                                curCharacter.Physics.ApplyDir(dirNormal * Time.deltaTime);
+                                curCharacter.Physics.Sweep(GameManager.SWEEP);
+                            }
+                            //오브젝트 기준 왼쪽
+                            else
+                            {
+                                curCharacter.Physics.ApplyDir(-dirNormal * Time.deltaTime);
+                                curCharacter.Physics.Sweep(GameManager.SWEEP);
+                            }
+
+                            //첫 클릭 위치 초기화
+                            clickStartScreenPos = Input.mousePosition;
+                        }
                     }
                 }
             }

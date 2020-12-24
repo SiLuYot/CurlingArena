@@ -4,15 +4,23 @@ using UnityEngine;
 
 public class GameCharacterSelectUI : UIBase
 {
+    public UILabel roundCount;
+    public UILabel title;
     public SlotUI[] slotArray;
-    public SlotUI curSelectSlot;
 
+    private SlotUI curSelectSlot;
+    private PlayerData playerData;
     private Character tempCharacter;
 
-    public void Start()
+    public void Init(int round, PlayerData playerData)
     {
-        tempCharacter = null;
-        var curDeck = DeckManager.Instance.CurDeck;
+        this.roundCount.text = round.ToString();
+        this.title.text = playerData.team.ToString();
+
+        this.playerData = playerData;
+        this.tempCharacter = null;
+
+        var curDeck = playerData.deckData;
 
         for (int i = 0; i < slotArray.Length; i++)
         {
@@ -20,6 +28,11 @@ public class GameCharacterSelectUI : UIBase
             {
                 var data = curDeck.DataDic[i];
                 slotArray[i].Init(i, data, data.NAME, ClickSlot);
+
+                if (playerData.UseIndexList.Contains(i))
+                {
+                    slotArray[i].ActiveBlock(true);
+                }                
             }
         }
 
@@ -36,7 +49,7 @@ public class GameCharacterSelectUI : UIBase
             GameManager.Instance.RemoveCharacter(tempCharacter.Physics.PID);
         }
 
-        var team = Team.PLAYER;
+        var team = playerData.team;
         var pos = GameManager.Instance.playerStartPos;
 
         tempCharacter = GameManager.Instance.AddCharacter(team, curSelectSlot.Data, pos.position, true);
@@ -46,6 +59,18 @@ public class GameCharacterSelectUI : UIBase
     {
         if (tempCharacter == null)
             return;
+
+        if (playerData.UseIndexList.Contains(curSelectSlot.Index))
+            return;
+
+        //캐릭터 사용 처리
+        playerData.UseCharacter(curSelectSlot.Index);
+
+        //아직 사용 가능한 캐릭터가 남아있다면
+        if (playerData.IsLeftCharacter())
+        {
+            GameManager.Instance.EnqueuePlayerSequenceQueue(playerData);
+        }
 
         Close();
         GameManager.Instance.Ready();
