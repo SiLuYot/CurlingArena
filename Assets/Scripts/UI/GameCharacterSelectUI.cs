@@ -44,6 +44,9 @@ public class GameCharacterSelectUI : UIBase
 
     public void ClickSelectButton()
     {
+        if (tempCharacter == null)
+            return;
+
         Close();
         GameManager.Instance.Ready();
     }

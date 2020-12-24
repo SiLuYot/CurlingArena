@@ -46,11 +46,10 @@ public class PhysicsManager : MonoBehaviour
     private List<CharacterPhysics> physicsObjectList = new List<CharacterPhysics>();
     //충돌 발생 시 순서대로 기록되는 리스트
     private List<CollisionData> collisionDataList = new List<CollisionData>();
-
-    public bool isAllStop = false;
-    public bool isAllStopEventEnd = false;
-    public Coroutine allStopCoroutine = null;
-    public Coroutine calculateForceCoroutine = null;
+    
+    private bool isAllStop = false;
+    private bool isAllStopEventEnd = false;
+    private Coroutine allStopCoroutine = null;
 
     public void Init()
     {
@@ -102,59 +101,6 @@ public class PhysicsManager : MonoBehaviour
         }
     }
 
-    public void SweepStep()
-    {
-        if (GameManager.CurRoundStep != RoundStep.SWEEP)
-            return;
-
-        var obj = GameManager.Instance.CurrentCharacter;
-        //현재 플레이어 캐릭터가 존재할때
-        if (obj != null)
-        {
-            //플레이어 캐릭터가 호그라인을 넘긴 경우
-            if (obj.transform.position.x > hoglineLine.position.x)
-            {
-                //스윕 중지
-                GameManager.Instance.Move();
-            }
-        }
-        //현재 플레이어 캐릭터가 없을때
-        else
-        {
-            //플레이어 캐릭터가 호그라인을 넘지 못해서 삭제되고
-            //모두 멈춰 있는 경우
-            if (isAllStop)
-            {
-                //스윕 중지
-                GameManager.Instance.Move();
-            }
-        }
-
-        //물리적 힘 처리
-        ForceProcess();
-    }
-
-    public void MoveStep()
-    {
-        if (GameManager.CurRoundStep != RoundStep.MOVE)
-            return;
-
-        //물리적 힘 처리
-        ForceProcess();
-        //모두 멈춘 경우 이벤트 발생
-        AllStopEvent();
-    }
-
-    public void ForceProcess()
-    {
-        //방향과 속력 계산
-        CalculateForce();
-        //계산된 방향과 속력 갱신
-        UpdateForce();
-        //갱신된 방향과 속력 적용
-        ApplyForce();
-    }
-
     public void AddPhysicsObject(CharacterPhysics obj)
     {
         //가장 마지막 데이터의 다음 id 부여
@@ -189,14 +135,20 @@ public class PhysicsManager : MonoBehaviour
             if (moveObj.isInActive)
                 continue;
 
+            //빙판을 벗어난 경우
+            if (!GameManager.Instance.IsInIcePlate(moveObj.characterTransform.position))
+            {                
+                StopPhysicsObj(moveObj);
+                continue;
+            }
+
             //속도를 마찰력만큼 감소 시킨다.
             moveObj.speed -= moveObj.Friction;
 
             //0보다 작을경우 0으로 처리
             if (moveObj.speed < 0)
             {
-                moveObj.speed = 0;
-                moveObj.dir = Vector3.zero;
+                StopPhysicsObj(moveObj);
             }
 
             //아직 변하는 중이라면
@@ -648,6 +600,12 @@ public class PhysicsManager : MonoBehaviour
     {
         physicsObjectList.Clear();
         collisionDataList.Clear();
+    }
+
+    public void StopPhysicsObj(CharacterPhysics obj)
+    {
+        obj.speed = 0;
+        obj.dir = Vector3.zero;
     }
 
     private void OnDestroy()

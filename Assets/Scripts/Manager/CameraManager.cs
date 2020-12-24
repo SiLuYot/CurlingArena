@@ -28,11 +28,6 @@ public class CameraManager : MonoBehaviour
     private const int DEFAULT_SIZE = 15;
     private const int SELECT_SIZE = 10;
 
-    public void Start()
-    {
-        
-    }
-
     public void InitCreatePos()
     {
         Init(playerCreatePos.position);
@@ -62,15 +57,37 @@ public class CameraManager : MonoBehaviour
     public void LateUpdate()
     {
         if (IsFixed)
-        {
-            var findObj = followTrans;
+        {            
+            var originPos = mainCamera.transform.position;
 
             var newPos = new Vector3(
-                findObj.position.x,
-                findObj.position.y + y,
-                findObj.position.z);
+                followTrans.position.x,
+                followTrans.position.y + y,
+                followTrans.position.z);
 
-            mainCamera.transform.position = newPos;
+            var finalPos = new Vector3(originPos.x, newPos.y, originPos.z);
+
+            var width = mainCamera.orthographicSize * Screen.width / Screen.height;
+            var height = width * Screen.height / Screen.width;
+
+            bool isInIce_X1 = GameManager.Instance.IsInIcePlate_X1(newPos.x - width);
+            bool isInIce_X2 = GameManager.Instance.IsInIcePlate_X2(newPos.x + width);
+            bool isInIce_Z1 = GameManager.Instance.IsInIcePlate_Z1(newPos.z + height);
+            bool isInIce_Z2 = GameManager.Instance.IsInIcePlate_Z2(newPos.z - height);
+
+            if (isInIce_X1 && isInIce_X2)
+            {
+                //x축 변경
+                finalPos.Set(newPos.x, finalPos.y, finalPos.z);
+            }
+
+            if (isInIce_Z1 && isInIce_Z2)
+            {
+                //z축 변경
+                finalPos.Set(finalPos.x, finalPos.y, newPos.z);
+            }
+
+            mainCamera.transform.position = finalPos;
         }
     }
 
@@ -80,14 +97,39 @@ public class CameraManager : MonoBehaviour
     }
 
     public void DragScreen_X(Vector3 clickStartPos)
-    {
-        var dragVector = clickStartPos - Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Camera.main.transform.position += new Vector3(dragVector.x, 0, 0);
+    {      
+        var dragVector = clickStartPos - mainCamera.ScreenToWorldPoint(Input.mousePosition);
+        var newPos = mainCamera.transform.position + new Vector3(dragVector.x, 0, 0);
+
+        var width = mainCamera.orthographicSize * Screen.width / Screen.height;
+
+        bool isInIce_X1 = GameManager.Instance.IsInIcePlate_X1(newPos.x - width);
+        bool isInIce_X2 = GameManager.Instance.IsInIcePlate_X2(newPos.x + width);
+
+        if (isInIce_X1 && isInIce_X2)
+        {
+            mainCamera.transform.position = newPos;
+        }
+
+        if (!isInIce_X1)        
+        {
+            var diff = GameManager.Instance.endLine1.position.x -
+                (mainCamera.transform.position.x - width);
+
+            mainCamera.transform.position += new Vector3(diff, 0, 0);
+        }
+        else if (!isInIce_X2)
+        {
+            var diff = GameManager.Instance.endLine2.position.x -
+                (mainCamera.transform.position.x + width);
+
+            mainCamera.transform.position += new Vector3(diff, 0, 0);
+        }
     }
 
     public void DragScreen_XZ(Vector3 clickStartPos)
     {
-        var dragVector = clickStartPos - Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Camera.main.transform.position += new Vector3(dragVector.x, 0, dragVector.z);
+        var dragVector = clickStartPos - mainCamera.ScreenToWorldPoint(Input.mousePosition);
+        mainCamera.transform.position += new Vector3(dragVector.x, 0, dragVector.z);
     }
 }

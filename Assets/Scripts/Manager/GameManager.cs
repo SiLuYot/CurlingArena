@@ -56,6 +56,11 @@ public class GameManager : MonoBehaviour
     public Transform playerStartPos;
     public Transform housePos;
 
+    public Transform endLine1;
+    public Transform endLine2;
+    public Transform endLine3;
+    public Transform endLine4;
+
     public GameObject characterPrefab1;
     public GameObject characterPrefab2;
 
@@ -204,7 +209,12 @@ public class GameManager : MonoBehaviour
                 if (findCharacter.Physics.PID == CurrentCharacter.Physics.PID)
                 {
                     var activeObj = ChracterList.Find(v => v.Physics.isInActive == false);
-                    CameraManager.Instance.SetFollowTrans(activeObj.transform);
+                    if (activeObj != null)
+                    {
+                        CameraManager.Instance.SetFollowTrans(activeObj.transform);
+                    }
+                    else CameraManager.Instance.SetFollowTrans(housePos);
+
                     CurrentCharacter = null;
                 }
             }
@@ -270,5 +280,58 @@ public class GameManager : MonoBehaviour
         return CurrentCharacter == null ? 
             false : 
             CurrentCharacter.Physics.PID == character.Physics.PID;
+    }
+
+    public bool IsInIcePlate(Vector3 pos)
+    {
+        if (IsInIcePlate_X1(pos.x) &&
+            IsInIcePlate_X2(pos.x) &&
+            IsInIcePlate_Z1(pos.z) &&
+            IsInIcePlate_Z2(pos.z))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    public bool IsInIcePlate_X1(float x)
+    {
+        if (x < endLine1.position.x)
+        {            
+            return false;
+        }
+
+        return true;
+    }
+
+    public bool IsInIcePlate_X2(float x)
+    {
+        if (x > endLine2.position.x)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    public bool IsInIcePlate_Z1(float z)
+    {
+        if (z > endLine3.position.z)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    public bool IsInIcePlate_Z2(float z)
+    {
+        if (z < endLine4.position.z)
+        {
+            return false;
+        }
+
+        return true;
     }
 }
