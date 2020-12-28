@@ -58,6 +58,7 @@ public class DataBaseManager : MonoBehaviour
             new SizeDataBase(),
             new SkillDataBase(),
             new SpeciesDataBase(),
+            new BasicDataBase(),
         };
 
         loader.Process(dataBase);

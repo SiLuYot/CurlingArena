@@ -2,6 +2,15 @@
 
 public class MainMenuUI : UIBase
 {
+    public GameObject mainRoot;
+    public GameObject gameRoot;
+
+    public void Start()
+    {
+        mainRoot.SetActive(true);
+        gameRoot.SetActive(false);
+    }
+
     public void ClickGameStartButton()
     {
         Close();
@@ -18,6 +27,18 @@ public class MainMenuUI : UIBase
     {
         Close();
         GameManager.Instance.TestSceneStart();
+    }
+
+    public void ClickGameButton()
+    {
+        //mainRoot.SetActive(false);
+        gameRoot.SetActive(true);
+    }
+
+    public void ClickBackButton()
+    {
+        mainRoot.SetActive(true);
+        gameRoot.SetActive(false);
     }
 
     public void ClickGameEndButton()

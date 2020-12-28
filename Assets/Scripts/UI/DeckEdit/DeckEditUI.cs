@@ -160,6 +160,9 @@ public class DeckEditUI : UIBase
         if (curSelectedMainSlot == null)
             return;
 
+        if (curSelectedMainSlot.Data == null)
+            return;
+
         if (!curSelectedMainSlot.Data.IsCompleteDeck())
             return;
 

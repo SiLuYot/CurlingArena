@@ -1,6 +1,6 @@
 ﻿using SQLiteLoadHelper.Data;
 using SQLiteLoadHelper.Database;
-
+using System.Linq;
 
 public class AffiliationData : ReadData
 {
@@ -187,5 +187,28 @@ public class SpeciesData : ReadData
 public class SpeciesDataBase : DataBase<SpeciesData>
 {
     public override string DBKey => "SpeciesDB";
+}
+
+public class BasicData : ReadData
+{
+    public int id;
+    public float Distacne;
+    public float Mass;
+    public float Base_Friction;
+    public float Sweep;
+    public float Sweep_Max;
+    public float Sweep_Min_Distance;
+    public float Round_Count;
+    public float Round_Wait_Time;
+
+    public override int ID => 0;
+    public override string NAME => "basic";
+}
+
+public class BasicDataBase : DataBase<BasicData>
+{
+    public override string DBKey => "BasicDB";
+
+    public BasicData GetBasicData() => GetDataList().First() as BasicData;
 }
 

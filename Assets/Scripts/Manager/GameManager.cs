@@ -78,27 +78,6 @@ public class PlayerData
 
 public class GameManager : MonoBehaviour
 {
-    //거리 1 = 1.45f = 크기 중의 반지름 모두 동일
-    public static float DISTACNE = 1.45f;
-    //물리 오브젝트들의 질량
-    public static float MASS = 1f;
-    //기본 마찰력
-    public static float BASE_FRICTION = 0.25f;
-    //스윕시 감소시킬 마찰력
-    public static float SWEEP = 0.001f;
-    //스윕으로 감소되는 마찰력의 최솟값
-    public static float SWEEP_MAX = 0.01f;
-    //스윕으로 판정되는 최소 거리
-    public static float SWEEP_MIN_DISTACNE = 100.0f;    
-    //총 라운드 수
-    public static float ROUND_COUNT = 4;
-    //던진 스톤이 멈춘 후 잠시 대기할 시간
-    public static float ROUND_WAIT_TIME = 1.0f;
-    //덱에 들어가는 캐릭터의 최대 수
-    public static float DECK_CHARACTER_COUNT = 4;
-    //하우스 가장 큰 원의 반지름
-    public static float IN_HOUSE_DISTANCE = 18.288f;
-
     public static Step CurStep;
     public static int CurRound;
 
@@ -113,6 +92,27 @@ public class GameManager : MonoBehaviour
 
     public GameObject characterPrefab1;
     public GameObject characterPrefab2;
+
+    //거리 1 = 1.45f = 크기 중의 반지름 모두 동일
+    public static float DISTACNE => basicData.Distacne;
+    //물리 오브젝트들의 질량
+    public static float MASS => basicData.Mass;
+    //기본 마찰력
+    public static float BASE_FRICTION => basicData.Base_Friction;
+    //스윕시 감소시킬 마찰력
+    public static float SWEEP => basicData.Sweep;
+    //스윕으로 감소되는 마찰력의 최솟값
+    public static float SWEEP_MAX => basicData.Sweep_Max;
+    //스윕으로 판정되는 최소 거리
+    public static float SWEEP_MIN_DISTACNE => basicData.Sweep_Min_Distance;
+    //총 라운드 수
+    public static float ROUND_COUNT => basicData.Round_Count;
+    //던진 스톤이 멈춘 후 잠시 대기할 시간
+    public static float ROUND_WAIT_TIME => basicData.Round_Wait_Time;    
+    //덱에 들어가는 캐릭터의 최대 수
+    public static float DECK_CHARACTER_COUNT = 4;
+    //하우스 가장 큰 원의 반지름
+    public static float IN_HOUSE_DISTANCE = 18.288f;
 
     public Character CurrentCharacter { get; private set; }
     public List<Character> ChracterList { get; private set; }
@@ -135,6 +135,8 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private static BasicData basicData;
+
     public void Awake()
     {
         ChracterList = new List<Character>();
@@ -146,6 +148,8 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         UIManager.Instance.Get<IntroUI>();
+
+        basicData = (DataBaseManager.Instance.loader.GetDataBase("BasicDB") as BasicDataBase).GetBasicData();
     }
 
     public void GameInit()
@@ -242,7 +246,16 @@ public class GameManager : MonoBehaviour
         RemoveAllData();
 
         CurRound += 1;
-        NextSequencePlayerStart();
+        if (CurRound > ROUND_COUNT)
+        {
+            //게임 종료
+            None();
+            UIManager.Instance.Get<MainMenuUI>();
+        }
+        else
+        {
+            NextSequencePlayerStart();
+        }        
     }
 
     public void None()
