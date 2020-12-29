@@ -16,6 +16,9 @@ public class Character : MonoBehaviour
     private Team team;
     public Team Team { get => team; }
 
+    public float synergyAtkValue;
+    public float synergyDefValue;
+
     public float finalAttack;
     public float finalDefence;
     public float ImpulseAddValue;
@@ -37,19 +40,31 @@ public class Character : MonoBehaviour
 
         this.team = team;
 
+        this.synergyAtkValue = 0;
+        this.synergyDefValue = 0;
+
         InitState();
         InitEvent();
     }
 
     public void InitState()
     {
-        finalAttack = data.attack;
-        finalDefence = data.defence;
+        finalAttack = data.attack + synergyAtkValue;
+        finalDefence = data.defence + synergyDefValue;
         ImpulseAddValue = 0;
         ImpulsePercentValue = 1.0f;
         ImpulseAddDir = Vector3.zero;
         immuneCount = 0;
-        lockCount = 0;        
+        lockCount = 0;
+    }
+
+    public void SetSynergyValue(float atk, float def)
+    {
+        this.synergyAtkValue = finalAttack * atk;
+        this.synergyDefValue = finalDefence * def;
+
+        finalAttack = data.attack + this.synergyAtkValue;
+        finalDefence = data.defence + this.synergyDefValue;
     }
 
     public void InitEvent()

@@ -81,7 +81,7 @@ public class DeckEditUI : UIBase
         {
             dataDic = tempDeckData.DataDic;
 
-            infoText = string.Format("{0}의 효과 출력 예정", tempDeckData.DeckName);
+            infoText = tempDeckData.DeckSynergyText;
             nameText = tempDeckData.DeckName;
         }
 
@@ -150,6 +150,7 @@ public class DeckEditUI : UIBase
         {
             tempDeckData = new DeckData(curSelectedMainSlot.Data.DeckName);
             tempDeckData.CopyData(curSelectedMainSlot.Data.DataDic);
+            DeckManager.Instance.CheckDeckEffect(tempDeckData);
         }
 
         ActiveDeckEditUI();
@@ -186,7 +187,7 @@ public class DeckEditUI : UIBase
         if (curSelectedMainSlot.Data != null)
         {
             dataDic = curSelectedMainSlot.Data.DataDic;
-            infoText = string.Format("{0}의 효과 출력 예정", curSelectedMainSlot.Data.DeckName);
+            infoText = curSelectedMainSlot.Data.DeckSynergyText;
         }
 
         mainInfoLabel.text = infoText;
@@ -222,6 +223,7 @@ public class DeckEditUI : UIBase
         {
             deckDataDic[index].CopyData(tempDeckData.DataDic);
             deckDataDic[index].ChangeDeckName(tempDeckData.DeckName);
+            DeckManager.Instance.CheckDeckEffect(deckDataDic[index]);
         }
         else DeckManager.Instance.AddNewDeck(index, tempDeckData);
 
@@ -269,6 +271,8 @@ public class DeckEditUI : UIBase
             tempDeckData.DataDic[index] = curSelectedEditSlot.Data;
         }
         else tempDeckData.AddData(index, curSelectedEditSlot.Data);
+
+        DeckManager.Instance.CheckDeckEffect(tempDeckData);
 
         curSelectedEditSlot.ActiveHighlight(false);
         curSelectedEditSlot = null;

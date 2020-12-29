@@ -53,6 +53,12 @@ public class GameCharacterSelectUI : UIBase
         var pos = GameManager.Instance.playerStartPos;
 
         tempCharacter = GameManager.Instance.AddCharacter(team, curSelectSlot.Data, pos.position, true);
+
+        var findData = playerData.deckData.SynergyDataList.Find(v => v.species == curSelectSlot.Data.speciesData.ID);
+        if (findData != null)
+        {
+            tempCharacter.SetSynergyValue(findData.synergyAtkValue, findData.synergyDefValue);
+        }        
     }
 
     public void ClickSelectButton()
