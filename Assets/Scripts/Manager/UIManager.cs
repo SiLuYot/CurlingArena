@@ -37,6 +37,7 @@ public class UIManager : MonoBehaviour
         AddUIPath(UIData.DeckEditUI);
         AddUIPath(UIData.GameReadyUI);
         AddUIPath(UIData.GameCharacterSelectUI);
+        AddUIPath(UIData.GameScoreUI);
     }
 
     private void AddUIPath(UIData data)
@@ -147,4 +148,6 @@ public class UIData
     public static UIData DeckEditUI = new UIData(6, typeof(DeckEditUI), "Prefabs/UI/DeckEditUI");
     public static UIData GameReadyUI = new UIData(7, typeof(GameReadyUI), "Prefabs/UI/GameReadyUI");
     public static UIData GameCharacterSelectUI = new UIData(8, typeof(GameCharacterSelectUI), "Prefabs/UI/GameCharacterSelectUI");
+    public static UIData GameScoreUI = new UIData(9, typeof(GameScoreUI), "Prefabs/UI/GameScoreUI");
+
 }

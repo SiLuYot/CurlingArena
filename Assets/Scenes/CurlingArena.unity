@@ -363,6 +363,7 @@ MonoBehaviour:
     type: 3}
   characterPrefab2: {fileID: 9045846341631651331, guid: 5fc586828ac1b4d4686ec1f643e9c31d,
     type: 3}
+  createPos: {fileID: 1256109890}
 --- !u!4 &32264135
 Transform:
   m_ObjectHideFlags: 0
@@ -2974,7 +2975,7 @@ Camera:
   far clip plane: 50
   field of view: 47.2
   orthographic: 1
-  orthographic size: 15
+  orthographic size: 25
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2

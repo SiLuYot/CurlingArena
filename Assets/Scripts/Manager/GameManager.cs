@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -93,6 +94,8 @@ public class GameManager : MonoBehaviour
     public GameObject characterPrefab1;
     public GameObject characterPrefab2;
 
+    public GameObject createPos;
+
     //거리 1 = 1.45f = 크기 중의 반지름 모두 동일
     public static float DISTACNE => basicData.Distacne;
     //물리 오브젝트들의 질량
@@ -108,7 +111,7 @@ public class GameManager : MonoBehaviour
     //총 라운드 수
     public static float ROUND_COUNT => basicData.Round_Count;
     //던진 스톤이 멈춘 후 잠시 대기할 시간
-    public static float ROUND_WAIT_TIME => basicData.Round_Wait_Time;    
+    public static float ROUND_WAIT_TIME => basicData.Round_Wait_Time;
     //덱에 들어가는 캐릭터의 최대 수
     public static float DECK_CHARACTER_COUNT = 4;
     //하우스 가장 큰 원의 반지름
@@ -118,8 +121,12 @@ public class GameManager : MonoBehaviour
     public List<Character> ChracterList { get; private set; }
     public List<CharacterCreateData> TestCharacterCreateDataList { get; private set; }
 
+    public PlayerData Player1 { get; private set; }
+    public PlayerData Player2 { get; private set; }
     public List<PlayerData> PlayerDataList { get; private set; }
     public Queue<PlayerData> PlayerSequenceQueue { get; private set; }
+
+    public bool IsGameEnd { get; private set; }
 
     private static GameManager instance = null;
     public static GameManager Instance
@@ -154,13 +161,20 @@ public class GameManager : MonoBehaviour
 
     public void GameInit()
     {
+        createPos.SetActive(false);
+
+        ChracterList.Clear();
+        PlayerDataList.Clear();
+        PlayerSequenceQueue.Clear();
+
+        IsGameEnd = false;
         CurRound = 1;
 
-        var newPlayer1 = new PlayerData(0, 0, Team.PLAYER1, DeckManager.Instance.CurDeck);
-        var newPlayer2 = new PlayerData(1, 1, Team.PLAYER2, DeckManager.Instance.CurDeck);
+        Player1 = new PlayerData(0, 0, Team.PLAYER1, DeckManager.Instance.CurDeck);
+        Player2 = new PlayerData(1, 1, Team.PLAYER2, DeckManager.Instance.CurDeck);
 
-        PlayerDataList.Add(newPlayer1);
-        PlayerDataList.Add(newPlayer2);
+        PlayerDataList.Add(Player1);
+        PlayerDataList.Add(Player2);
 
         PlayerDataList.Sort((x, y) =>
         {
@@ -184,12 +198,15 @@ public class GameManager : MonoBehaviour
     {
         None();
 
+        if (IsGameEnd)
+            return;
+
         if (PlayerSequenceQueue.Count > 0)
         {
             var player = PlayerSequenceQueue.Dequeue();
 
             var selectUI = UIManager.Instance.Get<GameCharacterSelectUI>() as GameCharacterSelectUI;
-            selectUI.Init(CurRound, player);
+            selectUI.Init(CurRound, player, Player1, Player2);
         }
         else
         {
@@ -207,6 +224,9 @@ public class GameManager : MonoBehaviour
         var pevLastPlayer = PlayerDataList
             .Find(v => v.order == (PlayerDataList.Count - 1));
 
+        var firstTeam = Team.NONE;
+        var winTeam = Team.NONE;
+
         //후공 플레이어가 점수를 획득했다면
         if (findPlayer != null &&
             pevLastPlayer.index == findPlayer.index)
@@ -216,6 +236,8 @@ public class GameManager : MonoBehaviour
             {
                 return y.order.CompareTo(x.order);
             });
+
+            firstTeam = PlayerDataList.First().team;
 
             //전 라운드 순서의 역순으로 인큐
             for (int i = 0; i < PlayerDataList.Count; i++)
@@ -234,6 +256,8 @@ public class GameManager : MonoBehaviour
                 return x.order.CompareTo(y.order);
             });
 
+            firstTeam = PlayerDataList.First().team;
+
             //전 라운드 순서로 인큐
             for (int i = 0; i < PlayerDataList.Count; i++)
             {
@@ -243,19 +267,42 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        RemoveAllData();
+        SetCameraToHousePos();
 
         CurRound += 1;
         if (CurRound > ROUND_COUNT)
         {
             //게임 종료
-            None();
-            UIManager.Instance.Get<MainMenuUI>();
+            IsGameEnd = true;
+
+            winTeam = Player1.Score > Player2.Score ? Team.PLAYER1 : Team.PLAYER2;
+
+            StartCoroutine(NextRoundWait(
+                (scoreUI) => scoreUI.SetWinLoseRoot(winTeam == Player1.team),
+                () =>
+                {
+                    RemoveAllData();
+                    None();
+
+                    var selectUI = UIManager.Instance.IsUIOpened<GameCharacterSelectUI>();
+                    if (selectUI != null)
+                    {
+                        selectUI.Close();
+                    }
+
+                    UIManager.Instance.Get<MainMenuUI>();
+                }));
         }
         else
         {
-            NextSequencePlayerStart();
-        }        
+            StartCoroutine(NextRoundWait(
+                (scoreUI) => scoreUI.SetFirstAttackRoot(firstTeam == Player1.team),
+                () => 
+                {
+                    RemoveAllData();
+                    NextSequencePlayerStart();                    
+                }));
+        }
     }
 
     public void None()
@@ -321,10 +368,25 @@ public class GameManager : MonoBehaviour
         NextSequencePlayerStart();
     }
 
+    public IEnumerator NextRoundWait(Action<GameScoreUI> callback1, Action callback2)
+    {
+        var gameScoreUI = UIManager.Instance.Get<GameScoreUI>() as GameScoreUI;
+        gameScoreUI.Init(Player1, Player2);
+
+        callback1?.Invoke(gameScoreUI);
+
+        yield return new WaitForSeconds(ROUND_WAIT_TIME);
+
+        gameScoreUI.Close();
+        callback2?.Invoke();
+    }
+
     public void TestSceneStart()
     {
         var testUI = UIManager.Instance.Get<TestBattleSceneUI>() as TestBattleSceneUI;
         testUI?.Init();
+
+        createPos.SetActive(true);
     }
 
     public Character AddCharacter(Team team, CharacterData data, Vector3 pos, bool isPlayerChacter)
@@ -453,6 +515,26 @@ public class GameManager : MonoBehaviour
         return CurrentCharacter == null ?
             false :
             CurrentCharacter.Physics.PID == character.Physics.PID;
+    }
+
+    public void SetCameraToHousePos()
+    {
+        CameraManager.Instance.Init(housePos.position);
+    }
+
+    public void GameForceEnd()
+    {
+        RemoveAllData();
+        SetCameraToHousePos();
+        None();
+
+        IsGameEnd = true;
+
+        var sweepUI = UIManager.Instance.IsUIOpened<SweepUI>();
+        if (sweepUI != null)
+        {
+            sweepUI.Close();
+        }
     }
 
     public bool IsInIcePlate(Vector3 pos)

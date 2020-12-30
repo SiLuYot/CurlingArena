@@ -22,7 +22,8 @@ public class InputManager : MonoBehaviour
     private void Update()
     {
         //준비 단계일때
-        if (GameManager.CurStep == Step.READY)
+        if (GameManager.CurStep == Step.NONE ||
+            GameManager.CurStep == Step.READY)
         {
             //누를때
             if (Input.GetMouseButtonDown(0))

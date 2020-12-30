@@ -25,7 +25,7 @@ public class CameraManager : MonoBehaviour
 
     private Transform followTrans;
 
-    private const int DEFAULT_SIZE = 15;
+    private const int DEFAULT_SIZE = 25;
     private const int SELECT_SIZE = 10;
 
     public void InitCreatePos()
@@ -39,7 +39,7 @@ public class CameraManager : MonoBehaviour
     {
         Init(playerSelectPos.position);
 
-        mainCamera.orthographicSize = SELECT_SIZE;
+        //mainCamera.orthographicSize = SELECT_SIZE;
     }
 
     public void Init(Vector3 pos)

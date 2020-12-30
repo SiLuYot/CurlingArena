@@ -186,8 +186,7 @@ public class TestBattleSceneUI : UIBase
     public void ClickMoveHousePosButton()
     {
         isPlayerChacter = false;
-        var initPos = GameManager.Instance.housePos.position;
-        CameraManager.Instance.Init(initPos);
+        GameManager.Instance.SetCameraToHousePos();
     }
 
     public void ClickResetButton()
@@ -198,8 +197,10 @@ public class TestBattleSceneUI : UIBase
 
     public void ClickMainMenuButton()
     {
-        Close();
         GameManager.Instance.RemoveAllData();
+        GameManager.Instance.SetCameraToHousePos();
+
+        Close();        
         UIManager.Instance.Get<MainMenuUI>();        
     }
 }

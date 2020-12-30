@@ -195,11 +195,13 @@ public class BasicData : ReadData
     public float Distacne;
     public float Mass;
     public float Base_Friction;
+    public float Friction;
     public float Sweep;
     public float Sweep_Max;
     public float Sweep_Min_Distance;
     public float Round_Count;
     public float Round_Wait_Time;
+    public float Turn;
 
     public override int ID => 0;
     public override string NAME => "basic";
