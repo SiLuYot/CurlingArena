@@ -141,9 +141,6 @@ public class PhysicsManager : MonoBehaviour
                 continue;
             }
 
-            //속도를 마찰력만큼 감소 시킨다.
-            moveObj.speed -= moveObj.Friction;
-
             //0보다 작을경우 0으로 처리
             if (moveObj.speed < 0)
             {
@@ -174,6 +171,12 @@ public class PhysicsManager : MonoBehaviour
                     }
                 }
             }
+
+            //속도를 마찰력만큼 감소 시킨다.
+            moveObj.speed -= moveObj.Friction;
+
+            //스윕으로 인한 마찰력 회복
+            moveObj.RecoverySweepFriction(Time.fixedDeltaTime);
         }
 
         isAllStop = allStop;

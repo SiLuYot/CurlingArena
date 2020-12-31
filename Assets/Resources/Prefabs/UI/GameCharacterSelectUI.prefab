@@ -1849,6 +1849,7 @@ MonoBehaviour:
   player1Name: {fileID: 4959615571317638584}
   player2Name: {fileID: 4449048325630894106}
   turnCount: {fileID: 2321132476307851386}
+  leftTime: {fileID: 5693645320495846156}
   roundCount: {fileID: 4275889705840060094}
   player1Score: {fileID: 4073087777239828752}
   player2Score: {fileID: 2021195722064577887}

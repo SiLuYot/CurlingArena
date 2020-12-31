@@ -102,6 +102,8 @@ public class GameManager : MonoBehaviour
     public static float MASS => basicData.Mass;
     //기본 마찰력
     public static float BASE_FRICTION => basicData.Base_Friction;
+    //초당 마찰력 회복 수치
+    public static float FRICTION => basicData.Friction;
     //스윕시 감소시킬 마찰력
     public static float SWEEP => basicData.Sweep;
     //스윕으로 감소되는 마찰력의 최솟값
@@ -112,6 +114,8 @@ public class GameManager : MonoBehaviour
     public static float ROUND_COUNT => basicData.Round_Count;
     //던진 스톤이 멈춘 후 잠시 대기할 시간
     public static float ROUND_WAIT_TIME => basicData.Round_Wait_Time;
+    //라운드 남은 시간
+    public static float Turn => basicData.Turn;
     //덱에 들어가는 캐릭터의 최대 수
     public static float DECK_CHARACTER_COUNT = 4;
     //하우스 가장 큰 원의 반지름

@@ -72,11 +72,17 @@ public class InputManager : MonoBehaviour
                     var force = shootUI.GetPowerValue();
                     var attackBouns = shootUI.GetAttackBouns();
 
-                    GameManager.Instance.Shoot(selectedCharacter, dir, force, attackBouns);
+                    //하우스 방향(전방)일때만 발사 허용
+                    var dot = Vector3.Dot(Vector3.right, dir);
+                    if (dot > 0)
+                    {
+                        GameManager.Instance.Shoot(selectedCharacter, dir, force, attackBouns);
+                    }
+
+                    selectedCharacter = null;
 
                     shootUI.Close();
                     shootUI = null;
-                    selectedCharacter = null;
                 }
             }
         }
@@ -86,7 +92,7 @@ public class InputManager : MonoBehaviour
             //누를때
             if (Input.GetMouseButtonDown(0))
             {
-                clickStartScreenPos = Input.mousePosition;                
+                clickStartScreenPos = Input.mousePosition;
             }
             //누르는 중일때
             else if (Input.GetMouseButton(0))
@@ -116,13 +122,13 @@ public class InputManager : MonoBehaviour
                             if (cross.y > 0)
                             {
                                 curCharacter.Physics.ApplyDir(dirNormal * Time.deltaTime);
-                                curCharacter.Physics.Sweep(GameManager.SWEEP);
+                                curCharacter.Physics.Sweep(GameManager.SWEEP * Time.deltaTime);
                             }
                             //오브젝트 기준 왼쪽
                             else
                             {
                                 curCharacter.Physics.ApplyDir(-dirNormal * Time.deltaTime);
-                                curCharacter.Physics.Sweep(GameManager.SWEEP);
+                                curCharacter.Physics.Sweep(GameManager.SWEEP * Time.deltaTime);
                             }
 
                             //첫 클릭 위치 초기화

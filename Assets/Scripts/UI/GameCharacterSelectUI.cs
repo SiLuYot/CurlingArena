@@ -8,6 +8,7 @@ public class GameCharacterSelectUI : UIBase
     public UILabel player2Name;
 
     public UILabel turnCount;
+    public UILabel leftTime;
     public UILabel roundCount;
 
     public UILabel player1Score;
@@ -32,6 +33,7 @@ public class GameCharacterSelectUI : UIBase
     private SlotUI curSelectSlot;
     private PlayerData playerData;
     private Character tempCharacter;
+    private float leftTimer = 0;
 
     public void Init(int round, PlayerData curPlayerData, PlayerData player1, PlayerData player2)
     {
@@ -42,6 +44,9 @@ public class GameCharacterSelectUI : UIBase
 
         this.turnCount.text = string.Format("{0}/{1}",
             curPlayerData.UseIndexList.Count + 1, curDeck.DataDic.Count);
+
+        this.leftTime.text = this.leftTimer.ToString();
+
         this.roundCount.text = string.Format("{0}/{1}",
             round, GameManager.ROUND_COUNT);
 
@@ -54,6 +59,7 @@ public class GameCharacterSelectUI : UIBase
         this.curSelectSlot = null;
         this.playerData = curPlayerData;
         this.tempCharacter = null;
+        this.leftTimer = GameManager.Turn;
 
         for (int i = 0; i < slotArray.Length; i++)
         {
@@ -77,6 +83,18 @@ public class GameCharacterSelectUI : UIBase
         profileRoot.SetActive(false);
         pauseRoot.SetActive(false);
         homePopupRoot.SetActive(false);
+    }
+
+    public void Update()
+    {
+        if (GameManager.CurStep != Step.NONE)
+            return;
+
+        if (leftTime != null && leftTimer > 0)
+        {
+            leftTimer -= Time.deltaTime;
+            leftTime.text = leftTimer.ToString("00.00");
+        }
     }
 
     public void ClickSlot(SlotUI slotUI)

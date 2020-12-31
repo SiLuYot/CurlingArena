@@ -80,6 +80,22 @@ public class CharacterPhysics
         PhysicsManager.Instance.AddPhysicsObject(this);
     }
 
+    public void RecoverySweepFriction(float deltaTime)
+    {
+        if (sweepValue <= 0)
+            return;
+
+        Debug.Log(string.Format("마찰력 회복\n{0} -> {1}",
+            friction - sweepValue, friction - (sweepValue - GameManager.FRICTION * deltaTime)));
+
+        sweepValue -= GameManager.FRICTION * deltaTime;
+        
+        if (sweepValue <= 0)
+        {
+            sweepValue = 0;
+        }
+    }
+
     public void SetPID(int pid)
     {
         this.pid = pid;
