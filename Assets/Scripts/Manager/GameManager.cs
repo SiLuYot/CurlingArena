@@ -134,6 +134,7 @@ public class GameManager : MonoBehaviour
     public Queue<PlayerData> PlayerSequenceQueue { get; private set; }
 
     public bool IsGameEnd { get; private set; }
+    public bool IsTestMode { get; private set; }
 
     private static GameManager instance = null;
     public static GameManager Instance
@@ -168,6 +169,7 @@ public class GameManager : MonoBehaviour
 
     public void GameInit()
     {
+        IsTestMode = false;
         createPos.SetActive(false);
 
         ChracterList.Clear();
@@ -224,6 +226,9 @@ public class GameManager : MonoBehaviour
 
     public void GetScore(Team team, int score)
     {
+        if (IsTestMode)
+            return;
+
         var findPlayer = PlayerDataList.Find(v => v.team == team);
         findPlayer?.GetScore(score);
 
@@ -402,6 +407,7 @@ public class GameManager : MonoBehaviour
         var testUI = UIManager.Instance.Get<TestBattleSceneUI>() as TestBattleSceneUI;
         testUI?.Init();
 
+        IsTestMode = true;
         createPos.SetActive(true);
     }
 
