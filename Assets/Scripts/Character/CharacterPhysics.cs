@@ -93,10 +93,10 @@ public class CharacterPhysics
             tempSweepValue = 0;
         }
 
-        Debug.Log(string.Format("마찰력 회복 값 : {0}\n{1} -> {2}",
-            GameManager.FRICTION * deltaTime,
-            tempFriction, 
-            friction - tempSweepValue));
+        //Debug.Log(string.Format("마찰력 회복 값 : {0}\n{1} -> {2}",
+        //    GameManager.FRICTION * deltaTime,
+        //    tempFriction, 
+        //    friction - tempSweepValue));
 
         sweepValue = tempSweepValue;
     }
@@ -156,7 +156,7 @@ public class CharacterPhysics
     //등차수열의 합과 이차방정식으로 속도를 알아낸다
     public float GetQuadraticEquationValue(float impulse)
     {
-        impulse = (impulse * GameManager.DISTACNE) * 2;
+        impulse = (impulse * GameManager.DISTACNE) * 3;
 
         var d = Friction;
 
