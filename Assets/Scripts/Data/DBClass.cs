@@ -227,6 +227,7 @@ public class BasicData : ReadData
     public float Sweep_Max;
     public float Sweep_Min_Distance;
     public float Round_Count;
+    public float Turn_Wait_time;
     public float Round_Wait_Time;
     public float Turn;
 

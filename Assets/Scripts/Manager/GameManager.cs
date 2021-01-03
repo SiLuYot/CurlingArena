@@ -114,6 +114,8 @@ public class GameManager : MonoBehaviour
     //총 라운드 수
     public static float ROUND_COUNT => basicData.Round_Count;
     //던진 스톤이 멈춘 후 잠시 대기할 시간
+    public static float TURN_WAIT_TIME => basicData.Turn_Wait_time;
+    //점수 보여준 후 잠시 대기할 시간
     public static float ROUND_WAIT_TIME => basicData.Round_Wait_Time;
     //라운드 남은 시간
     public static float Turn => basicData.Turn;
@@ -374,7 +376,7 @@ public class GameManager : MonoBehaviour
 
     public IEnumerator NextPlayerWait()
     {
-        yield return new WaitForSeconds(ROUND_WAIT_TIME);
+        yield return new WaitForSeconds(TURN_WAIT_TIME);
 
         NextSequencePlayerStart();
     }
