@@ -205,6 +205,9 @@ public class GameManager : MonoBehaviour
 
     public void NextSequencePlayerStart()
     {
+        if (IsTestMode)
+            return;
+
         None();
 
         if (IsGameEnd)

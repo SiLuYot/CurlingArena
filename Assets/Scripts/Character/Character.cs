@@ -89,7 +89,7 @@ public class Character : MonoBehaviour
 
     public float GetDefenceValue()
     {
-        return finalDefence * 300 / (finalDefence + 150);
+        return finalDefence * 100 / (finalDefence + 100);
     }
 
     public float GetImpulseValue(float attack)
