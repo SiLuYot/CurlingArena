@@ -21,9 +21,28 @@ public class InputManager : MonoBehaviour
 
     private void Update()
     {
+        //캐릭터를 고르는 단계일때
+        if (GameManager.CurStep == Step.SELECT)
+        {        
+            //누를때
+            if (Input.GetMouseButtonDown(0))
+            {
+                clickStartWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            }
+            //누르는 중일때
+            else if (Input.GetMouseButton(0))
+            {
+                //누르는 위치가 UI가 아니고 캐릭터를 누른것도 아닐때
+                if (!UICamera.isOverUI && selectedCharacter == null)
+                {
+                    CameraManager.Instance.DragScreen_X(clickStartWorldPos);
+                }
+            }
+              
+        }
+
         //준비 단계일때
-        if (GameManager.CurStep == Step.NONE ||
-            GameManager.CurStep == Step.READY)
+        if (GameManager.CurStep == Step.READY)
         {
             //누를때
             if (Input.GetMouseButtonDown(0))
@@ -52,7 +71,7 @@ public class InputManager : MonoBehaviour
                 if (!UICamera.isOverUI && selectedCharacter == null)
                 {
                     CameraManager.Instance.DragScreen_X(clickStartWorldPos);
-                }
+                }                
                 else if (selectedCharacter != null)
                 {
                     shootUI.RotateArrow(clickStartScreenPos);
@@ -87,6 +106,7 @@ public class InputManager : MonoBehaviour
             }
         }
 
+        //스윕 중
         if (GameManager.CurStep == Step.SWEEP)
         {
             //누를때
@@ -122,13 +142,15 @@ public class InputManager : MonoBehaviour
                             if (cross.y > 0)
                             {
                                 curCharacter.Physics.ApplyDir(dirNormal * Time.deltaTime);
-                                curCharacter.Physics.Sweep(GameManager.SWEEP * Time.deltaTime);
+                                curCharacter.Physics.Sweep(GameManager.SWEEP);
+                                //curCharacter.Physics.Sweep(GameManager.SWEEP * Time.deltaTime);
                             }
                             //오브젝트 기준 왼쪽
                             else
                             {
                                 curCharacter.Physics.ApplyDir(-dirNormal * Time.deltaTime);
-                                curCharacter.Physics.Sweep(GameManager.SWEEP * Time.deltaTime);
+                                curCharacter.Physics.Sweep(GameManager.SWEEP);
+                                //curCharacter.Physics.Sweep(GameManager.SWEEP * Time.deltaTime);
                             }
 
                             //첫 클릭 위치 초기화

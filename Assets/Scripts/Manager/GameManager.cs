@@ -7,11 +7,12 @@ using UnityEngine;
 public enum Step
 {
     NONE = 0,
-    READY = 1,
-    SHOOT = 2,
-    SWEEP = 3,
-    MOVE = 4,
-    END = 5,
+    SELECT = 1,
+    READY = 2,
+    SHOOT = 3,
+    SWEEP = 4,
+    MOVE = 5,
+    END = 6,
 }
 
 public enum Team
@@ -315,6 +316,12 @@ public class GameManager : MonoBehaviour
         Debug.Log("Step : " + CurStep);
     }
 
+    public void Select()
+    {
+        CurStep = Step.SELECT;
+        Debug.Log("Step : " + CurStep);
+    }
+
     public void Ready()
     {
         CurStep = Step.READY;
@@ -374,6 +381,9 @@ public class GameManager : MonoBehaviour
 
     public IEnumerator NextRoundWait(Action<GameScoreUI> callback1, Action callback2)
     {
+        var selectUI = UIManager.Instance.Get<GameCharacterSelectUI>() as GameCharacterSelectUI;
+        selectUI.HideMenu();
+
         var gameScoreUI = UIManager.Instance.Get<GameScoreUI>() as GameScoreUI;
         gameScoreUI.Init(Player1, Player2);
 

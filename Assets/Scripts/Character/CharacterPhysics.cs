@@ -37,8 +37,7 @@ public class CharacterPhysics
     {
         get
         {
-            var vaule = friction - sweepValue;
-            return vaule <= 0 ? GameManager.SWEEP_MAX : vaule;
+            return friction - sweepValue;
         }
     }
 
@@ -85,15 +84,21 @@ public class CharacterPhysics
         if (sweepValue <= 0)
             return;
 
-        Debug.Log(string.Format("마찰력 회복\n{0} -> {1}",
-            friction - sweepValue, friction - (sweepValue - GameManager.FRICTION * deltaTime)));
+        var tempFriction = friction - sweepValue;
+        tempFriction = tempFriction <= 0 ? GameManager.SWEEP_MAX : tempFriction;
 
-        sweepValue -= GameManager.FRICTION * deltaTime;
-        
-        if (sweepValue <= 0)
+        var tempSweepValue = sweepValue - GameManager.FRICTION * deltaTime;
+        if (tempSweepValue <= 0)
         {
-            sweepValue = 0;
+            tempSweepValue = 0;
         }
+
+        Debug.Log(string.Format("마찰력 회복 값 : {0}\n{1} -> {2}",
+            GameManager.FRICTION * deltaTime,
+            tempFriction, 
+            friction - tempSweepValue));
+
+        sweepValue = tempSweepValue;
     }
 
     public void SetPID(int pid)
@@ -118,7 +123,7 @@ public class CharacterPhysics
         this.firstSpeed = force;
         this.attackBouns = attackBouns;
 
-        Debug.Log(string.Format("ApplyForce -> {0}\ndir : {1} speed : {2} ab : {3}",
+        Debug.Log(string.Format("ApplyForce -> {0}\ndir : {1} speed : {2} attackBouns : {3}",
             characterTransform.name, dir, speed, attackBouns));
     }
 
@@ -130,10 +135,21 @@ public class CharacterPhysics
 
     public void Sweep(float value)
     {
-        sweepValue += value;
+        var tempSweepValue = sweepValue + value;
+        var tempFriction = friction - tempSweepValue;
 
-        Debug.Log(string.Format("현재 마찰력 : {0} ({1} - {2})\n마찰력 최소치 {3}",
-            Friction, friction, sweepValue, GameManager.SWEEP_MAX));
+        if (tempFriction <= GameManager.SWEEP_MAX)
+        {
+            tempSweepValue = friction - GameManager.SWEEP_MAX;
+            tempFriction = friction - tempSweepValue;
+        }
+
+        Debug.Log(string.Format("현재 마찰력 : {0}\n= {1} - {2} (기본 마찰력 - 스윕으로 감소시킬 마찰력)",
+            tempFriction, 
+            friction, 
+            tempSweepValue));
+
+        sweepValue = tempSweepValue;
     }
 
     //충격량을 속도로 변환

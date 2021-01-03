@@ -147,13 +147,40 @@ public class SkillData : ReadData
     public int applyValueType;
     public float applyValue;
     public float applyPercentValue;
-    public int changingValue;
+    //public int changingValue;
     public int checkSize;
     public int checkOtherRarity;
     public int isDefanceOver;
     public int isOneShot;
     public int isFirstCollide;
     public string desc;
+
+    public SkillData()
+    {
+
+    }
+
+    public SkillData(SkillData skillData)
+    {
+        this.id = skillData.id;
+        this.name = skillData.name;
+        this.conditionType = skillData.conditionType;
+        this.conditionObjectType = skillData.conditionObjectType;
+        this.occurStandard = skillData.occurStandard;
+        this.applyObject = skillData.applyObject;
+        this.applyAngle = skillData.applyAngle;
+        this.applyRange = skillData.applyRange;
+        this.applyType = skillData.applyType;
+        this.applyValueType = skillData.applyValueType;
+        this.applyValue = skillData.applyValue;
+        this.applyPercentValue = skillData.applyPercentValue;
+        this.checkSize = skillData.checkSize;
+        this.checkOtherRarity = skillData.checkOtherRarity;
+        this.isDefanceOver = skillData.isDefanceOver;
+        this.isOneShot = skillData.isOneShot;
+        this.isFirstCollide = skillData.isFirstCollide;
+        this.desc = skillData.desc;
+    }
 
     public ConditionType cType => (ConditionType)conditionType;
 

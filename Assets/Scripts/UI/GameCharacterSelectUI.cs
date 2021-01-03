@@ -76,6 +76,7 @@ public class GameCharacterSelectUI : UIBase
         }
 
         CameraManager.Instance.InitSelectPos();
+        GameManager.Instance.Select();
 
         menuRoot.SetActive(true);
         mainRoot.SetActive(true);
@@ -87,7 +88,8 @@ public class GameCharacterSelectUI : UIBase
 
     public void Update()
     {
-        if (GameManager.CurStep != Step.NONE)
+        if (GameManager.CurStep != Step.SELECT &&
+            GameManager.CurStep != Step.READY)
             return;
 
         if (leftTime != null && leftTimer > 0)
@@ -116,11 +118,45 @@ public class GameCharacterSelectUI : UIBase
 
         tempCharacter = GameManager.Instance.AddCharacter(team, curSelectSlot.Data, pos.position, true);
 
-        var findData = playerData.deckData.SynergyDataList.Find(v => v.species == curSelectSlot.Data.speciesData.ID);
-        if (findData != null)
+        float synergyAtkValue = 0, synergyDefValue = 0;
+        var findSpeciesDataArray = playerData.deckData.SynergySpeciesDataList.FindAll(v => v.id == curSelectSlot.Data.speciesData.ID);
+        if (findSpeciesDataArray != null)
         {
-            tempCharacter.SetSynergyValue(findData.synergyAtkValue, findData.synergyDefValue);
+            foreach (var data in findSpeciesDataArray)
+            {
+                synergyAtkValue += data.synergyAtkValue;
+                synergyDefValue += data.synergyDefValue;
+            }                  
         }
+
+        var findAffiliationDataArray = playerData.deckData.SynergyAffiliationDataList.FindAll(v => v.id == curSelectSlot.Data.affiliationData.ID);
+        if (findAffiliationDataArray != null)
+        {
+            foreach (var data in findAffiliationDataArray)
+            {
+                synergyAtkValue += data.synergyAtkValue;
+                synergyDefValue += data.synergyDefValue;
+            }          
+        }
+
+        //직업 시너지는 모든 아군 적용
+        foreach (var data in playerData.deckData.SynergyJobDataList)
+        {
+            synergyAtkValue += data.synergyAtkValue;
+            synergyDefValue += data.synergyDefValue;
+        }
+
+        //var findJobDataArray = playerData.deckData.SynergyJobDataList.FindAll(v => v.id == curSelectSlot.Data.jobData.ID);
+        //if (findJobDataArray != null)
+        //{
+        //    foreach (var data in findJobDataArray)
+        //    {
+        //        synergyAtkValue += data.synergyAtkValue;
+        //        synergyDefValue += data.synergyDefValue;
+        //    }           
+        //}
+
+        tempCharacter.SetSynergyValue(synergyAtkValue, synergyDefValue);
     }
 
     public void PressSlot(SlotUI slotUI, bool state)
@@ -223,5 +259,10 @@ public class GameCharacterSelectUI : UIBase
     public void ClickGoHomeNoButton()
     {
         homePopupRoot.SetActive(false);
+    }
+
+    public void HideMenu()
+    {
+        menuRoot.SetActive(false);
     }
 }
