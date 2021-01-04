@@ -1,1 +1,1 @@
-AffiliationDB_2/JobDB_1/RarityDB_0/SizeDB_0/SpeciesDB_0/CharacterDB_3/SkillDB_10/BasicDB_20/SynergyDB_1/
+AffiliationDB_2/JobDB_1/RarityDB_0/SizeDB_0/SpeciesDB_0/CharacterDB_3/SkillDB_10/BasicDB_21/SynergyDB_1/
