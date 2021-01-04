@@ -31,7 +31,7 @@ public class GameCharacterNameUI : UIBase
 
     private void UpdatePos()
     {
-        var e1 = Camera.main.WorldToViewportPoint(followTrans.position);
+        var e1 = Camera.main.WorldToViewportPoint(new Vector3(followTrans.position.x, 0, followTrans.position.z));
         var e2 = UICamera.mainCamera.ViewportToWorldPoint(e1);
         transform.position = e2;
     }
