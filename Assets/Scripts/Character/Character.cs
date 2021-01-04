@@ -13,6 +13,8 @@ public class Character : MonoBehaviour
     private CharacterSkill skill;
     public CharacterSkill Skill { get => skill; }
 
+    private GameCharacterNameUI gameCharacterNameUI;
+
     private Team team;
     public Team Team { get => team; }
 
@@ -44,7 +46,7 @@ public class Character : MonoBehaviour
         this.synergyDefValue = 0;
 
         InitState();
-        InitEvent();
+        //InitEvent();
     }
 
     public void InitState()
@@ -58,18 +60,34 @@ public class Character : MonoBehaviour
         lockCount = 0;
     }
 
-    public void SetSynergyValue(float atk, float def)
+    public void InitNameUI()
+    {
+        if (gameCharacterNameUI != null)
+            return;
+
+        gameCharacterNameUI = UIManager.Instance.Get<GameCharacterNameUI>(true) as GameCharacterNameUI;
+        gameCharacterNameUI.Init(data, Physics.characterTransform);        
+    }
+
+    public void SetSynergyValue(float atk, float def, List<SkillData> skillDataList)
     {
         this.synergyAtkValue = finalAttack * atk;
         this.synergyDefValue = finalDefence * def;
 
         finalAttack = data.attack + this.synergyAtkValue;
         finalDefence = data.defence + this.synergyDefValue;
+
+        Skill.AddSynergySkill(skillDataList);
     }
 
     public void InitEvent()
     {
         skill.InitEvent();
+    }
+
+    public void FirstShootEvent()
+    {
+        skill.FirstShootEvent();
     }
 
     public void CollideEvent(CharacterPhysics otherObj, List<CharacterPhysics> physicsObjectList)
@@ -119,6 +137,11 @@ public class Character : MonoBehaviour
 
     private void OnDestroy()
     {
+        if (gameCharacterNameUI != null)
+        {
+            gameCharacterNameUI.Close();
+        }
+
         physics = null;
     }
 }

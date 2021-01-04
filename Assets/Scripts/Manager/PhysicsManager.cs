@@ -141,12 +141,6 @@ public class PhysicsManager : MonoBehaviour
                 continue;
             }
 
-            //0보다 작을경우 0으로 처리
-            if (moveObj.speed < 0)
-            {
-                StopPhysicsObj(moveObj);
-            }
-
             //아직 변하는 중이라면
             if (moveObj.speed > 0 &&
                 moveObj.dir != Vector3.zero)
@@ -177,6 +171,12 @@ public class PhysicsManager : MonoBehaviour
 
             //스윕으로 인한 마찰력 회복
             moveObj.RecoverySweepFriction(Time.fixedDeltaTime);
+
+            //0보다 작을경우 0으로 처리
+            if (moveObj.speed < 0)
+            {
+                StopPhysicsObj(moveObj);
+            }
         }
 
         isAllStop = allStop;

@@ -2,15 +2,17 @@
 
 public class UIBase : MonoBehaviour
 {
-    protected UIData uiData;
+    public int index;
+    public UIData uiData;
 
-    public void Init(UIData uiData)
+    public void Init(int index, UIData uiData)
     {
+        this.index = index;
         this.uiData = uiData;
     }
 
     public void Close()
     {
-        UIManager.Instance.Close(uiData.id);
+        UIManager.Instance?.Close(index);
     }
 }

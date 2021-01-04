@@ -1617,14 +1617,14 @@ MonoBehaviour:
   updateAnchors: 1
   mColor: {r: 1, g: 0.48692903, b: 0, a: 1}
   mPivot: 4
-  mWidth: 539
+  mWidth: 528
   mHeight: 133
   mDepth: 3
   mMat: {fileID: 0}
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 4.0526314
+  aspectRatio: 3.969925
   mType: 1
   mFillDirection: 4
   mFillAmount: 1
@@ -2119,14 +2119,14 @@ MonoBehaviour:
   updateAnchors: 1
   mColor: {r: 1, g: 1, b: 1, a: 1}
   mPivot: 4
-  mWidth: 506
+  mWidth: 500
   mHeight: 100
   mDepth: 4
   mMat: {fileID: 0}
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 5.06
+  aspectRatio: 5
   keepCrispWhenShrunk: 1
   mTrueTypeFont: {fileID: 0}
   mFont: {fileID: 11400000, guid: 1fa4b2d5a71627a44950fff5085e485c, type: 2}
@@ -3031,6 +3031,7 @@ Transform:
   - {fileID: 8297127454524062150}
   - {fileID: 8297127454897105832}
   - {fileID: 8297127453835969003}
+  - {fileID: 179368717756671664}
   m_Father: {fileID: 8297127454600022981}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3387,7 +3388,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &8297127454600022981
 Transform:
   m_ObjectHideFlags: 0
@@ -3787,7 +3788,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8297127454692687684
 Transform:
   m_ObjectHideFlags: 0
@@ -5318,7 +5319,7 @@ MonoBehaviour:
   bottomType: 1
   topType: 1
   mAtlas: {fileID: 11400000, guid: 62adb30369acbf943a67cee0f69267a3, type: 2}
-  mSpriteName: Stripes 3
+  mSpriteName: Highlight - Shadowed
   mFixedAspect: 0
   mFillCenter: 1
 --- !u!1 &8297127454953517769
@@ -6028,8 +6029,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8297127455053040299}
-  - component: {fileID: 552801806826508457}
   - component: {fileID: 1496790631456010343}
+  - component: {fileID: 552801806826508457}
   - component: {fileID: 7709264276601025237}
   m_Layer: 8
   m_Name: DeckEditUI
@@ -6056,6 +6057,45 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1496790631456010343
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8297127455053040300}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edc30ca0c44e8534e8c0db94f2a4584a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  index: 0
+  mainRoot: {fileID: 8297127454692687685}
+  deckEditRoot: {fileID: 8297127455102619285}
+  SlotEditRoot: {fileID: 8297127454600022982}
+  mainSlotUIArray:
+  - {fileID: 6947034287884735587}
+  - {fileID: 5078364465863632900}
+  - {fileID: 7898623592256105106}
+  - {fileID: 9173024018883097563}
+  mainInfoSlotUIArray:
+  - {fileID: 8638410069636283845}
+  - {fileID: 4875210392713337500}
+  - {fileID: 6305394892777169375}
+  - {fileID: 7129699420072287585}
+  mainInfoLabel: {fileID: 8297127455742467276}
+  deckEditSlotUIArray:
+  - {fileID: 6811185070852854086}
+  - {fileID: 9018193126448557437}
+  - {fileID: 6213060021119543371}
+  - {fileID: 186441487683085473}
+  deckEditInfoLabel: {fileID: 8297127455676152396}
+  deckEditNameInput: {fileID: 5328183016195982969}
+  slotEditInfoSprite: {fileID: 8297127454897105831}
+  slotEditInfoLabel: {fileID: 8297127453947271588}
+  slotEditCharacterInfoLabel: {fileID: 4021544221595200094}
+  slotEditSlotPrefab: {fileID: 5646486482412026552}
+  scrollRoot: {fileID: 8297127455575725029}
 --- !u!114 &552801806826508457
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6106,43 +6146,6 @@ MonoBehaviour:
   mSortingLayerName: 
   mClipOffset: {x: 0, y: 0}
   useSortingOrder: 0
---- !u!114 &1496790631456010343
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8297127455053040300}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: edc30ca0c44e8534e8c0db94f2a4584a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mainRoot: {fileID: 8297127454692687685}
-  deckEditRoot: {fileID: 8297127455102619285}
-  SlotEditRoot: {fileID: 8297127454600022982}
-  mainSlotUIArray:
-  - {fileID: 6947034287884735587}
-  - {fileID: 5078364465863632900}
-  - {fileID: 7898623592256105106}
-  - {fileID: 9173024018883097563}
-  mainInfoSlotUIArray:
-  - {fileID: 8638410069636283845}
-  - {fileID: 4875210392713337500}
-  - {fileID: 6305394892777169375}
-  - {fileID: 7129699420072287585}
-  mainInfoLabel: {fileID: 8297127455742467276}
-  deckEditSlotUIArray:
-  - {fileID: 6811185070852854086}
-  - {fileID: 9018193126448557437}
-  - {fileID: 6213060021119543371}
-  - {fileID: 186441487683085473}
-  deckEditInfoLabel: {fileID: 8297127455676152396}
-  deckEditNameInput: {fileID: 5328183016195982969}
-  slotEditInfoSprite: {fileID: 8297127454897105831}
-  slotEditInfoLabel: {fileID: 8297127453947271588}
-  slotEditSlotPrefab: {fileID: 5646486482412026552}
-  scrollRoot: {fileID: 8297127455575725029}
 --- !u!54 &7709264276601025237
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -8269,6 +8272,108 @@ MonoBehaviour:
   mEncoding: 1
   mMaxLineCount: 0
   mEffectStyle: 0
+  mEffectColor: {r: 0, g: 0, b: 0, a: 1}
+  mSymbols: 1
+  mEffectDistance: {x: 1, y: 1}
+  mOverflow: 0
+  mApplyGradient: 0
+  mGradientTop: {r: 1, g: 1, b: 1, a: 1}
+  mGradientBottom: {r: 0.7, g: 0.7, b: 0.7, a: 1}
+  mSpacingX: 0
+  mSpacingY: 0
+  mUseFloatSpacing: 0
+  mFloatSpacingX: 0
+  mFloatSpacingY: 0
+  mOverflowEllipsis: 0
+  mOverflowWidth: 0
+  mOverflowHeight: 0
+  mModifier: 0
+  mShrinkToFit: 0
+  mMaxLineWidth: 0
+  mMaxLineHeight: 0
+  mLineWidth: 0
+  mMultiline: 1
+--- !u!1 &8536580384286754259
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 179368717756671664}
+  - component: {fileID: 4021544221595200094}
+  m_Layer: 8
+  m_Name: CharacterInfoLabel
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &179368717756671664
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8536580384286754259}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -234, y: 226, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 8297127454368995031}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4021544221595200094
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8536580384286754259}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9d0b5f3bbe925a408bd595c79d0bf63, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  leftAnchor:
+    target: {fileID: 0}
+    relative: 0
+    absolute: 0
+  rightAnchor:
+    target: {fileID: 0}
+    relative: 1
+    absolute: 0
+  bottomAnchor:
+    target: {fileID: 0}
+    relative: 0
+    absolute: 0
+  topAnchor:
+    target: {fileID: 0}
+    relative: 1
+    absolute: 0
+  updateAnchors: 1
+  mColor: {r: 1, g: 1, b: 1, a: 1}
+  mPivot: 0
+  mWidth: 467
+  mHeight: 332
+  mDepth: 4
+  mMat: {fileID: 0}
+  autoResizeBoxCollider: 0
+  hideIfOffScreen: 0
+  keepAspectRatio: 0
+  aspectRatio: 1.4066265
+  keepCrispWhenShrunk: 1
+  mTrueTypeFont: {fileID: 0}
+  mFont: {fileID: 11400000, guid: 1fa4b2d5a71627a44950fff5085e485c, type: 2}
+  mText: "\uC774\uB984 : \uAE30\uC0AC\n\uB4F1\uAE09 : SuperRare\n\n\uACF5\uACA9\uB825
+    : 100\n\uBC29\uC5B4\uB825 : 100\n\n\uD06C\uAE30 : \uC911"
+  mFontSize: 30
+  mFontStyle: 1
+  mAlignment: 0
+  mEncoding: 1
+  mMaxLineCount: 0
+  mEffectStyle: 2
   mEffectColor: {r: 0, g: 0, b: 0, a: 1}
   mSymbols: 1
   mEffectDistance: {x: 1, y: 1}

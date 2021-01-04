@@ -18,8 +18,9 @@ public class DeckEditUI : UIBase
 
     public UISprite slotEditInfoSprite;
     public UILabel slotEditInfoLabel;
+    public UILabel slotEditCharacterInfoLabel;
     public SlotUI slotEditSlotPrefab;
-    public UIGrid scrollRoot;
+    public UIGrid scrollRoot;    
     private bool isInitEditSlotList;
 
     //저장 전 임시 덱
@@ -129,6 +130,7 @@ public class DeckEditUI : UIBase
         }
 
         slotEditInfoLabel.text = "없음";
+        slotEditCharacterInfoLabel.text = string.Empty;
         slotEditInfoSprite.gameObject.SetActive(false);
 
         //각 UI 루트 활성화/비활성화
@@ -295,11 +297,12 @@ public class DeckEditUI : UIBase
         curSelectedEditSlot = slot;
         //curSelectedEditSlot?.ActiveHighlight(true);
 
-        if (curSelectedEditSlot.Data.skillDataArray != null)
+        var charData = curSelectedEditSlot.Data;
+        if (charData.skillDataArray != null)
         {
             string Info = string.Empty;
 
-            var skillArray = curSelectedEditSlot.Data.skillDataArray;
+            var skillArray = charData.skillDataArray;
             for (int i = 0; i < skillArray.Length; i++)
             {
                 if (skillArray[i].id != 0)
@@ -315,6 +318,12 @@ public class DeckEditUI : UIBase
                 Info = "스킬 없음";
 
             slotEditInfoLabel.text = Info;
+
+            slotEditCharacterInfoLabel.text =
+                string.Format("이름 : {0}\n등급 : {1}\n\n공격력 : {2}\n방어력 : {3}\n\n크기 : {4}\n\n종족 : {5}\n소속 : {6}\n직업 : {7}",
+                charData.name, charData.rarityData.NAME, 
+                charData.attack, charData.defence, charData.sizeData.NAME, 
+                charData.speciesData.NAME, charData.affiliationData.NAME, charData.jobData.NAME);
         }
 
         //스프라이트 그냥 활성화..

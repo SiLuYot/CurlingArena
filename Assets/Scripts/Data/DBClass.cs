@@ -190,7 +190,8 @@ public class SkillData : ReadData
         Init,
         Collide,
         BeCollide,
-        AllStop
+        AllStop,
+        FirstShoot,
     }
 
     public override int ID => id;
@@ -218,7 +219,6 @@ public class SpeciesDataBase : DataBase<SpeciesData>
 
 public class BasicData : ReadData
 {
-    public int id;
     public float Distacne;
     public float Mass;
     public float Base_Friction;
@@ -226,11 +226,14 @@ public class BasicData : ReadData
     public float Sweep;
     public float Sweep_Max;
     public float Sweep_Min_Distance;
+    public float Sweep_Dir;
+    public float Sweep_Fix_Distance;
+    public float Impulse;
     public float Round_Count;
-    public float Turn_Wait_time;
+    public float Turn_Wait_Time;
     public float Round_Wait_Time;
     public float Turn;
-
+    
     public override int ID => 0;
     public override string NAME => "basic";
 }
@@ -242,3 +245,45 @@ public class BasicDataBase : DataBase<BasicData>
     public BasicData GetBasicData() => GetDataList().First() as BasicData;
 }
 
+public class SynergyData : ReadData
+{
+    public int id;
+    public string name;
+    public int speciesType;
+    public int affiliationType;
+    public int jobType;
+    public int typeNumber;
+    public int applyObject;
+    public float attackValue;
+    public float defenceValue;
+    public int skillID;
+    public string text;
+
+    public SkillData skillData;
+
+    public override int ID => 0;
+    public override string NAME => name;
+}
+
+public class SynergyDataBase : DataBase<SynergyData>
+{
+    public override string DBKey => "SynergyDB";
+
+    public override bool CombinedData()
+    {
+        var dbLoader = DataBaseManager.Instance.loader;
+
+        foreach (var data in GetDataList())
+        {
+            var synergyData = data as SynergyData;
+
+            var skillData = dbLoader.GetDataBase("SkillDB").GetDataList().
+                Find(v => v.ID == synergyData.skillID) as SkillData;
+
+            if (skillData != null && skillData.id != 0)
+                synergyData.skillData = skillData;
+        }
+
+        return true;
+    }
+}

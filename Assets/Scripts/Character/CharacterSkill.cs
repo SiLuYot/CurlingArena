@@ -7,18 +7,18 @@ public class BaseSkillEvent
 {
     private SkillData.ConditionType type;
     private CharacterSkill characterSkill;
-    private SkillData[] skillArray;
+    private List<SkillData> skillList;
 
     public BaseSkillEvent(SkillData.ConditionType type, CharacterSkill characterSkill)
     {
         this.type = type;
         this.characterSkill = characterSkill;
-        this.skillArray = characterSkill.skillArray;
+        this.skillList = characterSkill.skillList;
     }
 
     public void Event(CharacterPhysics otherObj = null, List<CharacterPhysics> physicsObjectList = null)
     {
-        foreach (var skill in skillArray)
+        foreach (var skill in skillList)
         {
             if (skill.cType != type)
                 continue;
@@ -48,7 +48,7 @@ public class BaseSkillEvent
 
     public IEnumerator EventCoroutine(CharacterPhysics otherObj = null, List<CharacterPhysics> physicsObjectList = null)
     {
-        foreach (var skill in skillArray)
+        foreach (var skill in skillList)
         {
             if (skill.cType != type)
                 continue;
@@ -79,10 +79,11 @@ public class BaseSkillEvent
 public class CharacterSkill
 {
     public Character character;
-    public SkillData[] skillArray;
+    public List<SkillData> skillList;
     private Transform characterTransform;
 
     private BaseSkillEvent initEvent;
+    private BaseSkillEvent firstShootEvent;
     private BaseSkillEvent collideEvent;
     private BaseSkillEvent beCollidedEvent;
     private BaseSkillEvent allStopEvent;
@@ -92,10 +93,11 @@ public class CharacterSkill
     public CharacterSkill(Character character)
     {
         this.character = character;
-        this.skillArray = character.Data.skillDataArray;
+        this.skillList = character.Data.skillDataArray.ToList();
         this.characterTransform = character.transform;
 
         initEvent = new BaseSkillEvent(SkillData.ConditionType.Init, this);
+        firstShootEvent = new BaseSkillEvent(SkillData.ConditionType.FirstShoot, this);
         collideEvent = new BaseSkillEvent(SkillData.ConditionType.Collide, this);
         beCollidedEvent = new BaseSkillEvent(SkillData.ConditionType.BeCollide, this);
         allStopEvent = new BaseSkillEvent(SkillData.ConditionType.AllStop, this);
@@ -104,6 +106,11 @@ public class CharacterSkill
     public void InitEvent()
     {
         initEvent.Event();
+    }
+
+    public void FirstShootEvent()
+    {
+        firstShootEvent.Event();
     }
 
     public void CollideEvent(CharacterPhysics otherObj, List<CharacterPhysics> physicsObjectList)
@@ -119,6 +126,14 @@ public class CharacterSkill
     public IEnumerator AllStopEvent(CharacterPhysics firstCollisionObj, List<CharacterPhysics> physicsObjectList)
     {
         yield return PhysicsManager.Instance.StartPhysicsCoroutine(allStopEvent.EventCoroutine(firstCollisionObj, physicsObjectList));
+    }
+
+    public void AddSynergySkill(List<SkillData> skillDataList)
+    {
+        foreach (var data in skillDataList)
+        {
+            skillList.Add(data);
+        }
     }
 
     public IEnumerator GetOccurStandardObjectCoroutine(SkillData skill, CharacterPhysics collisionObj)
@@ -412,7 +427,7 @@ public class CharacterSkill
         }
 
         //상대에게 스킬 면역 횟수가 남아 있다면
-        if (!CheckSkillImmuneCount(otherCharacter))
+        if (!CheckSkillImmuneCount(skillData, otherCharacter))
         {
             Debug.Log(string.Format("스킬 '{0} 발동 무시'\n{1} - 'ImmuneCount'에서 제외 {2}의 남은 스킬 면역 횟수 {3}",
                    skillData.desc, otherCharacter.name, otherCharacter.name, otherCharacter.immuneCount));
@@ -544,8 +559,12 @@ public class CharacterSkill
         return true;
     }
 
-    public bool CheckSkillImmuneCount(Character otherCharacter)
+    public bool CheckSkillImmuneCount(SkillData skillData, Character otherCharacter)
     {
+        //적용되려는 효과가 면역 횟수라면 리턴
+        if (skillData.applyType == 4)
+            return true;
+
         // (-1 = 무한)
         if (otherCharacter.immuneCount > 0 || otherCharacter.immuneCount == -1)
         {
@@ -562,7 +581,7 @@ public class CharacterSkill
 
     public bool CheckImmuneSkill(Character otherCharacter)
     {
-        foreach (var skill in skillArray)
+        foreach (var skill in skillList)
         {
             if (!CheckRarity(skill, otherCharacter))
             {
@@ -688,6 +707,18 @@ public class CharacterSkill
                         else
                             applyCharacter.lockCount += finalValue;
                     }
+                }
+                break;
+            case 6: //공격력 방어력
+                {
+                    var attackValue = GetApplyValueType(skillData.applyValueType, applyCharacter.finalAttack, character);
+                    var finalAttackValue = attackValue * skillData.applyValue;
+                    
+                    var defenceValue = GetApplyValueType(skillData.applyValueType, applyCharacter.finalDefence, character);
+                    var finalDefenceValue = defenceValue * skillData.applyValue;
+
+                    applyCharacter.finalAttack = finalAttackValue;
+                    applyCharacter.finalDefence = finalDefenceValue;
                 }
                 break;
         }

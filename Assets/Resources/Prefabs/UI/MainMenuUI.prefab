@@ -2527,7 +2527,7 @@ MonoBehaviour:
   keepCrispWhenShrunk: 1
   mTrueTypeFont: {fileID: 0}
   mFont: {fileID: 11400000, guid: 1fa4b2d5a71627a44950fff5085e485c, type: 2}
-  mText: "\uC900\uBE44\uC911"
+  mText: "\uC900\uBE44\uC911 (\uD14C\uC2A4\uD2B8 \uBAA8\uB4DC)"
   mFontSize: 32
   mFontStyle: 1
   mAlignment: 0

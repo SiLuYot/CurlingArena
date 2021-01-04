@@ -59,6 +59,7 @@ public class DataBaseManager : MonoBehaviour
             new SkillDataBase(),
             new SpeciesDataBase(),
             new BasicDataBase(),
+            new SynergyDataBase(),
         };
 
         loader.Process(dataBase);

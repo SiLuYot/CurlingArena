@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class UIManager : MonoBehaviour
@@ -20,13 +21,15 @@ public class UIManager : MonoBehaviour
 
     public UIRoot uiRoot;
 
+    private int accumulateIndex;
     private Dictionary<Type, UIData> uiData;
-    private Dictionary<int, UIBase> openedUI;
+    private List<UIBase> openedUI;
 
     public void Awake()
     {
+        accumulateIndex = 0;
         uiData = new Dictionary<Type, UIData>();
-        openedUI = new Dictionary<int, UIBase>();
+        openedUI = new List<UIBase>();
 
         AddUIPath(UIData.ShootUI);
         AddUIPath(UIData.TestSceneUI);
@@ -38,6 +41,7 @@ public class UIManager : MonoBehaviour
         AddUIPath(UIData.GameReadyUI);
         AddUIPath(UIData.GameCharacterSelectUI);
         AddUIPath(UIData.GameScoreUI);
+        AddUIPath(UIData.GameCharacterNameUI);
     }
 
     private void AddUIPath(UIData data)
@@ -45,16 +49,18 @@ public class UIManager : MonoBehaviour
         uiData.Add(data.type, data);
     }
 
-    public UIBase Get<T>() where T : UIBase
+    public UIBase Get<T>(bool isForceCreate = false) where T : UIBase
     {
         UIBase loadObj = null;
 
         if (uiData.ContainsKey(typeof(T)))
         {
             var data = uiData[typeof(T)];
-            if (openedUI.ContainsKey(data.id))
+
+            var findOpenedUI = openedUI.Find(v => v.uiData.id == data.id);
+            if (!isForceCreate && findOpenedUI != null)
             {
-                loadObj = openedUI[data.id];
+                loadObj = findOpenedUI;
             }
             else
             {
@@ -70,8 +76,10 @@ public class UIManager : MonoBehaviour
                     Debug.LogError(string.Format("UIBase 컴포넌트가 없거나 UIBase를 상속받은 UI가 아님"));
                 }
 
-                loadObj.Init(data);
-                openedUI.Add(data.id, loadObj);
+                loadObj.Init(accumulateIndex, data);
+                openedUI.Add(loadObj);
+
+                accumulateIndex++;
             }
 
         }
@@ -80,31 +88,30 @@ public class UIManager : MonoBehaviour
         return loadObj;
     }
 
-    public void Close(int id)
+    public void Close(int index)
     {
-        if (openedUI.ContainsKey(id))
+        var findUI = openedUI.Find(v => v.index == index);
+        if (findUI != null)
         {
-            Destroy(openedUI[id].gameObject);
-            openedUI.Remove(id);
+            openedUI.Remove(findUI);
+            Destroy(findUI.gameObject);            
         }
     }
 
-    public void SetActive(int id, bool active)
+    public void SetActive(int index, bool active)
     {
-        if (openedUI.ContainsKey(id))
+        var findUI = openedUI.Find(v => v.index == index);
+        if (findUI != null)
         {
-            openedUI[id].gameObject.SetActive(active);
+            findUI.gameObject.SetActive(active);
         }
     }
 
     public void SetAllActive(bool active)
     {
-        for (int id = 0; id < uiData.Count; id++)
+        foreach (var ui in openedUI)
         {
-            if (openedUI.ContainsKey(id))
-            {
-                SetActive(id, active);
-            }
+            SetActive(ui.index, active);
         }
     }
 
@@ -115,9 +122,11 @@ public class UIManager : MonoBehaviour
         if (uiData.ContainsKey(typeof(T)))
         {
             var data = uiData[typeof(T)];
-            if (openedUI.ContainsKey(data.id))
+
+            var findOpenedUI = openedUI.Find(v => v.uiData.id == data.id);
+            if (findOpenedUI != null)
             {
-                loadObj = openedUI[data.id];
+                loadObj = findOpenedUI;
             }
         }
         else Debug.LogError(string.Format("{0} 타입의 UI DATA 없음", typeof(T)));
@@ -149,5 +158,6 @@ public class UIData
     public static UIData GameReadyUI = new UIData(7, typeof(GameReadyUI), "Prefabs/UI/GameReadyUI");
     public static UIData GameCharacterSelectUI = new UIData(8, typeof(GameCharacterSelectUI), "Prefabs/UI/GameCharacterSelectUI");
     public static UIData GameScoreUI = new UIData(9, typeof(GameScoreUI), "Prefabs/UI/GameScoreUI");
+    public static UIData GameCharacterNameUI = new UIData(10, typeof(GameCharacterNameUI), "Prefabs/UI/GameCharacterNameUI");
 
 }

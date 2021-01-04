@@ -1,22 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using UnityEngine;
-
-public class SynergyData
-{
-    public int id;
-    public float synergyAtkValue;
-    public float synergyDefValue;
-    public SkillData skill;
-
-    public SynergyData(int id, float synergyAtkValue, float synergyDefValue, SkillData skill = null)
-    {
-        this.id = id;
-        this.synergyAtkValue = synergyAtkValue;
-        this.synergyDefValue = synergyDefValue;
-        this.skill = skill;
-    }
-}
 
 public class DeckData
 {
@@ -138,244 +121,89 @@ public class DeckManager : MonoBehaviour
 
     public void CheckDeckEffect(DeckData deckData)
     {
-        int index = 0;
-        string text = string.Empty;
+        var speciesDataDic = new Dictionary<int, int>();
+        var affiliationDataDic = new Dictionary<int, int>();
+        var jobDataDic = new Dictionary<int, int>();
 
-        //db 안만들기로 해서 덱 시너지 하드코딩
+        foreach (var data in deckData.DataDic)
+        {
+            var species = data.Value.speciesData;
+            if (speciesDataDic.ContainsKey(species.ID))
+            {
+                speciesDataDic[species.ID] += 1;
+            }
+            else speciesDataDic.Add(species.ID, 1);
+
+            var affiliation = data.Value.affiliationData;
+            if (affiliationDataDic.ContainsKey(affiliation.ID))
+            {
+                affiliationDataDic[affiliation.ID] += 1;
+            }
+            else affiliationDataDic.Add(affiliation.ID, 1);
+
+            var job = data.Value.jobData;
+            if (jobDataDic.ContainsKey(job.ID))
+            {
+                jobDataDic[job.ID] += 1;
+            }
+            else jobDataDic.Add(job.ID, 1);
+        }
+
         deckData.SynergySpeciesDataList.Clear();
         deckData.SynergyAffiliationDataList.Clear();
         deckData.SynergyJobDataList.Clear();
 
-        //species
-        var dataDic = new Dictionary<int, int>();
-        foreach (var data in deckData.DataDic)
+        string text = string.Empty;
+
+        var synergyDataList = DataBaseManager.Instance.loader.GetDataList("SynergyDB");
+        foreach (var data in synergyDataList)
         {
-            var species = data.Value.speciesData;
-            if (dataDic.ContainsKey(species.ID))
+            var synergyData = data as SynergyData;
+
+            if (synergyData.speciesType != -1)
             {
-                dataDic[species.ID] += 1;
+                if (speciesDataDic.ContainsKey(synergyData.speciesType))
+                {
+                    var count = speciesDataDic[synergyData.speciesType];
+                    if (count >= synergyData.typeNumber)
+                    {
+                        if (text != string.Empty)
+                            text += "\n";
+
+                        text += synergyData.text;
+                        deckData.SynergySpeciesDataList.Add(synergyData);
+                    }
+                }
             }
-            else dataDic.Add(species.ID, 1);
-        }
-
-        //인간
-        index = 0;
-        if (dataDic.ContainsKey(index))
-        {
-            if (dataDic[index] >= 2)
+            if (synergyData.affiliationType != -1)
             {
-                if (text != string.Empty)
-                    text += "\n";
+                if (affiliationDataDic.ContainsKey(synergyData.affiliationType))
+                {
+                    var count = affiliationDataDic[synergyData.affiliationType];
+                    if (count >= synergyData.typeNumber)
+                    {
+                        if (text != string.Empty)
+                            text += "\n";
 
-                text += "모든 인간의 능력치 공격력 +5%, 방어력 +5%";
-                deckData.SynergySpeciesDataList.Add(new SynergyData(index, 0.05f, 0.05f));
+                        text += synergyData.text;
+                        deckData.SynergyAffiliationDataList.Add(synergyData);
+                    }
+                }
             }
-            if (dataDic[index] >= 4)
+            if (synergyData.jobType != -1)
             {
-                if (text != string.Empty)
-                    text += "\n";
+                if (jobDataDic.ContainsKey(synergyData.jobType))
+                {
+                    var count = jobDataDic[synergyData.jobType];
+                    if (count >= synergyData.typeNumber)
+                    {
+                        if (text != string.Empty)
+                            text += "\n";
 
-                text += "모든 인간의 능력치 공격력 +5%, 방어력 +5%";
-                deckData.SynergySpeciesDataList.Add(new SynergyData(index, 0.05f, 0.05f));
-            }
-        }
-
-        //신
-        index = 1;
-        if (dataDic.ContainsKey(index))
-        {
-            if (dataDic[index] >= 2)
-            {
-                if (text != string.Empty)
-                    text += "\n";
-
-                text += "모든 신의 능력치 공격력 +5%, 방어력 +5%";
-                deckData.SynergySpeciesDataList.Add(new SynergyData(index, 0.05f, 0.05f));
-            }
-            if (dataDic[index] >= 4)
-            {
-                if (text != string.Empty)
-                    text += "\n";
-
-                text += "모든 신의 능력치 공격력 +5%, 방어력 +5%";
-                deckData.SynergySpeciesDataList.Add(new SynergyData(index, 0.05f, 0.05f));
-            }
-        }
-
-        //affiliation        
-        dataDic.Clear();
-        foreach (var data in deckData.DataDic)
-        {
-            var affiliation = data.Value.affiliationData;
-            if (dataDic.ContainsKey(affiliation.ID))
-            {
-                dataDic[affiliation.ID] += 1;
-            }
-            else dataDic.Add(affiliation.ID, 1);
-        }
-
-        //기사단
-        index = 0;
-        if (dataDic.ContainsKey(index))
-        {
-            if (dataDic[index] >= 4)
-            {
-                if (text != string.Empty)
-                    text += "\n";
-
-                //검사 스킬2
-                //var skill = DataBaseManager.Instance.loader.GetDataBase("SkillDB").
-                //    GetDataList().Find(v => v.ID == 4) as SkillData;
-
-                //var newSkill = new SkillData(skill);
-                //newSkill.applyValue = 0.3f;
-
-                text += "기사단 캐릭터가 충돌당할 시 상대 캐릭터를 공격력의 30%만큼 밀어낸다.";
-                deckData.SynergyAffiliationDataList.Add(new SynergyData(index, 0, 0, null));
-            }
-        }
-
-        //교단
-        index = 1;
-        if (dataDic.ContainsKey(index))
-        {
-            if (dataDic[index] >= 4)
-            {
-                if (text != string.Empty)
-                    text += "\n";
-
-                text += "처음으로 발사한 캐릭터가 스킬에 1회 면역";
-                deckData.SynergyAffiliationDataList.Add(new SynergyData(index, 0, 0, null));
-            }
-            if (dataDic[index] >= 2)
-            {
-                if (text != string.Empty)
-                    text += "\n";
-
-                text += "모든 교단 캐릭터가 스킬에 1회 면역";
-                deckData.SynergyAffiliationDataList.Add(new SynergyData(index, 0, 0, null));
-            }
-        }
-
-        //천사
-        index = 2;
-        if (dataDic.ContainsKey(index))
-        {
-            if (dataDic[index] >= 4)
-            {
-                if (text != string.Empty)
-                    text += "\n";
-
-                text += "천사가 아군과 충돌하면 해당 라운드에 아군에게 공격력 +10%, 방어력 10%를 부여함";
-                deckData.SynergyAffiliationDataList.Add(new SynergyData(index, 0, 0, null));
-            }
-            if (dataDic[index] >= 2)
-            {
-                if (text != string.Empty)
-                    text += "\n";
-
-                text += "모든 천사의 능력치 10%";
-                deckData.SynergyAffiliationDataList.Add(new SynergyData(index, 0.1f, 0.1f));
-            }
-        }
-
-        //job      
-        dataDic.Clear();
-        foreach (var data in deckData.DataDic)
-        {
-            var job = data.Value.jobData;
-            if (dataDic.ContainsKey(job.ID))
-            {
-                dataDic[job.ID] += 1;
-            }
-            else dataDic.Add(job.ID, 1);
-        }
-
-        //기사
-        index = 0;
-        if (dataDic.ContainsKey(index))
-        {
-            if (dataDic[index] >= 2)
-            {
-                if (text != string.Empty)
-                    text += "\n";
-
-                text += "모든 아군의 능력치 공격력 +5%, 방어력 +5%";
-                deckData.SynergyJobDataList.Add(new SynergyData(index, 0.05f, 0.05f));
-            }
-            if (dataDic[index] >= 4)
-            {
-                if (text != string.Empty)
-                    text += "\n";
-
-                text += "모든 아군의 능력치 공격력 +5%, 방어력 +5%";
-                deckData.SynergyJobDataList.Add(new SynergyData(index, 0.05f, 0.05f));
-            }
-        }
-
-        //전사
-        index = 1;
-        if (dataDic.ContainsKey(index))
-        {
-            if (dataDic[index] >= 2)
-            {
-                if (text != string.Empty)
-                    text += "\n";
-
-                text += "모든 아군의 능력치 공격력 +5%, 방어력 +5%";
-                deckData.SynergyJobDataList.Add(new SynergyData(index, 0.05f, 0.05f));
-            }
-            if (dataDic[index] >= 4)
-            {
-                if (text != string.Empty)
-                    text += "\n";
-
-                text += "모든 아군의 능력치 공격력 +5%, 방어력 +5%";
-                deckData.SynergyJobDataList.Add(new SynergyData(index, 0.05f, 0.05f));
-            }
-        }
-
-        //마법사
-        index = 2;
-        if (dataDic.ContainsKey(index))
-        {
-            if (dataDic[index] >= 2)
-            {
-                if (text != string.Empty)
-                    text += "\n";
-
-                text += "모든 아군의 능력치 공격력 +10%";
-                deckData.SynergyJobDataList.Add(new SynergyData(index, 0.1f, 0));
-            }
-            if (dataDic[index] >= 4)
-            {
-                if (text != string.Empty)
-                    text += "\n";
-
-                text += "모든 아군의 능력치 공격력 +10%";
-                deckData.SynergyJobDataList.Add(new SynergyData(index, 0.1f, 0));
-            }
-        }
-
-        //방패병
-        index = 3;
-        if (dataDic.ContainsKey(index))
-        {
-            if (dataDic[index] >= 2)
-            {
-                if (text != string.Empty)
-                    text += "\n";
-
-                text += "모든 아군의 능력치 방어력 +10%";
-                deckData.SynergyJobDataList.Add(new SynergyData(index, 0, 0.1f));
-            }
-            if (dataDic[index] >= 4)
-            {
-                if (text != string.Empty)
-                    text += "\n";
-
-                text += "모든 아군의 능력치 방어력 +10%";
-                deckData.SynergyJobDataList.Add(new SynergyData(index, 0, 0.1f));
+                        text += synergyData.text;
+                        deckData.SynergyJobDataList.Add(synergyData);
+                    }
+                }
             }
         }
 

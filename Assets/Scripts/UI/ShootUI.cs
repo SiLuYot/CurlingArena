@@ -4,12 +4,16 @@ public class ShootUI : UIBase
 {
     public UISlider slider;
     public Transform rotateRoot;
+    public GameObject xMark;
 
     private Character selectedCharacter;
     private float maxPower;
 
     public void Init(Vector3 pos, Character selectedCharacter)
     {
+        xMark.SetActive(false);
+        this.gameObject.SetActive(false);
+
         var e1 = Camera.main.ScreenToViewportPoint(pos);
         var e2 = UICamera.mainCamera.ViewportToWorldPoint(e1);
         transform.position = e2;
@@ -29,6 +33,8 @@ public class ShootUI : UIBase
         var dir = s2 - e2;
         var angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
         rotateRoot.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+
+        this.gameObject.SetActive(dir != Vector3.zero);
     }
 
     public void SetSliderValue(Vector3 clickStartPos)

@@ -39,8 +39,8 @@ public class GameCharacterSelectUI : UIBase
     {
         var curDeck = curPlayerData.deckData;
 
-        this.player1Name.text = string.Format("{0} :", player1.team);
-        this.player2Name.text = string.Format("{0} :", player2.team);
+        this.player1Name.text = string.Format("{0}", player1.team);
+        this.player2Name.text = string.Format("{0}", player2.team);
 
         this.turnCount.text = string.Format("{0}/{1}",
             curPlayerData.UseIndexList.Count + 1, curDeck.DataDic.Count);
@@ -95,6 +95,10 @@ public class GameCharacterSelectUI : UIBase
         if (leftTime != null && leftTimer > 0)
         {
             leftTimer -= Time.deltaTime;
+
+            if (leftTimer <= 0)
+                leftTimer = 0;
+
             leftTime.text = leftTimer.ToString("00.00");
         }
     }
@@ -118,45 +122,103 @@ public class GameCharacterSelectUI : UIBase
 
         tempCharacter = GameManager.Instance.AddCharacter(team, curSelectSlot.Data, pos.position, true);
 
+        List<SkillData> synergySkillList = new List<SkillData>();
         float synergyAtkValue = 0, synergyDefValue = 0;
-        var findSpeciesDataArray = playerData.deckData.SynergySpeciesDataList.FindAll(v => v.id == curSelectSlot.Data.speciesData.ID);
-        if (findSpeciesDataArray != null)
+
+        foreach (var data in playerData.deckData.SynergySpeciesDataList)
         {
-            foreach (var data in findSpeciesDataArray)
+            switch(data.applyObject)
             {
-                synergyAtkValue += data.synergyAtkValue;
-                synergyDefValue += data.synergyDefValue;
-            }                  
+                case 1:
+                    //인간
+                    if (tempCharacter.Data.speciesData.ID == 0)
+                    {
+                        synergyAtkValue += data.attackValue;
+                        synergyDefValue += data.defenceValue;
+                    }
+                    break;
+                case 2:
+                    //신
+                    if (tempCharacter.Data.speciesData.ID == 1)
+                    {
+                        synergyAtkValue += data.attackValue;
+                        synergyDefValue += data.defenceValue;
+                    }
+                    break;
+                    //모두
+                case 6:
+                    {
+                        synergyAtkValue += data.attackValue;
+                        synergyDefValue += data.defenceValue;
+                    }                    
+                    break;                
+            }
+
+            if (data.skillData != null)
+                synergySkillList.Add(data.skillData);
         }
 
-        var findAffiliationDataArray = playerData.deckData.SynergyAffiliationDataList.FindAll(v => v.id == curSelectSlot.Data.affiliationData.ID);
-        if (findAffiliationDataArray != null)
+        foreach (var data in playerData.deckData.SynergyAffiliationDataList)
         {
-            foreach (var data in findAffiliationDataArray)
+            switch (data.applyObject)
             {
-                synergyAtkValue += data.synergyAtkValue;
-                synergyDefValue += data.synergyDefValue;
-            }          
+                case 2:
+                    //기사단
+                    if (tempCharacter.Data.affiliationData.ID == 0)
+                    {
+                        synergyAtkValue += data.attackValue;
+                        synergyDefValue += data.defenceValue;
+                    }
+                    break;
+                case 3:
+                    //교단
+                    if (tempCharacter.Data.affiliationData.ID == 1)
+                    {
+                        synergyAtkValue += data.attackValue;
+                        synergyDefValue += data.defenceValue;
+                    }
+                    break;
+                case 4:
+                    //천사
+                    if (tempCharacter.Data.affiliationData.ID == 2)
+                    {
+                        synergyAtkValue += data.attackValue;
+                        synergyDefValue += data.defenceValue;
+                    }
+                    break;
+                //모두
+                case 6:
+                    {
+                        synergyAtkValue += data.attackValue;
+                        synergyDefValue += data.defenceValue;
+                    }
+                    break;
+            }
+
+            if (data.skillData != null)
+                synergySkillList.Add(data.skillData);
         }
 
         //직업 시너지는 모든 아군 적용
         foreach (var data in playerData.deckData.SynergyJobDataList)
         {
-            synergyAtkValue += data.synergyAtkValue;
-            synergyDefValue += data.synergyDefValue;
+            synergyAtkValue += data.attackValue;
+            synergyDefValue += data.defenceValue;
+
+            if (data.skillData != null)
+                synergySkillList.Add(data.skillData);
         }
 
-        //var findJobDataArray = playerData.deckData.SynergyJobDataList.FindAll(v => v.id == curSelectSlot.Data.jobData.ID);
-        //if (findJobDataArray != null)
-        //{
-        //    foreach (var data in findJobDataArray)
-        //    {
-        //        synergyAtkValue += data.synergyAtkValue;
-        //        synergyDefValue += data.synergyDefValue;
-        //    }           
-        //}
+        tempCharacter.SetSynergyValue(synergyAtkValue, synergyDefValue, synergySkillList);
 
-        tempCharacter.SetSynergyValue(synergyAtkValue, synergyDefValue);
+        //초기화 이벤트
+        tempCharacter.InitEvent();
+
+        //사용한 캐릭터가 하나도 없을경우
+        if (playerData.UseIndexList.Count == 0)
+        {
+            tempCharacter.FirstShootEvent();
+        }
     }
 
     public void PressSlot(SlotUI slotUI, bool state)

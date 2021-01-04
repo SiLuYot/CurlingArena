@@ -111,10 +111,16 @@ public class GameManager : MonoBehaviour
     public static float SWEEP_MAX => basicData.Sweep_Max;
     //스윕으로 판정되는 최소 거리
     public static float SWEEP_MIN_DISTACNE => basicData.Sweep_Min_Distance;
+    //스윕으로 변하는 방향에 곱할 값
+    public static float SWEEP_DIR => basicData.Sweep_Dir;
+    //스윕시 방향이 앞으로 고정될 거리 값
+    public static float SWEEP_FIX_DISTANCE => basicData.Sweep_Fix_Distance;
+    //충격량 보정 값
+    public static float IMPULSE => basicData.Impulse;
     //총 라운드 수
     public static float ROUND_COUNT => basicData.Round_Count;
     //던진 스톤이 멈춘 후 잠시 대기할 시간
-    public static float TURN_WAIT_TIME => basicData.Turn_Wait_time;
+    public static float TURN_WAIT_TIME => basicData.Turn_Wait_Time;
     //점수 보여준 후 잠시 대기할 시간
     public static float ROUND_WAIT_TIME => basicData.Round_Wait_Time;
     //라운드 남은 시간
@@ -378,6 +384,8 @@ public class GameManager : MonoBehaviour
     {
         CurStep = Step.END;
         Debug.Log("Step : " + CurStep);
+        
+        CurrentCharacter?.InitNameUI();
 
         StartCoroutine(NextPlayerWait());
     }

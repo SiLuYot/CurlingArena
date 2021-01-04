@@ -145,8 +145,8 @@ public class CharacterPhysics
         }
 
         Debug.Log(string.Format("현재 마찰력 : {0}\n= {1} - {2} (기본 마찰력 - 스윕으로 감소시킬 마찰력)",
-            tempFriction, 
-            friction, 
+            tempFriction,
+            friction,
             tempSweepValue));
 
         sweepValue = tempSweepValue;
@@ -156,7 +156,7 @@ public class CharacterPhysics
     //등차수열의 합과 이차방정식으로 속도를 알아낸다
     public float GetQuadraticEquationValue(float impulse)
     {
-        impulse = (impulse * GameManager.DISTACNE) * 3;
+        impulse = (impulse * GameManager.DISTACNE) * GameManager.IMPULSE;
 
         var d = Friction;
 
