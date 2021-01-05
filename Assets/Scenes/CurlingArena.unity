@@ -353,7 +353,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stoneRoot: {fileID: 400210006}
-  playerStartPos: {fileID: 2101278070}
   housePos: {fileID: 335741012}
   endLine1: {fileID: 2084420728}
   endLine2: {fileID: 993923088}

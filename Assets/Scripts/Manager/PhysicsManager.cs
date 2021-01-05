@@ -271,6 +271,14 @@ public class PhysicsManager : MonoBehaviour
 
         RemoveObj(removeList);
 
+        //모든 움직임이 끝나고 오브젝트들 초기화
+        foreach (var obj in physicsObjectList)
+        {
+            obj.dir = Vector3.zero;
+            obj.speed = 0;
+            obj.sweepValue = 0;
+        }
+
         isAllStopEventEnd = true;
         allStopCoroutine = null;
     }
@@ -389,6 +397,11 @@ public class PhysicsManager : MonoBehaviour
     //충돌 뒤 반동 계산
     private void CalculateBouncing(CharacterPhysics moveObj, CharacterPhysics checkObj)
     {
+        //충돌 이벤트 발생
+        moveObj.collideEvent(checkObj, physicsObjectList);
+        //충돌 된 이벤트 발생
+        checkObj.beCollidedEvent(moveObj, physicsObjectList);
+
         //현재 변화중인 오브젝트의 트랜스폼
         var moveObjTrans = moveObj.characterTransform;
         //체크할 오브젝트의 트랜스폼
@@ -415,16 +428,30 @@ public class PhysicsManager : MonoBehaviour
         //충돌된 오브젝트 벡터에 vc의 노말 벡터를 투영
         var proj22 = Vector3.Project(v2, vcn);
 
+        //오브젝트의 질량
+        var moveObjMass = moveObj.Mass;
+        var checkObjMass = checkObj.Mass;
+
+        //충격량을 받지 않는 상태라면 질량을 올려서 움직이지 않게 함
+        if (moveObj.character.ImpulsePercentValue == 0)
+        {
+            moveObjMass *= 9999.0f;
+        }
+        if (checkObj.character.ImpulsePercentValue == 0)
+        {
+            checkObjMass *= 9999.0f;
+        }
+
         //서로의 운동벡터 교환 (x축)
-        float P = moveObj.Mass * proj11.x + checkObj.Mass * proj21.x;
+        float P = moveObjMass * proj11.x + checkObjMass * proj21.x;
         float V = proj11.x - proj21.x;
-        float v2fx = (P + V * moveObj.Mass) / (moveObj.Mass + checkObj.Mass);
+        float v2fx = (P + V * moveObjMass) / (moveObjMass + checkObjMass);
         float v1fx = v2fx - V;
 
         //서로의 운동벡터 교환 (z축)
-        P = moveObj.Mass * proj11.z + checkObj.Mass * proj21.z;
+        P = moveObjMass * proj11.z + checkObjMass * proj21.z;
         V = proj11.z - proj21.z;
-        float v2fz = (P + V * moveObj.Mass) / (moveObj.Mass + checkObj.Mass);
+        float v2fz = (P + V * moveObjMass) / (moveObjMass + checkObjMass);
         float v1fz = v2fz - V;
         //참조 -> https://brownsoo.github.io/2DVectors/moving_balls/
 
@@ -433,10 +460,10 @@ public class PhysicsManager : MonoBehaviour
         //반동이 계산된 충돌된 오브젝트 벡터
         var newv2 = new Vector3(proj22.x + v2fx, 0, proj22.z + v2fz);
 
-        //충돌 이벤트 발생
-        moveObj.collideEvent(checkObj, physicsObjectList);
-        //충돌 된 이벤트 발생
-        checkObj.beCollidedEvent(moveObj, physicsObjectList);
+        //무한 충돌을 방지하기 위해 아주 적은 값 무시
+        if (newv1.magnitude < 0.01f &&
+            newv2.magnitude < 0.01f)
+            return;
 
         //공격력과 공격보너스를 합친 값 (발사단계에서 게이지 퍼센트 만큼 50%~120% 보너스)
         var attackValue = moveObj.character.finalAttack * moveObj.AttackBouns;
@@ -608,6 +635,8 @@ public class PhysicsManager : MonoBehaviour
     {
         obj.speed = 0;
         obj.dir = Vector3.zero;
+
+        obj.character.InitState();
     }
 
     private void OnDestroy()

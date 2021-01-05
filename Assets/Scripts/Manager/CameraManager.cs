@@ -35,12 +35,12 @@ public class CameraManager : MonoBehaviour
         mainCamera.orthographicSize = DEFAULT_SIZE;
     }
 
-    public void InitSelectPos()
-    {
-        Init(playerSelectPos.position);
+    //public void InitSelectPos()
+    //{
+    //    Init(playerSelectPos.position);
 
-        //mainCamera.orthographicSize = SELECT_SIZE;
-    }
+    //    mainCamera.orthographicSize = SELECT_SIZE;
+    //}
 
     public void Init(Vector3 pos)
     {

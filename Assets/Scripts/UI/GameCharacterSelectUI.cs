@@ -20,6 +20,9 @@ public class GameCharacterSelectUI : UIBase
     public GameObject profileRoot;
     public GameObject pauseRoot;
     public GameObject homePopupRoot;
+    public GameObject characterPosSelectRoot;
+    public GameObject readyButtonRoot;
+    public GameObject readyCancelButtonRoot;
 
     public UILabel profilePlayerName;
     public SlotUI[] profileSlotArray;
@@ -75,7 +78,7 @@ public class GameCharacterSelectUI : UIBase
             }
         }
 
-        CameraManager.Instance.InitSelectPos();
+        CameraManager.Instance.InitCreatePos();
         GameManager.Instance.Select();
 
         menuRoot.SetActive(true);
@@ -84,6 +87,9 @@ public class GameCharacterSelectUI : UIBase
         profileRoot.SetActive(false);
         pauseRoot.SetActive(false);
         homePopupRoot.SetActive(false);
+        characterPosSelectRoot.SetActive(false);
+        readyButtonRoot.SetActive(false);
+        readyCancelButtonRoot.SetActive(false);
     }
 
     public void Update()
@@ -103,31 +109,19 @@ public class GameCharacterSelectUI : UIBase
         }
     }
 
-    public void ClickSlot(SlotUI slotUI)
+    public void CreateCharacter(Vector3 pos)
     {
-        if (curSelectSlot != null &&
-            curSelectSlot.Index == slotUI.Index)
-            return;
-
-        curSelectSlot?.ActiveHighlight(false);
-        curSelectSlot = slotUI;
-
-        if (tempCharacter != null)
-        {
-            GameManager.Instance.RemoveCharacter(tempCharacter.Physics.PID);
-        }
-
         var team = playerData.team;
-        var pos = GameManager.Instance.playerStartPos;
+        //var pos = GameManager.Instance.playerStartPos;
 
-        tempCharacter = GameManager.Instance.AddCharacter(team, curSelectSlot.Data, pos.position, true);
+        tempCharacter = GameManager.Instance.AddCharacter(team, curSelectSlot.Data, pos, true);
 
         List<SkillData> synergySkillList = new List<SkillData>();
         float synergyAtkValue = 0, synergyDefValue = 0;
 
         foreach (var data in playerData.deckData.SynergySpeciesDataList)
         {
-            switch(data.applyObject)
+            switch (data.applyObject)
             {
                 case 1:
                     //인간
@@ -145,13 +139,13 @@ public class GameCharacterSelectUI : UIBase
                         synergyDefValue += data.defenceValue;
                     }
                     break;
-                    //모두
+                //모두
                 case 6:
                     {
                         synergyAtkValue += data.attackValue;
                         synergyDefValue += data.defenceValue;
-                    }                    
-                    break;                
+                    }
+                    break;
             }
 
             if (data.skillData != null)
@@ -219,6 +213,55 @@ public class GameCharacterSelectUI : UIBase
         {
             tempCharacter.FirstShootEvent();
         }
+    }
+
+    public void ClickSlot(SlotUI slotUI)
+    {
+        if (curSelectSlot != null &&
+            curSelectSlot.Index == slotUI.Index)
+            return;
+
+        curSelectSlot?.ActiveHighlight(false);
+        curSelectSlot = slotUI;
+
+        if (tempCharacter != null)
+        {
+            GameManager.Instance.RemoveCharacter(tempCharacter.Physics.PID);
+            tempCharacter = null;
+        }
+
+        readyButtonRoot.SetActive(tempCharacter != null);
+        readyCancelButtonRoot.SetActive(false);
+        characterPosSelectRoot.SetActive(true);
+
+        CameraManager.Instance.InitCreatePos();
+
+        //CreateCharacter(GameManager.Instance.playerStartPos);
+    }
+
+    public void ClickCharacterPosSelectRange()
+    {
+        var clickWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        CreateCharacter(clickWorldPos);
+
+        readyButtonRoot.SetActive(tempCharacter != null);
+        readyCancelButtonRoot.SetActive(true);
+        characterPosSelectRoot.SetActive(false);
+    }
+
+    public void ClickSelectCancelButton()
+    {
+        curSelectSlot?.ActiveHighlight(false);
+        curSelectSlot = null;
+
+        if (tempCharacter != null)
+        {
+            GameManager.Instance.RemoveCharacter(tempCharacter.Physics.PID);
+            tempCharacter = null;
+        }
+
+        readyButtonRoot.SetActive(false);
+        readyCancelButtonRoot.SetActive(false);
     }
 
     public void PressSlot(SlotUI slotUI, bool state)

@@ -84,7 +84,7 @@ public class GameManager : MonoBehaviour
     public static int CurRound;
 
     public Transform stoneRoot;
-    public Transform playerStartPos;
+    //public Transform playerStartPos;
     public Transform housePos;
 
     public Transform endLine1;
