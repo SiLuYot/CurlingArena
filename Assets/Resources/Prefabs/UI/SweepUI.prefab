@@ -514,7 +514,7 @@ MonoBehaviour:
   mText: "\uC704 \uC544\uB798\uB85C \uBB38\uC9C8\uB7EC\uC11C \uBC29\uD5A5\uACFC \uC18D\uB825\uC744
     \uC870\uC808\uD558\uC138\uC694!"
   mFontSize: 28
-  mFontStyle: 1
+  mFontStyle: 0
   mAlignment: 0
   mEncoding: 1
   mMaxLineCount: 0
@@ -586,6 +586,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7a18005c3b4c684b97cbbc0164c07a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  index: 0
   title: {fileID: 5462482194745252657}
   arrowUp: {fileID: 5462482193563196148}
   arrowDown: {fileID: 5462482193816813968}

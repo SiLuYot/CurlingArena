@@ -235,14 +235,16 @@ public class GameCharacterSelectUI : UIBase
         characterPosSelectRoot.SetActive(true);
 
         CameraManager.Instance.InitCreatePos();
-
-        //CreateCharacter(GameManager.Instance.playerStartPos);
+        CameraManager.IsDragAble = false;        
     }
 
     public void ClickCharacterPosSelectRange()
     {
         var clickWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         CreateCharacter(clickWorldPos);
+
+        CameraManager.IsDragAble = true;
+        CameraManager.Instance.DragScreen_X(Camera.main.ScreenToWorldPoint(Input.mousePosition));
 
         readyButtonRoot.SetActive(tempCharacter != null);
         readyCancelButtonRoot.SetActive(true);

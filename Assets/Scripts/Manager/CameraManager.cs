@@ -22,6 +22,7 @@ public class CameraManager : MonoBehaviour
     public float y = 10.0f;
 
     public static bool IsFixed = false;
+    public static bool IsDragAble = false;
 
     private Transform followTrans;
 
@@ -45,13 +46,14 @@ public class CameraManager : MonoBehaviour
     public void Init(Vector3 pos)
     {
         IsFixed = false;
+        IsDragAble = true;
 
         var newPos = new Vector3(
                 pos.x,
                 pos.y + y,
                 pos.z);
-
-        mainCamera.transform.position = newPos;
+        
+        mainCamera.transform.position = newPos;        
     }
 
     public void LateUpdate()
@@ -97,7 +99,10 @@ public class CameraManager : MonoBehaviour
     }
 
     public void DragScreen_X(Vector3 clickStartPos)
-    {      
+    {
+        if (!IsDragAble)
+            return;
+
         var dragVector = clickStartPos - mainCamera.ScreenToWorldPoint(Input.mousePosition);
         var newPos = mainCamera.transform.position + new Vector3(dragVector.x, 0, 0);
 
@@ -129,6 +134,9 @@ public class CameraManager : MonoBehaviour
 
     public void DragScreen_XZ(Vector3 clickStartPos)
     {
+        if (!IsDragAble)
+            return;
+
         var dragVector = clickStartPos - mainCamera.ScreenToWorldPoint(Input.mousePosition);
         mainCamera.transform.position += new Vector3(dragVector.x, 0, dragVector.z);
     }

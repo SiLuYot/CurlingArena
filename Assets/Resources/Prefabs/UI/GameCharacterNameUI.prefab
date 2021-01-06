@@ -122,7 +122,7 @@ MonoBehaviour:
   mFont: {fileID: 11400000, guid: 1fa4b2d5a71627a44950fff5085e485c, type: 2}
   mText: "SuperRare \uAE30\uC0AC"
   mFontSize: 20
-  mFontStyle: 1
+  mFontStyle: 0
   mAlignment: 0
   mEncoding: 1
   mMaxLineCount: 0

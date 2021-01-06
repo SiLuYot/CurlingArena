@@ -75,7 +75,7 @@ MonoBehaviour:
   mFont: {fileID: 11400000, guid: 1fa4b2d5a71627a44950fff5085e485c, type: 2}
   mText: "\uB371 \uC774\uB984"
   mFontSize: 24
-  mFontStyle: 1
+  mFontStyle: 0
   mAlignment: 0
   mEncoding: 1
   mMaxLineCount: 1
@@ -485,7 +485,7 @@ MonoBehaviour:
   mFont: {fileID: 11400000, guid: 1fa4b2d5a71627a44950fff5085e485c, type: 2}
   mText: "\uB4A4\uB85C\uAC00\uAE30"
   mFontSize: 20
-  mFontStyle: 1
+  mFontStyle: 0
   mAlignment: 0
   mEncoding: 1
   mMaxLineCount: 0
@@ -866,7 +866,7 @@ MonoBehaviour:
   mFont: {fileID: 11400000, guid: 1fa4b2d5a71627a44950fff5085e485c, type: 2}
   mText: "\uCDE8\uC18C"
   mFontSize: 20
-  mFontStyle: 1
+  mFontStyle: 0
   mAlignment: 0
   mEncoding: 1
   mMaxLineCount: 0
@@ -1765,7 +1765,7 @@ MonoBehaviour:
   mFont: {fileID: 11400000, guid: 1fa4b2d5a71627a44950fff5085e485c, type: 2}
   mText: "\uC7A5\uCC29\uB41C \uCE90\uB9AD\uD130 \uC815\uBCF4"
   mFontSize: 32
-  mFontStyle: 1
+  mFontStyle: 0
   mAlignment: 0
   mEncoding: 1
   mMaxLineCount: 0
@@ -2132,11 +2132,11 @@ MonoBehaviour:
   mFont: {fileID: 11400000, guid: 1fa4b2d5a71627a44950fff5085e485c, type: 2}
   mText: "\uCE90\uB9AD\uD130 \uC815\uBCF4"
   mFontSize: 24
-  mFontStyle: 1
+  mFontStyle: 0
   mAlignment: 0
   mEncoding: 1
   mMaxLineCount: 0
-  mEffectStyle: 0
+  mEffectStyle: 2
   mEffectColor: {r: 0, g: 0, b: 0, a: 1}
   mSymbols: 1
   mEffectDistance: {x: 1, y: 1}
@@ -2334,7 +2334,7 @@ MonoBehaviour:
   mFont: {fileID: 11400000, guid: 1fa4b2d5a71627a44950fff5085e485c, type: 2}
   mText: "\uC218\uC815"
   mFontSize: 20
-  mFontStyle: 1
+  mFontStyle: 0
   mAlignment: 0
   mEncoding: 1
   mMaxLineCount: 0
@@ -3110,7 +3110,7 @@ MonoBehaviour:
   mFont: {fileID: 11400000, guid: 1fa4b2d5a71627a44950fff5085e485c, type: 2}
   mText: "\uC7A5\uCC29\uB41C \uCE90\uB9AD\uD130 \uC815\uBCF4"
   mFontSize: 32
-  mFontStyle: 1
+  mFontStyle: 0
   mAlignment: 0
   mEncoding: 1
   mMaxLineCount: 0
@@ -3388,7 +3388,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8297127454600022981
 Transform:
   m_ObjectHideFlags: 0
@@ -3573,7 +3573,7 @@ MonoBehaviour:
   mFont: {fileID: 11400000, guid: 1fa4b2d5a71627a44950fff5085e485c, type: 2}
   mText: 
   mFontSize: 32
-  mFontStyle: 1
+  mFontStyle: 0
   mAlignment: 0
   mEncoding: 1
   mMaxLineCount: 0
@@ -3788,7 +3788,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &8297127454692687684
 Transform:
   m_ObjectHideFlags: 0
@@ -3985,7 +3985,7 @@ MonoBehaviour:
   mFont: {fileID: 11400000, guid: 1fa4b2d5a71627a44950fff5085e485c, type: 2}
   mText: "\uCE90\uB9AD\uD1301"
   mFontSize: 24
-  mFontStyle: 1
+  mFontStyle: 0
   mAlignment: 0
   mEncoding: 1
   mMaxLineCount: 0
@@ -4086,7 +4086,7 @@ MonoBehaviour:
   mFont: {fileID: 11400000, guid: 1fa4b2d5a71627a44950fff5085e485c, type: 2}
   mText: "\uC800\uC7A5"
   mFontSize: 20
-  mFontStyle: 1
+  mFontStyle: 0
   mAlignment: 0
   mEncoding: 1
   mMaxLineCount: 0
@@ -4561,7 +4561,7 @@ MonoBehaviour:
   mFont: {fileID: 11400000, guid: 1fa4b2d5a71627a44950fff5085e485c, type: 2}
   mText: "\uB371 \uD3B8\uC9D1"
   mFontSize: 20
-  mFontStyle: 1
+  mFontStyle: 0
   mAlignment: 0
   mEncoding: 1
   mMaxLineCount: 0
@@ -4812,7 +4812,7 @@ MonoBehaviour:
   mFont: {fileID: 11400000, guid: 1fa4b2d5a71627a44950fff5085e485c, type: 2}
   mText: "\uCE90\uB9AD\uD1303"
   mFontSize: 24
-  mFontStyle: 1
+  mFontStyle: 0
   mAlignment: 0
   mEncoding: 1
   mMaxLineCount: 0
@@ -5122,7 +5122,7 @@ MonoBehaviour:
   mFont: {fileID: 11400000, guid: 1fa4b2d5a71627a44950fff5085e485c, type: 2}
   mText: "\uB371 \uD3B8\uC9D1"
   mFontSize: 28
-  mFontStyle: 1
+  mFontStyle: 0
   mAlignment: 0
   mEncoding: 1
   mMaxLineCount: 0
@@ -6795,7 +6795,7 @@ MonoBehaviour:
   mFont: {fileID: 11400000, guid: 1fa4b2d5a71627a44950fff5085e485c, type: 2}
   mText: "\uC7A5\uCC29\uB41C \uCE90\uB9AD\uD130 \uC815\uBCF4"
   mFontSize: 32
-  mFontStyle: 1
+  mFontStyle: 0
   mAlignment: 0
   mEncoding: 1
   mMaxLineCount: 0
@@ -6928,7 +6928,7 @@ MonoBehaviour:
   mFont: {fileID: 11400000, guid: 1fa4b2d5a71627a44950fff5085e485c, type: 2}
   mText: "\uCE90\uB9AD\uD1302"
   mFontSize: 24
-  mFontStyle: 1
+  mFontStyle: 0
   mAlignment: 0
   mEncoding: 1
   mMaxLineCount: 0
@@ -7485,7 +7485,7 @@ MonoBehaviour:
   mFont: {fileID: 11400000, guid: 1fa4b2d5a71627a44950fff5085e485c, type: 2}
   mText: "\uCE90\uB9AD\uD1304"
   mFontSize: 24
-  mFontStyle: 1
+  mFontStyle: 0
   mAlignment: 0
   mEncoding: 1
   mMaxLineCount: 0
@@ -7586,7 +7586,7 @@ MonoBehaviour:
   mFont: {fileID: 11400000, guid: 1fa4b2d5a71627a44950fff5085e485c, type: 2}
   mText: "\uC7A5\uCC29\uB41C \uCE90\uB9AD\uD130 \uC815\uBCF4"
   mFontSize: 32
-  mFontStyle: 1
+  mFontStyle: 0
   mAlignment: 0
   mEncoding: 1
   mMaxLineCount: 0
@@ -7766,7 +7766,7 @@ MonoBehaviour:
   mFont: {fileID: 11400000, guid: 1fa4b2d5a71627a44950fff5085e485c, type: 2}
   mText: "\uB371\uC5D0 \uC801\uC6A9\uB41C \uBC84\uD504 \uBC0F \uD6A8\uACFC \uD45C\uAE30"
   mFontSize: 36
-  mFontStyle: 1
+  mFontStyle: 0
   mAlignment: 0
   mEncoding: 1
   mMaxLineCount: 0
@@ -8015,9 +8015,9 @@ MonoBehaviour:
   keepCrispWhenShrunk: 1
   mTrueTypeFont: {fileID: 0}
   mFont: {fileID: 11400000, guid: 1fa4b2d5a71627a44950fff5085e485c, type: 2}
-  mText: "\uB371 \uC120\uD0DD"
+  mText: "\uC900\uBE44 \uC644\uB8CC"
   mFontSize: 20
-  mFontStyle: 1
+  mFontStyle: 0
   mAlignment: 0
   mEncoding: 1
   mMaxLineCount: 0
@@ -8118,7 +8118,7 @@ MonoBehaviour:
   mFont: {fileID: 11400000, guid: 1fa4b2d5a71627a44950fff5085e485c, type: 2}
   mText: "\uB371 \uD3B8\uC9D1"
   mFontSize: 36
-  mFontStyle: 1
+  mFontStyle: 0
   mAlignment: 0
   mEncoding: 1
   mMaxLineCount: 0
@@ -8267,7 +8267,7 @@ MonoBehaviour:
   mFont: {fileID: 11400000, guid: 1fa4b2d5a71627a44950fff5085e485c, type: 2}
   mText: "\uB371\uC5D0 \uC801\uC6A9\uB41C \uBC84\uD504 \uBC0F \uD6A8\uACFC"
   mFontSize: 24
-  mFontStyle: 1
+  mFontStyle: 0
   mAlignment: 0
   mEncoding: 1
   mMaxLineCount: 0
@@ -8369,7 +8369,7 @@ MonoBehaviour:
   mText: "\uC774\uB984 : \uAE30\uC0AC\n\uB4F1\uAE09 : SuperRare\n\n\uACF5\uACA9\uB825
     : 100\n\uBC29\uC5B4\uB825 : 100\n\n\uD06C\uAE30 : \uC911"
   mFontSize: 30
-  mFontStyle: 1
+  mFontStyle: 0
   mAlignment: 0
   mEncoding: 1
   mMaxLineCount: 0
@@ -8549,7 +8549,7 @@ PrefabInstance:
         type: 2}
     - target: {fileID: 11400002, guid: fee46b827274e694aa251e2d36700135, type: 3}
       propertyPath: mFontStyle
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 11400004, guid: fee46b827274e694aa251e2d36700135, type: 3}
       propertyPath: mWidth
@@ -8761,7 +8761,7 @@ PrefabInstance:
         type: 2}
     - target: {fileID: 11400002, guid: fee46b827274e694aa251e2d36700135, type: 3}
       propertyPath: mFontStyle
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 11400004, guid: fee46b827274e694aa251e2d36700135, type: 3}
       propertyPath: mWidth
@@ -8973,7 +8973,7 @@ PrefabInstance:
         type: 2}
     - target: {fileID: 11400002, guid: fee46b827274e694aa251e2d36700135, type: 3}
       propertyPath: mFontStyle
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 11400004, guid: fee46b827274e694aa251e2d36700135, type: 3}
       propertyPath: mWidth
@@ -9185,7 +9185,7 @@ PrefabInstance:
         type: 2}
     - target: {fileID: 11400002, guid: fee46b827274e694aa251e2d36700135, type: 3}
       propertyPath: mFontStyle
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 11400004, guid: fee46b827274e694aa251e2d36700135, type: 3}
       propertyPath: mWidth
@@ -9397,7 +9397,7 @@ PrefabInstance:
         type: 2}
     - target: {fileID: 11400002, guid: fee46b827274e694aa251e2d36700135, type: 3}
       propertyPath: mFontStyle
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 11400004, guid: fee46b827274e694aa251e2d36700135, type: 3}
       propertyPath: mWidth
