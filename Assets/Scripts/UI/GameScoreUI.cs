@@ -83,6 +83,12 @@ public class GameScoreUI : BaseUI
 
     public void NextRoundWaitEnd()
     {
+        var popup = UIManager.Instance.IsUIOpened<BasePopupUI>();
+        if (popup != null)
+        {
+            popup.Close();
+        }
+
         base.Close();
     }
 
