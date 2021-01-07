@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class SweepUI : UIBase
+public class SweepUI : BaseSystemUI
 {
     public UILabel title;
     public GameObject arrowUp;

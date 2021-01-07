@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class ShootUI : UIBase
+public class ShootUI : BaseSystemUI
 {
     public UISlider slider;
     public Transform rotateRoot;

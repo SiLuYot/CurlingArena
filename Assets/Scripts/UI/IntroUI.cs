@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class IntroUI : UIBase
+public class IntroUI : BaseUI
 {
     public void Awake()
     {        
@@ -10,12 +10,17 @@ public class IntroUI : UIBase
 
     public void ClickGameStartButton()
     {
-        Close();
+        base.Close();
         UIManager.Instance.Get<MainMenuUI>();
     }
 
-    public void ClickGameEndButton()
+    public override void Close()
     {
-        Application.Quit();
+        var popup = UIManager.Instance.Get<BasePopupUI>() as BasePopupUI;
+        popup.Init("정말 게임을 종료할까요?",
+            () =>
+            {
+                Application.Quit();
+            });
     }
 }

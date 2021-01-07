@@ -2,7 +2,7 @@
 using System.Linq;
 using UnityEngine;
 
-public class GameReadyUI : UIBase
+public class GameReadyUI : BaseUI
 {
     public DeckSlotUI deckSlotPrefab;
     public UIGrid uiGrid;
@@ -67,19 +67,24 @@ public class GameReadyUI : UIBase
 
     public void ClickDeckEditButton()
     {
-        Close();
+        base.Close();
         UIManager.Instance.Get<DeckEditUI>();
     }
 
     public void ClickReadyButton()
     {
-        Close();
+        base.Close();
         GameManager.Instance.GameInit();        
     }
 
     public void ClickBackButton()
     {
-        Close();
+        base.Close();
         UIManager.Instance.Get<MainMenuUI>();
+    }
+
+    public override void Close()
+    {
+        ClickBackButton();
     }
 }

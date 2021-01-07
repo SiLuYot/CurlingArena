@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-public class TestBattleSceneUI : UIBase
+public class TestBattleSceneUI : BaseUI
 {
     public GameObject editModeRoot;
     public GameObject playModeRoot;
@@ -200,7 +200,12 @@ public class TestBattleSceneUI : UIBase
         GameManager.Instance.RemoveAllData();
         GameManager.Instance.SetCameraToHousePos();
 
-        Close();        
+        base.Close();
         UIManager.Instance.Get<MainMenuUI>();        
+    }
+
+    public override void Close()
+    {
+        ClickMainMenuButton();
     }
 }

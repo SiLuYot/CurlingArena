@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameScoreUI : UIBase
+public class GameScoreUI : BaseUI
 {
     public UILabel player1Name;
     public UILabel player2Name;
@@ -79,5 +79,23 @@ public class GameScoreUI : UIBase
 
         player1LoseRoot.SetActive(!isPlayer1Win);
         player2LoseRoot.SetActive(isPlayer1Win);
+    }
+
+    public void NextRoundWaitEnd()
+    {
+        base.Close();
+    }
+
+    public override void Close()
+    {
+        var popup = UIManager.Instance.Get<BasePopupUI>() as BasePopupUI;
+        popup.Init("정말 게임을 포기할까요?",
+            () =>
+            {
+                GameManager.Instance.GameForceEnd();
+
+                base.Close();
+                UIManager.Instance.Get<MainMenuUI>();
+            });
     }
 }

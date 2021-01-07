@@ -2,7 +2,7 @@
 using System.Linq;
 using UnityEngine;
 
-public class DeckEditUI : UIBase
+public class DeckEditUI : BaseUI
 {
     public GameObject mainRoot;
     public GameObject deckEditRoot;
@@ -334,5 +334,22 @@ public class DeckEditUI : UIBase
     {
         Close();
         UIManager.Instance.Get<MainMenuUI>();
+    }
+
+    public override void Close()
+    {
+        if (SlotEditRoot.activeSelf)
+        {
+            ClickSlotEditCancel();
+        }
+        else if (deckEditRoot.activeSelf)
+        {
+            ClickEditCancelButton();
+        }
+        else if (mainRoot.activeSelf)
+        {
+            base.Close();
+            UIManager.Instance.Get<MainMenuUI>();
+        }
     }
 }

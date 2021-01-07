@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameCharacterSelectUI : UIBase
+public class GameMainUI : BaseUI
 {
     public UILabel player1Name;
     public UILabel player2Name;
@@ -19,7 +19,6 @@ public class GameCharacterSelectUI : UIBase
     public GameObject characterInfoRoot;
     public GameObject profileRoot;
     public GameObject pauseRoot;
-    public GameObject homePopupRoot;
     public GameObject characterPosSelectRoot;
     public GameObject readyButtonRoot;
     public GameObject readyCancelButtonRoot;
@@ -85,8 +84,7 @@ public class GameCharacterSelectUI : UIBase
         mainRoot.SetActive(true);
         characterInfoRoot.SetActive(false);
         profileRoot.SetActive(false);
-        pauseRoot.SetActive(false);
-        homePopupRoot.SetActive(false);
+        pauseRoot.SetActive(false);        
         characterPosSelectRoot.SetActive(false);
         readyButtonRoot.SetActive(false);
         readyCancelButtonRoot.SetActive(false);
@@ -352,24 +350,36 @@ public class GameCharacterSelectUI : UIBase
 
     public void ClickPauseGoHomeButton()
     {
-        homePopupRoot.SetActive(true);
-    }
+        var popup = UIManager.Instance.Get<BasePopupUI>() as BasePopupUI;
+        popup.Init("정말 게임을 포기할까요?",
+            () => 
+            {
+                GameManager.Instance.GameForceEnd();
 
-    public void ClickGoHomeYesButton()
-    {
-        GameManager.Instance.GameForceEnd();      
-
-        Close();
-        UIManager.Instance.Get<MainMenuUI>();
-    }
-
-    public void ClickGoHomeNoButton()
-    {
-        homePopupRoot.SetActive(false);
+                base.Close();
+                UIManager.Instance.Get<MainMenuUI>();
+            });
     }
 
     public void HideMenu()
     {
         menuRoot.SetActive(false);
+        ClickPauseBackButton();
+    }
+
+    public override void Close()
+    {
+        if (profileRoot.activeSelf)
+        {
+            ClickProfileBackButton();
+        }
+        else if (pauseRoot.activeSelf)
+        {
+            ClickPauseBackButton();
+        }
+        else if (menuRoot.activeSelf)
+        {
+            ClickPauseButton();
+        }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class MainMenuUI : UIBase
+public class MainMenuUI : BaseUI
 {
     public GameObject mainRoot;
     public GameObject gameRoot;
@@ -11,21 +11,38 @@ public class MainMenuUI : UIBase
         gameRoot.SetActive(false);
     }
 
+    public override void Close()
+    {
+        if (gameRoot.activeSelf)
+        {
+            ClickBackButton();
+        }
+        else
+        {
+            var popup = UIManager.Instance.Get<BasePopupUI>() as BasePopupUI;
+            popup.Init("정말 게임을 종료할까요?",
+                () =>
+                {
+                    Application.Quit();
+                });
+        }
+    }
+
     public void ClickGameStartButton()
     {
-        Close();
+        base.Close();
         UIManager.Instance.Get<GameReadyUI>();
     }
 
     public void ClickDeckEditButton()
     {
-        Close();
+        base.Close();
         UIManager.Instance.Get<DeckEditUI>();
     }
 
     public void ClickTestSceneButton()
     {
-        Close();
+        base.Close();
         GameManager.Instance.TestSceneStart();
     }
 
@@ -39,10 +56,5 @@ public class MainMenuUI : UIBase
     {
         mainRoot.SetActive(true);
         gameRoot.SetActive(false);
-    }
-
-    public void ClickGameEndButton()
-    {
-        Application.Quit();
     }
 }

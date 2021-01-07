@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using UnityEngine;
 
-public class PositionSelectUI : UIBase
+public class PositionSelectUI : BaseSystemUI
 {
     public UIButton button;
     public UILabel titleLabel;

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameCharacterNameUI : UIBase
+public class GameCharacterNameUI : BaseSystemUI
 {
     public UILabel label;
     private Transform followTrans;

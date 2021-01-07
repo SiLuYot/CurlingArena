@@ -157,6 +157,7 @@ public class GameManager : MonoBehaviour
     }
 
     private static BasicData basicData;
+    private Coroutine curCoroutine;
 
     public void Awake()
     {
@@ -175,6 +176,7 @@ public class GameManager : MonoBehaviour
 
     public void GameInit()
     {
+        curCoroutine = null;
         IsTestMode = false;
         createPos.SetActive(false);
 
@@ -223,7 +225,7 @@ public class GameManager : MonoBehaviour
         {
             var player = PlayerSequenceQueue.Dequeue();
 
-            var selectUI = UIManager.Instance.Get<GameCharacterSelectUI>() as GameCharacterSelectUI;
+            var selectUI = UIManager.Instance.Get<GameMainUI>() as GameMainUI;
             selectUI.Init(CurRound, player, Player1, Player2);
         }
         else
@@ -298,30 +300,34 @@ public class GameManager : MonoBehaviour
 
             winTeam = Player1.Score > Player2.Score ? Team.PLAYER1 : Team.PLAYER2;
 
-            StartCoroutine(NextRoundWait(
+            curCoroutine = StartCoroutine(NextRoundWait(
                 (scoreUI) => scoreUI.SetWinLoseRoot(winTeam == Player1.team),
                 () =>
                 {
                     RemoveAllData();
                     None();
 
-                    var selectUI = UIManager.Instance.IsUIOpened<GameCharacterSelectUI>();
+                    var selectUI = UIManager.Instance.IsUIOpened<GameMainUI>();
                     if (selectUI != null)
                     {
                         selectUI.Close();
                     }
 
                     UIManager.Instance.Get<MainMenuUI>();
+
+                    curCoroutine = null;
                 }));
         }
         else
         {
-            StartCoroutine(NextRoundWait(
+            curCoroutine = StartCoroutine(NextRoundWait(
                 (scoreUI) => scoreUI.SetFirstAttackRoot(firstTeam == Player1.team),
                 () => 
                 {
                     RemoveAllData();
-                    NextSequencePlayerStart();                    
+                    NextSequencePlayerStart();
+
+                    curCoroutine = null;
                 }));
         }
     }
@@ -399,7 +405,7 @@ public class GameManager : MonoBehaviour
 
     public IEnumerator NextRoundWait(Action<GameScoreUI> callback1, Action callback2)
     {
-        var selectUI = UIManager.Instance.Get<GameCharacterSelectUI>() as GameCharacterSelectUI;
+        var selectUI = UIManager.Instance.Get<GameMainUI>() as GameMainUI;
         selectUI.HideMenu();
 
         var gameScoreUI = UIManager.Instance.Get<GameScoreUI>() as GameScoreUI;
@@ -409,7 +415,7 @@ public class GameManager : MonoBehaviour
 
         yield return new WaitForSeconds(ROUND_WAIT_TIME);
 
-        gameScoreUI.Close();
+        gameScoreUI.NextRoundWaitEnd();
         callback2?.Invoke();
     }
 
@@ -557,6 +563,12 @@ public class GameManager : MonoBehaviour
 
     public void GameForceEnd()
     {
+        if (curCoroutine != null)
+        {
+            StopCoroutine(curCoroutine);
+            curCoroutine = null;
+        }
+
         RemoveAllData();
         SetCameraToHousePos();
         None();

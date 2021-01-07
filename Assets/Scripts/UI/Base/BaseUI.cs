@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class UIBase : MonoBehaviour
+public class BaseUI : MonoBehaviour
 {
     public int index;
     public UIData uiData;
@@ -11,8 +11,8 @@ public class UIBase : MonoBehaviour
         this.uiData = uiData;
     }
 
-    public void Close()
+    public virtual void Close()
     {
-        UIManager.Instance?.Close(index);
+        UIManager.Instance?.Close();        
     }
 }
