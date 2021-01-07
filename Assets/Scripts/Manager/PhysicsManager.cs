@@ -271,11 +271,9 @@ public class PhysicsManager : MonoBehaviour
 
         RemoveObj(removeList);
 
-        //모든 움직임이 끝나고 오브젝트들 초기화
+        //스윕 값 초기화
         foreach (var obj in physicsObjectList)
         {
-            obj.dir = Vector3.zero;
-            obj.speed = 0;
             obj.sweepValue = 0;
         }
 

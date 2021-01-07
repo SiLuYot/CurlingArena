@@ -16,7 +16,7 @@ public class CameraManager : MonoBehaviour
     }
 
     public Camera mainCamera;
-    public Transform stoneRoot;
+    //public Transform stoneRoot;
     public Transform playerCreatePos;
     public Transform playerSelectPos;
     public float y = 10.0f;
@@ -33,7 +33,7 @@ public class CameraManager : MonoBehaviour
     {
         Init(playerCreatePos.position);
 
-        mainCamera.orthographicSize = DEFAULT_SIZE;
+        //mainCamera.orthographicSize = DEFAULT_SIZE;
     }
 
     //public void InitSelectPos()
@@ -96,6 +96,36 @@ public class CameraManager : MonoBehaviour
     public void SetFollowTrans(Transform followTrans)
     {
         this.followTrans = followTrans;
+    }
+
+    public void AdjustScreen()
+    {
+        var newPos = mainCamera.transform.position;
+
+        var width = mainCamera.orthographicSize * Screen.width / Screen.height;
+
+        bool isInIce_X1 = GameManager.Instance.IsInIcePlate_X1(newPos.x - width);
+        bool isInIce_X2 = GameManager.Instance.IsInIcePlate_X2(newPos.x + width);
+
+        if (isInIce_X1 && isInIce_X2)
+        {
+            mainCamera.transform.position = newPos;
+        }
+
+        if (!isInIce_X1)
+        {
+            var diff = GameManager.Instance.endLine1.position.x -
+                (mainCamera.transform.position.x - width);
+
+            mainCamera.transform.position += new Vector3(diff, 0, 0);
+        }
+        else if (!isInIce_X2)
+        {
+            var diff = GameManager.Instance.endLine2.position.x -
+                (mainCamera.transform.position.x + width);
+
+            mainCamera.transform.position += new Vector3(diff, 0, 0);
+        }
     }
 
     public void DragScreen_X(Vector3 clickStartPos)

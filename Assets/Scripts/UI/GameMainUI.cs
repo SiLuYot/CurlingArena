@@ -77,9 +77,6 @@ public class GameMainUI : BaseUI
             }
         }
 
-        CameraManager.Instance.InitCreatePos();
-        GameManager.Instance.Select();
-
         menuRoot.SetActive(true);
         mainRoot.SetActive(true);
         characterInfoRoot.SetActive(false);
@@ -228,12 +225,18 @@ public class GameMainUI : BaseUI
             tempCharacter = null;
         }
 
+        CameraManager.Instance.InitCreatePos();
+        CameraManager.Instance.AdjustScreen();
+        CameraManager.IsDragAble = false;
+
+        var playerCreatePos = CameraManager.Instance.playerCreatePos.position;
+        var e1 = Camera.main.WorldToViewportPoint(playerCreatePos);
+        var e2 = UICamera.mainCamera.ViewportToWorldPoint(e1);
+        characterPosSelectRoot.transform.position = new Vector3(e2.x, e2.y, 0);
+
         readyButtonRoot.SetActive(tempCharacter != null);
         readyCancelButtonRoot.SetActive(false);
         characterPosSelectRoot.SetActive(true);
-
-        CameraManager.Instance.InitCreatePos();
-        CameraManager.IsDragAble = false;        
     }
 
     public void ClickCharacterPosSelectRange()
@@ -241,8 +244,7 @@ public class GameMainUI : BaseUI
         var clickWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         CreateCharacter(clickWorldPos);
 
-        CameraManager.IsDragAble = true;
-        CameraManager.Instance.DragScreen_X(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+        CameraManager.IsDragAble = true;        
 
         readyButtonRoot.SetActive(tempCharacter != null);
         readyCancelButtonRoot.SetActive(true);
@@ -290,7 +292,7 @@ public class GameMainUI : BaseUI
         mainRoot.SetActive(false);
         profileRoot.SetActive(false);
         pauseRoot.SetActive(false);
-
+        
         GameManager.Instance.Ready();
     }
 

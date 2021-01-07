@@ -165,6 +165,12 @@ public class GameManager : MonoBehaviour
         TestCharacterCreateDataList = new List<CharacterCreateData>();
         PlayerDataList = new List<PlayerData>();
         PlayerSequenceQueue = new Queue<PlayerData>();
+
+        DataBaseManager.Instance.Init();
+        DeckManager.Instance.Init();
+
+        CameraManager.Instance.Init(housePos.position);
+        CameraManager.Instance.AdjustScreen();
     }
 
     void Start()
@@ -227,6 +233,11 @@ public class GameManager : MonoBehaviour
 
             var selectUI = UIManager.Instance.Get<GameMainUI>() as GameMainUI;
             selectUI.Init(CurRound, player, Player1, Player2);
+
+            Select();
+
+            CameraManager.Instance.InitCreatePos();
+            CameraManager.Instance.AdjustScreen();
         }
         else
         {
@@ -350,6 +361,8 @@ public class GameManager : MonoBehaviour
         Debug.Log("Step : " + CurStep);
 
         CameraManager.Instance.InitCreatePos();
+        CameraManager.Instance.AdjustScreen();
+
         PhysicsManager.Instance.Init();
     }
 

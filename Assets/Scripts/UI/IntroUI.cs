@@ -2,12 +2,6 @@
 
 public class IntroUI : BaseUI
 {
-    public void Awake()
-    {        
-        DataBaseManager.Instance.Init();
-        DeckManager.Instance.Init();
-    }
-
     public void ClickGameStartButton()
     {
         base.Close();
