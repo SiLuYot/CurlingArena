@@ -233,7 +233,8 @@ public class BasicData : ReadData
     public float Turn_Wait_Time;
     public float Round_Wait_Time;
     public float Turn;
-    
+    public float Speed;
+
     public override int ID => 0;
     public override string NAME => "basic";
 }

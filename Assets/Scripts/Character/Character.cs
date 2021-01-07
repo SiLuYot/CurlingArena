@@ -117,7 +117,8 @@ public class Character : MonoBehaviour
 
     public float GetShootSpeed(float attackBouns = 1f)
     {
-        return Mathf.Sqrt(100f * ((0.6f * (Data.attack * attackBouns)) + 30f)) + 15f;
+        //return Mathf.Sqrt(100f * ((0.6f * (Data.attack * attackBouns)) + 30f)) + 15f;
+        return attackBouns * GameManager.SPEED;
     }
 
     public void RefreshData(CharacterData data)
