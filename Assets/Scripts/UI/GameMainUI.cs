@@ -61,7 +61,7 @@ public class GameMainUI : BaseUI
         this.curSelectSlot = null;
         this.playerData = curPlayerData;
         this.tempCharacter = null;
-        this.leftTimer = GameManager.Turn;
+        this.leftTimer = GameManager.TURN;
 
         for (int i = 0; i < slotArray.Length; i++)
         {

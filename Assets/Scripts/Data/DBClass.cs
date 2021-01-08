@@ -234,6 +234,8 @@ public class BasicData : ReadData
     public float Round_Wait_Time;
     public float Turn;
     public float Speed;
+    public float Power_Min;
+    public float Power_Max;
 
     public override int ID => 0;
     public override string NAME => "basic";

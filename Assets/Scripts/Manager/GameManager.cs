@@ -126,7 +126,11 @@ public class GameManager : MonoBehaviour
     //발사할 기본 속도
     public static float SPEED => basicData.Speed;
     //라운드 남은 시간
-    public static float Turn => basicData.Turn;
+    public static float TURN => basicData.Turn;
+    //발사 속도 최소 %
+    public static float POWER_MIN => basicData.Power_Min;
+    //발사 속도 최대 %
+    public static float POWER_MAX => basicData.Power_Max;
     //덱에 들어가는 캐릭터의 최대 수
     public static float DECK_CHARACTER_COUNT = 4;
     //하우스 가장 큰 원의 반지름

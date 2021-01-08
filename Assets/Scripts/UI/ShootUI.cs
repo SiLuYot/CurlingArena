@@ -49,9 +49,9 @@ public class ShootUI : BaseSystemUI
 
     public float GetAttackBouns()
     {
-        var attackBouns = slider.value * 1.2f;
-        if (attackBouns < 0.5f)
-            attackBouns = 0.5f;
+        var attackBouns = slider.value * GameManager.POWER_MAX;
+        if (attackBouns < GameManager.POWER_MIN)
+            attackBouns = GameManager.POWER_MIN;
 
         return attackBouns;
     }
