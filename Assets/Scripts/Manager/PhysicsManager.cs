@@ -27,7 +27,6 @@ class CollisionData
 public class PhysicsManager : MonoBehaviour
 {
     public Transform hoglineLine;
-    public Transform backLine;
 
     private static PhysicsManager instance = null;
     public static PhysicsManager Instance
@@ -136,7 +135,7 @@ public class PhysicsManager : MonoBehaviour
 
             //빙판을 벗어난 경우
             if (!GameManager.Instance.IsInIcePlate(moveObj.characterTransform.position))
-            {                
+            {
                 StopPhysicsObj(moveObj);
                 continue;
             }
@@ -590,8 +589,7 @@ public class PhysicsManager : MonoBehaviour
         List<int> removeList = null;
         foreach (var obj in physicsObjectList)
         {
-            if (obj.characterTransform.position.x < hoglineLine.position.x ||
-                obj.characterTransform.position.x > backLine.position.x)
+            if (!GameManager.Instance.IsInIcePlate(obj.characterTransform.position))
             {
                 if (removeList == null)
                     removeList = new List<int>();
