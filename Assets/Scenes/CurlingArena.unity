@@ -2282,8 +2282,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hoglineLine: {fileID: 1368013572}
   backLine: {fileID: 827878345}
-  upLine: {fileID: 334977273}
-  downLine: {fileID: 1179860062}
 --- !u!1 &1198383873
 GameObject:
   m_ObjectHideFlags: 0

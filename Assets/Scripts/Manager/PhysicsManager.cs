@@ -27,6 +27,7 @@ class CollisionData
 public class PhysicsManager : MonoBehaviour
 {
     public Transform hoglineLine;
+    public Transform backLine;
 
     private static PhysicsManager instance = null;
     public static PhysicsManager Instance
@@ -589,7 +590,9 @@ public class PhysicsManager : MonoBehaviour
         List<int> removeList = null;
         foreach (var obj in physicsObjectList)
         {
-            if (!GameManager.Instance.IsInIcePlate(obj.characterTransform.position))
+            if (!GameManager.Instance.IsInIcePlate(obj.characterTransform.position) ||
+                obj.characterTransform.position.x < hoglineLine.position.x ||
+                obj.characterTransform.position.x > backLine.position.x)
             {
                 if (removeList == null)
                     removeList = new List<int>();
