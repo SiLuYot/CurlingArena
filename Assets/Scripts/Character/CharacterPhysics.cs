@@ -21,6 +21,7 @@ public class CharacterPhysics
     private float attackBouns;
     private float firstSpeed;
     private float friction;
+    private Action updateForce;
 
     public float speed;
     public Vector3 dir;
@@ -47,7 +48,6 @@ public class CharacterPhysics
     public Transform characterTransform;
     public Vector3 prevPostion;
 
-    public Action updateForce;
     public Action<CharacterPhysics, List<CharacterPhysics>> collideEvent;
     public Action<CharacterPhysics, List<CharacterPhysics>> beCollidedEvent;
     public Func<CharacterPhysics, List<CharacterPhysics>, IEnumerator> allStopEvent;
@@ -131,6 +131,20 @@ public class CharacterPhysics
     {
         this.dir += dir;
         this.dir.Normalize();
+    }
+
+    public void SetUpdateForce(Vector3 dir, float speed)
+    {
+        updateForce = () =>
+        {
+            ApplyForce(dir, speed);
+        };
+    }
+
+    public void ExcuteUpdateForce()
+    {
+        updateForce?.Invoke();
+        updateForce = null;
     }
 
     public void Sweep(float value)

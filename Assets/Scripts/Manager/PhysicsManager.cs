@@ -37,7 +37,7 @@ public class PhysicsManager : MonoBehaviour
             if (instance == null)
             {
                 instance = FindObjectOfType(typeof(PhysicsManager)) as PhysicsManager;
-            }                
+            }
             return instance;
         }
     }
@@ -46,7 +46,7 @@ public class PhysicsManager : MonoBehaviour
     private List<CharacterPhysics> physicsObjectList = new List<CharacterPhysics>();
     //충돌 발생 시 순서대로 기록되는 리스트
     private List<CollisionData> collisionDataList = new List<CollisionData>();
-    
+
     private bool isAllStop = false;
     private bool isAllStopEventEnd = false;
     private Coroutine allStopCoroutine = null;
@@ -91,8 +91,6 @@ public class PhysicsManager : MonoBehaviour
         {
             //방향과 속력 계산
             CalculateForce();
-            //계산된 방향과 속력 갱신
-            UpdateForce();
             //갱신된 방향과 속력 적용
             ApplyForce();
             //모두 멈춘 경우 이벤트 발생
@@ -182,20 +180,6 @@ public class PhysicsManager : MonoBehaviour
         isAllStop = allStop;
     }
 
-    //계산된 방향과 속력을 갱신한다.
-    private void UpdateForce()
-    {
-        foreach (var moveObj in physicsObjectList)
-        {
-            if (moveObj != null &&
-                moveObj.updateForce != null)
-            {
-                moveObj.updateForce();
-                moveObj.updateForce = null;
-            }
-        }
-    }
-
     //계산된 방향과 속력을 적용한다.
     private void ApplyForce()
     {
@@ -203,6 +187,9 @@ public class PhysicsManager : MonoBehaviour
         {
             if (moveObj == null)
                 continue;
+
+            //방향과 속력을 갱신한다.
+            moveObj.ExcuteUpdateForce();
 
             //아직 변하는 중이라면
             if (moveObj.speed > 0 &&
@@ -292,17 +279,13 @@ public class PhysicsManager : MonoBehaviour
         var move_vc = checkObjTrans.localPosition - moveObjTrans.localPosition;
         //현재 오브젝트와 체크할 오브젝트의 벡터
         var check_vc = moveObjTrans.localPosition - checkObjTrans.localPosition;
+
         //두 오브젝트의 반지름을 더한 값
         float sumRadius = moveObj.Radius + checkObj.Radius;
 
         //두 오브젝트의 반지름을 더한 값보다
         //vc의 길이가 크다면 서로 충돌하지 않음.
         var difference = sumRadius - move_vc.magnitude;
-
-        //현재 오브젝트의 방향과 두 오브젝트 사이 벡터의 내적
-        var move_dot = Vector3.Dot(moveObj.dir, move_vc.normalized);
-        //체크할 오브젝트의 방향과 두 오브젝트 사이 벡터의 내적
-        var check_dot = Vector3.Dot(checkObj.dir, check_vc.normalized);
 
         //충돌 플래그
         bool isCollision = false;
@@ -313,36 +296,30 @@ public class PhysicsManager : MonoBehaviour
             //상대가 움직이고 있을때
             if (checkObj.speed > 0)
             {
-                //상대방이 나의 앞에 있고
-                //상대방 기준으로도 내가 상대방의 앞에 있다면
-                if (move_dot > 0 && check_dot > 0)
-                {
-                    //두 오브젝트의 속도가 같은 경우
-                    if (moveObj.speed == checkObj.speed)
-                    {
-                        moveObj.speed += 0.001f;
-                    }
+                //현재 오브젝트의 방향과 두 오브젝트 사이 벡터의 내적
+                var move_dot = Vector3.Dot(moveObj.dir, move_vc.normalized);
+                //체크할 오브젝트의 방향과 두 오브젝트 사이 벡터의 내적
+                var check_dot = Vector3.Dot(checkObj.dir, check_vc.normalized);
 
+                //서로의 앞에 있거나 뒤에 있다면
+                if ((move_dot > 0 && check_dot > 0) || 
+                    (move_dot <= 0 && check_dot <= 0))
+                {
                     //중복 충돌 방지를 위해
-                    //더 빠른 오브젝트에게만 충돌 발생
-                    if (moveObj.speed > checkObj.speed)
+                    //먼저 만들어진 오브젝트에게만 충돌 발생
+                    if (moveObj.PID < checkObj.PID)
                     {
                         isCollision = true;
                     }
                 }
-                //상대방이 나의 앞에 있고
-                //상대방 기준으로 내가 상대방의 뒤에 있다면
+                //상대방이 내 앞에 있고 내가 상대방의 뒤에 있다면
                 else if (move_dot > 0 && check_dot < 0)
                 {
                     isCollision = true;
                 }
             }
-            //상대가 멈춰 있을때
-            else
-            {
-                //충돌
-                isCollision = true;
-            }
+            //상대가 멈춰 있으면
+            else isCollision = true;
         }
 
         //충돌이 일어났다면
@@ -414,13 +391,22 @@ public class PhysicsManager : MonoBehaviour
 
         //현재 오브젝트 벡터
         var v1 = moveObjTrans.localPosition - moveObj.prevPostion;
+        //충돌된 오브젝트 벡터
+        var v2 = checkObjTrans.localPosition - checkObj.prevPostion;
+
+        //두 오브젝트 모두 변화 없을 경우 무시
+        if (v1 == Vector3.zero && v2 == Vector3.zero)
+        {
+            moveObj.SetUpdateForce(Vector3.zero, 0);
+            checkObj.SetUpdateForce(Vector3.zero, 0);
+            return;
+        }
+
         //현재 오브젝트 벡터에 vc의 방향 벡터를 투영
         var proj11 = Vector3.Project(v1, vcd);
         //현재 오브젝트 벡터에 vc의 노말 벡터를 투영
         var proj12 = Vector3.Project(v1, vcn);
 
-        //충돌된 오브젝트 벡터
-        var v2 = checkObjTrans.localPosition - checkObj.prevPostion;
         //충돌된 오브젝트 벡터에 vc의 방향 벡터를 투영
         var proj21 = Vector3.Project(v2, vcd);
         //충돌된 오브젝트 벡터에 vc의 노말 벡터를 투영
@@ -429,16 +415,6 @@ public class PhysicsManager : MonoBehaviour
         //오브젝트의 질량
         var moveObjMass = moveObj.Mass;
         var checkObjMass = checkObj.Mass;
-
-        //충격량을 받지 않는 상태라면 질량을 올려서 움직이지 않게 함
-        if (moveObj.character.ImpulsePercentValue == 0)
-        {
-            moveObjMass *= 9999.0f;
-        }
-        if (checkObj.character.ImpulsePercentValue == 0)
-        {
-            checkObjMass *= 9999.0f;
-        }
 
         //서로의 운동벡터 교환 (x축)
         float P = moveObjMass * proj11.x + checkObjMass * proj21.x;
@@ -451,24 +427,18 @@ public class PhysicsManager : MonoBehaviour
         V = proj11.z - proj21.z;
         float v2fz = (P + V * moveObjMass) / (moveObjMass + checkObjMass);
         float v1fz = v2fz - V;
-        //참조 -> https://brownsoo.github.io/2DVectors/moving_balls/
+        //참고 -> https://brownsoo.github.io/2DVectors/moving_balls/
 
         //반동이 계산된 현재 오브젝트 벡터
         var newv1 = new Vector3(proj12.x + v1fx, 0, proj12.z + v1fz);
         //반동이 계산된 충돌된 오브젝트 벡터
         var newv2 = new Vector3(proj22.x + v2fx, 0, proj22.z + v2fz);
 
-        //무한 충돌을 방지하기 위해 아주 적은 값 무시
-        if (newv1.magnitude < 0.01f &&
-            newv2.magnitude < 0.01f)
-            return;
-
         //공격력과 공격보너스를 합친 값 (발사단계에서 게이지 퍼센트 만큼 50%~120% 보너스)
         var attackValue = moveObj.character.finalAttack * moveObj.AttackBouns;
 
-        //발사 할때와 충돌 했을때의 속도 감소율
-        var speedRate = GameManager.Instance.IsCurrentPlayer(moveObj.character) ?
-            (moveObj.speed / moveObj.FirstSpeed) : 1.0f;
+        //처음 속도와 충돌 했을때 속도 비율 (감소율)
+        var speedRate = moveObj.speed / moveObj.FirstSpeed;
 
         //최종 공격력
         var finalAttackValue = attackValue * speedRate;
@@ -497,18 +467,8 @@ public class PhysicsManager : MonoBehaviour
         var checkDir = (newv2.normalized + checkObj.character.ImpulseAddDir).normalized;
 
         //방향과 속력 업데이트 등록
-        moveObj.updateForce = () =>
-        {
-            moveObj.dir = moveDir;
-            moveObj.speed = moveSpeed;
-        };
-
-        //방향과 속력 업데이트 등록
-        checkObj.updateForce = () =>
-        {
-            checkObj.dir = checkDir;
-            checkObj.speed = checkSpeed;
-        };
+        moveObj.SetUpdateForce(moveDir, moveSpeed);
+        checkObj.SetUpdateForce(checkDir, checkSpeed);
 
         //충돌 데이터 기록
         var collisionData = new CollisionData(collisionDataList.Count,
