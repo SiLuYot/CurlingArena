@@ -302,8 +302,8 @@ public class PhysicsManager : MonoBehaviour
                 var check_dot = Vector3.Dot(checkObj.dir, check_vc.normalized);
 
                 //서로의 앞에 있거나 뒤에 있다면
-                if ((move_dot > 0 && check_dot > 0) || 
-                    (move_dot <= 0 && check_dot <= 0))
+                if ((move_dot > 0 && check_dot > 0) ||
+                    (move_dot < 0 && check_dot < 0))
                 {
                     //중복 충돌 방지를 위해
                     //먼저 만들어진 오브젝트에게만 충돌 발생
@@ -395,44 +395,28 @@ public class PhysicsManager : MonoBehaviour
         var v2 = checkObjTrans.localPosition - checkObj.prevPostion;
 
         //두 오브젝트 모두 변화 없을 경우 무시
-        if (v1 == Vector3.zero && v2 == Vector3.zero)
+        if (v1 == Vector3.zero &&
+            v2 == Vector3.zero)
         {
             moveObj.SetUpdateForce(Vector3.zero, 0);
             checkObj.SetUpdateForce(Vector3.zero, 0);
             return;
         }
 
-        //현재 오브젝트 벡터에 vc의 방향 벡터를 투영
+        //현재 오브젝트 벡터를 vc의 방향 벡터에 투영
         var proj11 = Vector3.Project(v1, vcd);
-        //현재 오브젝트 벡터에 vc의 노말 벡터를 투영
+        //현재 오브젝트 벡터를 vc의 노말 벡터에 투영
         var proj12 = Vector3.Project(v1, vcn);
 
-        //충돌된 오브젝트 벡터에 vc의 방향 벡터를 투영
+        //충돌된 오브젝트 벡터를 vc의 방향 벡터에 투영
         var proj21 = Vector3.Project(v2, vcd);
-        //충돌된 오브젝트 벡터에 vc의 노말 벡터를 투영
+        //충돌된 오브젝트 벡터를 vc의 노말 벡터에 투영
         var proj22 = Vector3.Project(v2, vcn);
 
-        //오브젝트의 질량
-        var moveObjMass = moveObj.Mass;
-        var checkObjMass = checkObj.Mass;
-
-        //서로의 운동벡터 교환 (x축)
-        float P = moveObjMass * proj11.x + checkObjMass * proj21.x;
-        float V = proj11.x - proj21.x;
-        float v2fx = (P + V * moveObjMass) / (moveObjMass + checkObjMass);
-        float v1fx = v2fx - V;
-
-        //서로의 운동벡터 교환 (z축)
-        P = moveObjMass * proj11.z + checkObjMass * proj21.z;
-        V = proj11.z - proj21.z;
-        float v2fz = (P + V * moveObjMass) / (moveObjMass + checkObjMass);
-        float v1fz = v2fz - V;
-        //참고 -> https://brownsoo.github.io/2DVectors/moving_balls/
-
         //반동이 계산된 현재 오브젝트 벡터
-        var newv1 = new Vector3(proj12.x + v1fx, 0, proj12.z + v1fz);
+        var newv1 = proj21 + proj12;
         //반동이 계산된 충돌된 오브젝트 벡터
-        var newv2 = new Vector3(proj22.x + v2fx, 0, proj22.z + v2fz);
+        var newv2 = proj22 + proj11;
 
         //공격력과 공격보너스를 합친 값 (발사단계에서 게이지 퍼센트 만큼 50%~120% 보너스)
         var attackValue = moveObj.character.finalAttack * moveObj.AttackBouns;
@@ -494,6 +478,8 @@ public class PhysicsManager : MonoBehaviour
             moveObjTrans.name, moveDir, moveSpeed));
         Debug.Log(string.Format("[{0} final Vector]\n방향 : {1} 속도 : {2}",
            checkObjTrans.name, checkDir, checkSpeed));
+
+        //물리 연산 참고 사이트 -> https://brownsoo.github.io/2DVectors/moving_balls/
     }
 
     public int FindFirstCollision(int pid)
