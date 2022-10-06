@@ -164,7 +164,7 @@ public class PhysicsManager : MonoBehaviour
                 }
             }
 
-            //속도를 마찰력만큼 감소 시킨다.
+            //속력를 마찰력만큼 감소 시킨다.
             moveObj.speed -= moveObj.Friction;
 
             //스윕으로 인한 마찰력 회복
@@ -421,7 +421,7 @@ public class PhysicsManager : MonoBehaviour
         //공격력과 공격보너스를 합친 값 (발사단계에서 게이지 퍼센트 만큼 50%~120% 보너스)
         var attackValue = moveObj.character.finalAttack * moveObj.AttackBouns;
 
-        //처음 속도와 충돌 했을때 속도 비율 (감소율)
+        //처음 속력과 충돌 했을때 속력 비율 (감소율)
         var speedRate = moveObj.speed / moveObj.FirstSpeed;
 
         //최종 공격력
@@ -447,8 +447,8 @@ public class PhysicsManager : MonoBehaviour
         var checkSpeed = checkObj.GetQuadraticEquationValue(finalCheckImpulse);
 
         //추가로 더해지는 충격량의 방향까지 고려
-        var moveDir = (newv1.normalized + moveObj.character.ImpulseAddDir).normalized;
-        var checkDir = (newv2.normalized + checkObj.character.ImpulseAddDir).normalized;
+        var moveDir = (newv1 + moveObj.character.ImpulseAddDir).normalized;
+        var checkDir = (newv2 + checkObj.character.ImpulseAddDir).normalized;
 
         //방향과 속력 업데이트 등록
         moveObj.SetUpdateForce(moveDir, moveSpeed);
@@ -460,8 +460,8 @@ public class PhysicsManager : MonoBehaviour
         collisionDataList.Add(collisionData);
 
         //로깅        
-        Debug.Log(moveObjTrans.name + " 충돌 전 속도 : " + moveObj.speed);
-        Debug.Log(checkObjTrans.name + " 충돌 전 속도 : " + checkObj.speed);
+        Debug.Log(moveObjTrans.name + " 충돌 전 속력 : " + moveObj.speed);
+        Debug.Log(checkObjTrans.name + " 충돌 전 속력 : " + checkObj.speed);
 
         Debug.Log(string.Format("{0}의 공격력 : {1} ({2}*{3})",
             moveObjTrans.name, finalAttackValue, attackValue, speedRate));
@@ -474,9 +474,9 @@ public class PhysicsManager : MonoBehaviour
         Debug.Log(string.Format("{0}의 충격량 : {1} = ({2}+{3})*{4}",
             checkObjTrans.name, finalCheckImpulse, checkImpulse, checkObj.character.ImpulseAddValue, checkObj.character.ImpulsePercentValue));
 
-        Debug.Log(string.Format("[{0} final Vector]\n방향 : {1} 속도 : {2}",
+        Debug.Log(string.Format("[{0} final Vector]\n방향 : {1} 속력 : {2}",
             moveObjTrans.name, moveDir, moveSpeed));
-        Debug.Log(string.Format("[{0} final Vector]\n방향 : {1} 속도 : {2}",
+        Debug.Log(string.Format("[{0} final Vector]\n방향 : {1} 속력 : {2}",
            checkObjTrans.name, checkDir, checkSpeed));
 
         //물리 연산 참고 사이트 -> https://brownsoo.github.io/2DVectors/moving_balls/

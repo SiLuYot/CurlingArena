@@ -166,8 +166,8 @@ public class CharacterPhysics
         sweepValue = tempSweepValue;
     }
 
-    //충격량을 속도로 변환
-    //등차수열의 합과 이차방정식으로 속도를 알아낸다
+    //충격량을 속력으로 변환
+    //등차수열의 합과 이차방정식으로 속력를 알아낸다
     public float GetQuadraticEquationValue(float impulse)
     {
         impulse = (impulse * GameManager.DISTACNE) * GameManager.IMPULSE;
